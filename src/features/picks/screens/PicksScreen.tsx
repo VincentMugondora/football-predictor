@@ -76,7 +76,7 @@ export function PicksScreen() {
 
   const listHeader = useMemo(() => {
     if (!payload) {
-      return null;
+      return undefined;
     }
 
     const backtestSubtitle = `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${payload.backtest.log_loss_book.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
