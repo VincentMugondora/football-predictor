@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import { formatUpdatedRelative, isDataStale } from '@/lib/dateUtils';
 
 describe('dateUtils', () => {
