@@ -36,6 +36,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~58.0.4",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -44,7 +46,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --watchAll=false",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "private": true
 }
