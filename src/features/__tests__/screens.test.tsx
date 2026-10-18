@@ -43,10 +43,9 @@ describe('Tab Screen Render Tests', () => {
   it('renders PicksScreen with backtest verdict banner, featured match, and compliance footer', async () => {
     await render(<PicksScreen />);
 
-    const verdict = await screen.findByText(
-      'Model beats closing market log-loss over 420 matches'
-    );
-    expect(verdict).toBeTruthy();
+    expect(
+      screen.getByText('Model beats closing market log-loss over 420 matches')
+    ).toBeTruthy();
 
     expect(screen.getAllByText('Arsenal').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Liverpool').length).toBeGreaterThan(0);

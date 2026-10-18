@@ -26,8 +26,10 @@ export interface MatchListItem {
 }
 
 export function usePicksScreen() {
-  const [payload, setPayload] = useState<PicksPayload | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [payload, setPayload] = useState<PicksPayload | null>(() =>
+    picksRepository.getCachedPicks()
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');

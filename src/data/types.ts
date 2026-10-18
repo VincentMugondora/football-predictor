@@ -68,5 +68,6 @@ export interface UserSettings {
 }
 
 export interface PicksRepository {
+  getCachedPicks(): PicksPayload;
   getPicks(): Promise<PicksPayload>;
 }

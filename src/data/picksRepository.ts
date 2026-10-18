@@ -2,6 +2,10 @@ import { MOCK_PICKS_PAYLOAD } from '@/data/mockPicks';
 import { MatchPick, PicksPayload, PicksRepository } from '@/data/types';
 
 class LocalMockPicksRepository implements PicksRepository {
+  getCachedPicks(): PicksPayload {
+    return MOCK_PICKS_PAYLOAD;
+  }
+
   async getPicks(): Promise<PicksPayload> {
     return MOCK_PICKS_PAYLOAD;
   }
