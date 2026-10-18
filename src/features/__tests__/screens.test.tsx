@@ -1,14 +1,20 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
-
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
-);
+import { View } from 'react-native';
 
 import { useAppStore } from '@/data/store';
 import { BetLogScreen } from '@/features/betLog/screens/BetLogScreen';
 import { PicksScreen } from '@/features/picks/screens/PicksScreen';
 import { SummaryScreen } from '@/features/summary/screens/SummaryScreen';
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  __esModule: true,
+  default: {
+    getItem: jest.fn(async () => null),
+    setItem: jest.fn(async () => undefined),
+    removeItem: jest.fn(async () => undefined),
+  },
+}));
 
 jest.mock('expo-router', () => ({
   router: {
@@ -20,14 +26,17 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: jest.fn(() => ({ id: 'ars-liv-2026-10-24' })),
 }));
 
-jest.mock('react-native-safe-area-context', () => {
-  const ReactActual = require('react');
-  const { View } = require('react-native');
-  return {
-    SafeAreaView: ({ children, style }: { children: React.ReactNode; style?: object }) =>
-      ReactActual.createElement(View, { style }, children),
-  };
-});
+const MockSafeAreaView = View;
+
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: ({
+    children,
+    style,
+  }: {
+    children: React.ReactNode;
+    style?: object;
+  }) => <MockSafeAreaView style={style}>{children}</MockSafeAreaView>,
+}));
 
 describe('Tab Screen Render Tests', () => {
   beforeEach(() => {
@@ -83,7 +92,9 @@ describe('Tab Screen Render Tests', () => {
   it('renders SummaryScreen with bankroll, ROI, <100 settled bets notice, and triggers drawdown alert when threshold passed', async () => {
     await render(<SummaryScreen />);
 
-    expect(screen.getByText('Fewer than 100 settled bets is mostly luck')).toBeTruthy();
+    expect(
+      screen.getByText('Fewer than 100 settled bets is mostly luck')
+    ).toBeTruthy();
     expect(screen.getByText('Current Bankroll')).toBeTruthy();
     expect(screen.getByText('Win rate vs break-even rate')).toBeTruthy();
 

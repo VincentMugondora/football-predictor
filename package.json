@@ -7,7 +7,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
-    "expo": "57.0.0",
+    "expo": "~57.0.30",
     "expo-constants": "~58.0.12",
     "expo-device": "~58.0.5",
     "expo-font": "~58.0.8",
@@ -46,7 +46,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint",
+    "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "jest --watchAll=false",
     "format": "prettier --write \"src/**/*.{ts,tsx}\""
