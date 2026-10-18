@@ -69,17 +69,12 @@ export function calculateTotalProfit(
 export function calculateROI(
   bets: readonly Pick<BetRecord, 'odds' | 'stake' | 'result'>[]
 ): number {
-  const settledBets = bets.filter(
-    (bet) => bet.result === 'Win' || bet.result === 'Loss'
-  );
+  const settledBets = bets.filter((bet) => bet.result === 'Win' || bet.result === 'Loss');
   const totalStaked = settledBets.reduce((sum, bet) => sum + bet.stake, 0);
   if (totalStaked <= 0) {
     return 0;
   }
-  const totalProfit = settledBets.reduce(
-    (sum, bet) => sum + calculateBetProfit(bet),
-    0
-  );
+  const totalProfit = settledBets.reduce((sum, bet) => sum + calculateBetProfit(bet), 0);
   return totalProfit / totalStaked;
 }
 
@@ -178,8 +173,7 @@ export function calculateDrawdownFromPeak(
   }
 
   const currentBankroll = curve[curve.length - 1] ?? startingBankroll;
-  const currentDrawdownPct =
-    peak > 0 ? Math.max(0, (peak - currentBankroll) / peak) : 0;
+  const currentDrawdownPct = peak > 0 ? Math.max(0, (peak - currentBankroll) / peak) : 0;
 
   return {
     currentBankroll,

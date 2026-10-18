@@ -29,13 +29,9 @@ jest.mock('expo-router', () => ({
 const MockSafeAreaView = View;
 
 jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaView: ({
-    children,
-    style,
-  }: {
-    children: React.ReactNode;
-    style?: object;
-  }) => <MockSafeAreaView style={style}>{children}</MockSafeAreaView>,
+  SafeAreaView: ({ children, style }: { children: React.ReactNode; style?: object }) => (
+    <MockSafeAreaView style={style}>{children}</MockSafeAreaView>
+  ),
 }));
 
 describe('Tab Screen Render Tests', () => {
@@ -92,9 +88,7 @@ describe('Tab Screen Render Tests', () => {
   it('renders SummaryScreen with bankroll, ROI, <100 settled bets notice, and triggers drawdown alert when threshold passed', async () => {
     await render(<SummaryScreen />);
 
-    expect(
-      screen.getByText('Fewer than 100 settled bets is mostly luck')
-    ).toBeTruthy();
+    expect(screen.getByText('Fewer than 100 settled bets is mostly luck')).toBeTruthy();
     expect(screen.getByText('Current Bankroll')).toBeTruthy();
     expect(screen.getByText('Win rate vs break-even rate')).toBeTruthy();
 
