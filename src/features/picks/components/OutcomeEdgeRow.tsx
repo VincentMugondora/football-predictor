@@ -11,7 +11,11 @@ export interface OutcomeEdgeRowProps {
   matchTitle: string;
 }
 
-export function OutcomeEdgeRow({ analysis, onLogPress, matchTitle }: OutcomeEdgeRowProps) {
+export function OutcomeEdgeRow({
+  analysis,
+  onLogPress,
+  matchTitle,
+}: OutcomeEdgeRowProps) {
   const theme = useAppTheme();
   const modelPct = Math.round(analysis.modelProb * 100);
   const breakEvenPct = Math.round(analysis.breakEvenProb * 100);
@@ -35,7 +39,8 @@ export function OutcomeEdgeRow({ analysis, onLogPress, matchTitle }: OutcomeEdge
     <View
       style={styles.rowContainer}
       accessible={true}
-      accessibilityLabel={`${displayOutcome}: Model ${modelPct}%, Break-even ${breakEvenPct}% at odds ${analysis.odds.toFixed(2)}, Edge ${edgeText}${analysis.isValuePick ? ', Value edge above threshold' : ''}`}>
+      accessibilityLabel={`${displayOutcome}: Model ${modelPct}%, Break-even ${breakEvenPct}% at odds ${analysis.odds.toFixed(2)}, Edge ${edgeText}${analysis.isValuePick ? ', Value edge above threshold' : ''}`}
+    >
       <View style={styles.topLine}>
         <Text style={styles.outcomeLabel}>{displayOutcome}</Text>
         <View style={styles.track}>
@@ -59,7 +64,8 @@ export function OutcomeEdgeRow({ analysis, onLogPress, matchTitle }: OutcomeEdge
           style={styles.logButton}
           onPress={() => onLogPress(analysis.outcome, analysis.odds)}
           accessibilityRole="button"
-          accessibilityLabel={`Log ${analysis.outcome} bet for ${matchTitle} at odds ${analysis.odds.toFixed(2)}`}>
+          accessibilityLabel={`Log ${analysis.outcome} bet for ${matchTitle} at odds ${analysis.odds.toFixed(2)}`}
+        >
           <Text style={styles.logButtonText}>+ Log</Text>
         </TouchableOpacity>
       </View>

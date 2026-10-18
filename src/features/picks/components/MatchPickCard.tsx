@@ -41,7 +41,8 @@ function MatchPickCardComponent({
           style={styles.teamsTouchArea}
           onPress={() => onPressMatch(match.id)}
           accessibilityRole="button"
-          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${formatKickoffTime(match.date)}`}>
+          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${formatKickoffTime(match.date)}`}
+        >
           <View style={styles.homeGroup}>
             <TeamCrest teamName={match.home} size="sm" />
             <Text style={styles.teamName} numberOfLines={1}>
@@ -71,7 +72,8 @@ function MatchPickCardComponent({
             isFavourite
               ? `Remove ${matchTitle} from favourites`
               : `Add ${matchTitle} to favourites`
-          }>
+          }
+        >
           <Text style={styles.starIcon}>{isFavourite ? '★' : '☆'}</Text>
         </TouchableOpacity>
       </View>

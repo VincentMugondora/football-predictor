@@ -36,7 +36,8 @@ function BetRowCardComponent({ bet, onChangeResult, onDelete }: BetRowCardProps)
     <View
       style={styles.card}
       accessible={true}
-      accessibilityLabel={`Bet on ${bet.match}, Pick ${bet.pick}, Odds ${bet.odds.toFixed(2)}, Stake $${bet.stake.toFixed(2)}, Result ${bet.result}, Net ${profitDisplay}`}>
+      accessibilityLabel={`Bet on ${bet.match}, Pick ${bet.pick}, Odds ${bet.odds.toFixed(2)}, Stake $${bet.stake.toFixed(2)}, Result ${bet.result}, Net ${profitDisplay}`}
+    >
       {/* Top row modeled closely on Image 2 Result Card */}
       <View style={styles.mainRow}>
         <View style={styles.clubsBox}>
@@ -49,9 +50,7 @@ function BetRowCardComponent({ bet, onChangeResult, onDelete }: BetRowCardProps)
 
           <View style={styles.scoreCol}>
             <Text style={styles.scoreText}>{bet.scoreline ?? 'VS'}</Text>
-            <Text style={styles.ftLabel}>
-              {bet.result === 'Pending' ? 'OPEN' : 'FT'}
-            </Text>
+            <Text style={styles.ftLabel}>{bet.result === 'Pending' ? 'OPEN' : 'FT'}</Text>
           </View>
 
           <View style={styles.clubCol}>
@@ -80,7 +79,8 @@ function BetRowCardComponent({ bet, onChangeResult, onDelete }: BetRowCardProps)
           style={styles.deleteButton}
           onPress={() => onDelete(bet.id)}
           accessibilityRole="button"
-          accessibilityLabel={`Delete bet on ${bet.match}`}>
+          accessibilityLabel={`Delete bet on ${bet.match}`}
+        >
           <Text style={styles.deleteText}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -99,12 +99,16 @@ function BetRowCardComponent({ bet, onChangeResult, onDelete }: BetRowCardProps)
               onPress={() => onChangeResult(bet.id, statusOption)}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
-              accessibilityLabel={`Mark bet on ${bet.match} as ${statusOption}`}>
+              accessibilityLabel={`Mark bet on ${bet.match} as ${statusOption}`}
+            >
               <Text
                 style={[
                   styles.statusChipText,
-                  isSelected ? styles.statusChipTextActive : styles.statusChipTextInactive,
-                ]}>
+                  isSelected
+                    ? styles.statusChipTextActive
+                    : styles.statusChipTextInactive,
+                ]}
+              >
                 {statusOption}
               </Text>
             </TouchableOpacity>

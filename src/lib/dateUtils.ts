@@ -18,7 +18,10 @@ export function isDataStale(generatedAtIso: string, now: Date = new Date()): boo
 /**
  * Formats an ISO timestamp into a compact relative label such as "Updated 2h ago" or "Updated 4d ago".
  */
-export function formatUpdatedRelative(generatedAtIso: string, now: Date = new Date()): string {
+export function formatUpdatedRelative(
+  generatedAtIso: string,
+  now: Date = new Date()
+): string {
   const generatedTime = new Date(generatedAtIso).getTime();
   if (Number.isNaN(generatedTime)) {
     return 'Updated recently';
@@ -44,7 +47,15 @@ export function formatMatchDayHeader(isoDate: string): string {
   if (Number.isNaN(date.getTime())) {
     return isoDate;
   }
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   const months = [
     'Jan',
     'Feb',

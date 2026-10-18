@@ -67,7 +67,8 @@ export function MatchDetailScreen() {
       <AppHeader title={matchTitle} showBack />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Hero Card matching Image 1 */}
         <View style={styles.heroCard}>
           <View style={styles.heroBadgeRow}>

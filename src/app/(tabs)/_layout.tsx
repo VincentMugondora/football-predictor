@@ -34,7 +34,8 @@ export default function TabsLayout() {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarLabelStyle: styles.tabLabel,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{

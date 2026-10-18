@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useAppStore } from '@/data/store';
 import { OutcomeKey } from '@/data/types';
@@ -18,7 +18,7 @@ export function useBetForm() {
   }, [settings.startingBankroll, bets]);
 
   const defaultStakeStr = useMemo(() => {
-    const raw = (currentBankroll * (settings.usualStakePct / 100));
+    const raw = currentBankroll * (settings.usualStakePct / 100);
     const clamped = Math.max(0.5, Number(raw.toFixed(2)));
     return String(clamped);
   }, [currentBankroll, settings.usualStakePct]);
@@ -31,20 +31,20 @@ export function useBetForm() {
   const [tag, setTag] = useState<string>('Premier League');
   const [hasSubmittedAttempt, setHasSubmittedAttempt] = useState<boolean>(false);
   const [awaitingMaxStakeConfirm, setAwaitingMaxStakeConfirm] = useState<boolean>(false);
+  const [appliedDraftRef, setAppliedDraftRef] = useState<typeof draftBet>(null);
 
-  // When a user taps "+ Log" on a Pick, prefill the form and open it automatically
-  useEffect(() => {
-    if (draftBet) {
-      setMatch(draftBet.match);
-      setPick(draftBet.pick);
-      setOddsInput(draftBet.odds.toFixed(2));
-      setStakeInput(defaultStakeStr);
-      setTag(draftBet.tag);
-      setHasSubmittedAttempt(false);
-      setAwaitingMaxStakeConfirm(false);
-      setIsFormOpen(true);
-    }
-  }, [draftBet, defaultStakeStr]);
+  // Synchronize draftBet prefill during render without cascading an effect
+  if (draftBet && draftBet !== appliedDraftRef) {
+    setAppliedDraftRef(draftBet);
+    setMatch(draftBet.match);
+    setPick(draftBet.pick);
+    setOddsInput(draftBet.odds.toFixed(2));
+    setStakeInput(defaultStakeStr);
+    setTag(draftBet.tag);
+    setHasSubmittedAttempt(false);
+    setAwaitingMaxStakeConfirm(false);
+    setIsFormOpen(true);
+  }
 
   const validation = useMemo(
     () =>
@@ -77,6 +77,7 @@ export function useBetForm() {
     setIsFormOpen(false);
     setHasSubmittedAttempt(false);
     setAwaitingMaxStakeConfirm(false);
+    setAppliedDraftRef(null);
     setDraftBet(null);
   }, [setDraftBet]);
 
@@ -87,7 +88,11 @@ export function useBetForm() {
         return false;
       }
 
-      if (validation.exceedsMaxStakePct && !forceConfirmMaxStake && !awaitingMaxStakeConfirm) {
+      if (
+        validation.exceedsMaxStakePct &&
+        !forceConfirmMaxStake &&
+        !awaitingMaxStakeConfirm
+      ) {
         setAwaitingMaxStakeConfirm(true);
         return false;
       }
@@ -104,6 +109,7 @@ export function useBetForm() {
       setIsFormOpen(false);
       setHasSubmittedAttempt(false);
       setAwaitingMaxStakeConfirm(false);
+      setAppliedDraftRef(null);
       return true;
     },
     [validation, awaitingMaxStakeConfirm, addBet, match, pick, tag]

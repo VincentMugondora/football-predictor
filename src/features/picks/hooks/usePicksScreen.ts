@@ -34,7 +34,32 @@ export function usePicksScreen() {
   const toggleFavouriteMatch = useAppStore((s) => s.toggleFavouriteMatch);
   const setDraftBet = useAppStore((s) => s.setDraftBet);
 
-  const loadPicks = useCallback(async () => {
+  useEffect(() => {
+    let isCancelled = false;
+    picksRepository
+      .getPicks()
+      .then((data) => {
+        if (!isCancelled) {
+          setPayload(data);
+          setErrorMessage(null);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setErrorMessage(
+            'Could not load match predictions. Check your local data cache.'
+          );
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const reload = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -46,10 +71,6 @@ export function usePicksScreen() {
       setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    void loadPicks();
-  }, [loadPicks]);
 
   const featuredMatch = useMemo(() => {
     if (!payload) {
@@ -153,6 +174,6 @@ export function usePicksScreen() {
     toggleFavouriteMatch,
     handlePressMatch,
     handleLogOutcome,
-    reload: loadPicks,
+    reload,
   };
 }

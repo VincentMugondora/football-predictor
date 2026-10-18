@@ -12,12 +12,7 @@ export interface StatTileProps {
   tone?: StatTileTone;
 }
 
-export function StatTile({
-  label,
-  value,
-  sublabel,
-  tone = 'default',
-}: StatTileProps) {
+export function StatTile({ label, value, sublabel, tone = 'default' }: StatTileProps) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme, tone), [theme, tone]);
 
@@ -25,7 +20,8 @@ export function StatTile({
     <View
       style={styles.tile}
       accessible={true}
-      accessibilityLabel={`${label}: ${value}${sublabel ? `, ${sublabel}` : ''}`}>
+      accessibilityLabel={`${label}: ${value}${sublabel ? `, ${sublabel}` : ''}`}
+    >
       <Text style={styles.label}>{label}</Text>
       <Text style={styles.value}>{value}</Text>
       {sublabel ? <Text style={styles.sublabel}>{sublabel}</Text> : null}

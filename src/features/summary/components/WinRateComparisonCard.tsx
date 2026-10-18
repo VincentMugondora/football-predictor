@@ -25,7 +25,8 @@ export function WinRateComparisonCard({ comparison }: WinRateComparisonCardProps
     <View
       style={styles.card}
       accessible={true}
-      accessibilityLabel={`Win rate vs break-even rate across ${comparison.settledCount} settled bets: Actual win rate ${winPct}%, Required break-even rate ${breakEvenPct}%, Difference ${deltaText}`}>
+      accessibilityLabel={`Win rate vs break-even rate across ${comparison.settledCount} settled bets: Actual win rate ${winPct}%, Required break-even rate ${breakEvenPct}%, Difference ${deltaText}`}
+    >
       <View style={styles.headerRow}>
         <Text style={styles.title}>Win rate vs break-even rate</Text>
         <Text style={styles.deltaBadge}>

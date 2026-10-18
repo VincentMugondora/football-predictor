@@ -12,14 +12,14 @@ export function FormBadge({ result }: FormBadgeProps) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme, result), [theme, result]);
 
-  const fullLabel =
-    result === 'W' ? 'Win' : result === 'D' ? 'Draw' : 'Loss';
+  const fullLabel = result === 'W' ? 'Win' : result === 'D' ? 'Draw' : 'Loss';
 
   return (
     <View
       style={styles.circle}
       accessible={true}
-      accessibilityLabel={`Form result: ${fullLabel}`}>
+      accessibilityLabel={`Form result: ${fullLabel}`}
+    >
       <Text style={styles.letter}>{result}</Text>
     </View>
   );

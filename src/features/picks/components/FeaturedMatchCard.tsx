@@ -38,7 +38,8 @@ export function FeaturedMatchCard({
         style={styles.heroTouchable}
         onPress={() => onPressMatch(match.id)}
         accessibilityRole="button"
-        accessibilityLabel={`Featured match ${matchTitle}. Tap to view detailed breakdown`}>
+        accessibilityLabel={`Featured match ${matchTitle}. Tap to view detailed breakdown`}
+      >
         <View style={styles.topRow}>
           <Text style={styles.featuredLabel}>FEATURED MATCH</Text>
           {match.isDemo ? <PillBadge label="DEMO DATA" variant="gold" /> : null}

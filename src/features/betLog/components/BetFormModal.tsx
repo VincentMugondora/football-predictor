@@ -56,9 +56,7 @@ export function BetFormModal({
     <View style={styles.card} accessible={true} accessibilityLabel="Log a bet form">
       <View style={styles.headerRow}>
         <Text style={styles.title}>Log Bet</Text>
-        <Text style={styles.bankrollHint}>
-          Bankroll: ${currentBankroll.toFixed(2)}
-        </Text>
+        <Text style={styles.bankrollHint}>Bankroll: ${currentBankroll.toFixed(2)}</Text>
       </View>
 
       <AppInput
@@ -85,12 +83,16 @@ export function BetFormModal({
                 onPress={() => onChangePick(option)}
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
-                accessibilityLabel={`Select outcome ${option}`}>
+                accessibilityLabel={`Select outcome ${option}`}
+              >
                 <Text
                   style={[
                     styles.outcomePillText,
-                    selected ? styles.outcomePillTextActive : styles.outcomePillTextInactive,
-                  ]}>
+                    selected
+                      ? styles.outcomePillTextActive
+                      : styles.outcomePillTextInactive,
+                  ]}
+                >
                   {option}
                 </Text>
               </TouchableOpacity>
@@ -133,7 +135,8 @@ export function BetFormModal({
         accessibilityLabel="League or tag"
       />
 
-      {awaitingMaxStakeConfirm || (validation.exceedsMaxStakePct && hasSubmittedAttempt) ? (
+      {awaitingMaxStakeConfirm ||
+      (validation.exceedsMaxStakePct && hasSubmittedAttempt) ? (
         <InfoBanner
           tone="warning"
           title={`Stake is ${validation.stakePctOfBankroll.toFixed(1)}% of bankroll (above your ${maxStakePct}% max stake setting)`}

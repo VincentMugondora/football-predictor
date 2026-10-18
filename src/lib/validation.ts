@@ -56,7 +56,9 @@ export function validateBetForm(
       : 0;
 
   const exceedsMaxStakePct =
-    Object.keys(errors).length === 0 && maxStakePct > 0 && stakePctOfBankroll > maxStakePct;
+    Object.keys(errors).length === 0 &&
+    maxStakePct > 0 &&
+    stakePctOfBankroll > maxStakePct;
 
   return {
     isValid: Object.keys(errors).length === 0,

@@ -35,7 +35,8 @@ export function AppButton({
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{ disabled }}>
+      accessibilityState={{ disabled }}
+    >
       <Text style={styles.text}>{label}</Text>
     </TouchableOpacity>
   );
@@ -81,7 +82,9 @@ function createStyles(
     },
     text: {
       color: textColor,
-      fontSize: compact ? theme.typography.sizes.caption : theme.typography.sizes.bodyStrong,
+      fontSize: compact
+        ? theme.typography.sizes.caption
+        : theme.typography.sizes.bodyStrong,
       fontWeight: theme.typography.weights.bold,
     },
   });

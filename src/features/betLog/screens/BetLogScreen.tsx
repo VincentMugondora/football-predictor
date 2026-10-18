@@ -28,11 +28,7 @@ export function BetLogScreen() {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<BetRecord>) => (
-      <BetRowCard
-        bet={item}
-        onChangeResult={updateBetResult}
-        onDelete={deleteBet}
-      />
+      <BetRowCard bet={item} onChangeResult={updateBetResult} onDelete={deleteBet} />
     ),
     [updateBetResult, deleteBet]
   );

@@ -1,5 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { ActivityIndicator, FlatList, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItemInfo,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { AppHeader } from '@/components/AppHeader';
 import { AppInput } from '@/components/AppInput';
@@ -177,10 +184,7 @@ export function PicksScreen() {
 
   return (
     <ScreenContainer>
-      <AppHeader
-        onSearchPress={handleToggleSearch}
-        isSearchActive={isSearchVisible}
-      />
+      <AppHeader onSearchPress={handleToggleSearch} isSearchActive={isSearchVisible} />
       <FlatList
         data={listItems}
         keyExtractor={keyExtractor}

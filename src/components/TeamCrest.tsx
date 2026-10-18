@@ -27,8 +27,18 @@ const CLUB_PALETTE: Record<string, ClubColors> = {
   Napoli: { bg: '#12A0D7', border: '#FFFFFF', text: '#FFFFFF', shortCode: 'NAP' },
   'Real Madrid': { bg: '#FEBE10', border: '#00529F', text: '#00529F', shortCode: 'RMA' },
   Valencia: { bg: '#FF6600', border: '#111111', text: '#FFFFFF', shortCode: 'VAL' },
-  'Atlético Madrid': { bg: '#CB3524', border: '#272E61', text: '#FFFFFF', shortCode: 'ATM' },
-  'Bayern Munich': { bg: '#DC052D', border: '#FFFFFF', text: '#FFFFFF', shortCode: 'BAY' },
+  'Atlético Madrid': {
+    bg: '#CB3524',
+    border: '#272E61',
+    text: '#FFFFFF',
+    shortCode: 'ATM',
+  },
+  'Bayern Munich': {
+    bg: '#DC052D',
+    border: '#FFFFFF',
+    text: '#FFFFFF',
+    shortCode: 'BAY',
+  },
   Dortmund: { bg: '#FDE100', border: '#111111', text: '#111111', shortCode: 'BVB' },
 };
 
@@ -65,7 +75,8 @@ export function TeamCrest({ teamName, size = 'sm' }: TeamCrestProps) {
       style={styles.shield}
       accessible={true}
       accessibilityRole="image"
-      accessibilityLabel={`${teamName} club crest`}>
+      accessibilityLabel={`${teamName} club crest`}
+    >
       <Text style={styles.code}>{identity.shortCode}</Text>
     </View>
   );

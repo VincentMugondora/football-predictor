@@ -74,7 +74,8 @@ export function SettingsScreen() {
       <AppHeader title="Settings" showBack />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Bankroll & Risk Rules</Text>
 

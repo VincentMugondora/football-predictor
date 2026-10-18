@@ -33,7 +33,8 @@ export function SummaryScreen() {
       <AppHeader />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         {metrics.isDrawdownAlertActive ? (
           <DrawdownAlertBanner
             currentDrawdownPct={metrics.drawdown.currentDrawdownPct}
@@ -88,9 +89,7 @@ export function SummaryScreen() {
             label="ROI (Yield)"
             value={roiFormatted}
             sublabel="Profit / settled stake"
-            tone={
-              metrics.roi > 0 ? 'positive' : metrics.roi < 0 ? 'negative' : 'default'
-            }
+            tone={metrics.roi > 0 ? 'positive' : metrics.roi < 0 ? 'negative' : 'default'}
           />
           <StatTile
             label="Drawdown from Peak"

@@ -1,9 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 
-jest.mock(
-  '@react-native-async-storage/async-storage',
-  () => require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
 import { useAppStore } from '@/data/store';
@@ -84,9 +83,7 @@ describe('Tab Screen Render Tests', () => {
   it('renders SummaryScreen with bankroll, ROI, <100 settled bets notice, and triggers drawdown alert when threshold passed', async () => {
     await render(<SummaryScreen />);
 
-    expect(
-      screen.getByText('Fewer than 100 settled bets is mostly luck')
-    ).toBeTruthy();
+    expect(screen.getByText('Fewer than 100 settled bets is mostly luck')).toBeTruthy();
     expect(screen.getByText('Current Bankroll')).toBeTruthy();
     expect(screen.getByText('Win rate vs break-even rate')).toBeTruthy();
 

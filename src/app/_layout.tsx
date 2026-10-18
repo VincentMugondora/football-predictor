@@ -14,7 +14,8 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.background },
-        }}>
+        }}
+      >
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="match/[id]" />
         <Stack.Screen

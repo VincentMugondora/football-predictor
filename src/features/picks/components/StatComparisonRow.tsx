@@ -23,7 +23,8 @@ export function StatComparisonRow({
     <View
       style={styles.row}
       accessible={true}
-      accessibilityLabel={`${label}: Home ${homeValue}, Away ${awayValue}`}>
+      accessibilityLabel={`${label}: Home ${homeValue}, Away ${awayValue}`}
+    >
       <Text style={styles.valueText}>{homeValue}</Text>
       <Text style={styles.labelText}>{label}</Text>
       <Text style={styles.valueText}>{awayValue}</Text>

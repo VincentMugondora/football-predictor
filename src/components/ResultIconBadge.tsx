@@ -13,19 +13,14 @@ export function ResultIconBadge({ result }: ResultIconBadgeProps) {
   const styles = useMemo(() => createStyles(theme, result), [theme, result]);
 
   const symbol =
-    result === 'Win'
-      ? '✓'
-      : result === 'Loss'
-        ? '✕'
-        : result === 'Void'
-          ? '–'
-          : '•';
+    result === 'Win' ? '✓' : result === 'Loss' ? '✕' : result === 'Void' ? '–' : '•';
 
   return (
     <View
       style={styles.circle}
       accessible={true}
-      accessibilityLabel={`Bet outcome: ${result}`}>
+      accessibilityLabel={`Bet outcome: ${result}`}
+    >
       <Text style={styles.symbol}>{symbol}</Text>
     </View>
   );

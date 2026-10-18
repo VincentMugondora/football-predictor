@@ -10,7 +10,7 @@ export interface StackedProbBarProps {
 
 export function StackedProbBar({ probabilities }: StackedProbBarProps) {
   const theme = useAppTheme();
-  const [homeProb, drawProb, awayProb] = probabilities;
+  const [homeProb, drawProb] = probabilities;
   const homePct = Math.round(homeProb * 100);
   const drawPct = Math.round(drawProb * 100);
   const awayPct = Math.max(0, 100 - homePct - drawPct);
@@ -24,7 +24,8 @@ export function StackedProbBar({ probabilities }: StackedProbBarProps) {
     <View
       style={styles.wrapper}
       accessible={true}
-      accessibilityLabel={`Match probabilities: Home ${homePct}%, Draw ${drawPct}%, Away ${awayPct}%`}>
+      accessibilityLabel={`Match probabilities: Home ${homePct}%, Draw ${drawPct}%, Away ${awayPct}%`}
+    >
       <View style={styles.barTrack}>
         <View style={styles.homeSegment} />
         <View style={styles.drawSegment} />
@@ -45,7 +46,12 @@ export function StackedProbBar({ probabilities }: StackedProbBarProps) {
   );
 }
 
-function createStyles(theme: AppTheme, homePct: number, drawPct: number, awayPct: number) {
+function createStyles(
+  theme: AppTheme,
+  homePct: number,
+  drawPct: number,
+  awayPct: number
+) {
   return StyleSheet.create({
     wrapper: {
       gap: theme.spacing.sm,

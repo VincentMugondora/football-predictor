@@ -44,7 +44,10 @@ describe('calculations pure functions', () => {
 
   describe('calculateBetProfit', () => {
     it('returns stake * (odds - 1) on Win', () => {
-      expect(calculateBetProfit({ odds: 2.5, stake: 10, result: 'Win' })).toBeCloseTo(15, 5);
+      expect(calculateBetProfit({ odds: 2.5, stake: 10, result: 'Win' })).toBeCloseTo(
+        15,
+        5
+      );
     });
 
     it('returns -stake on Loss', () => {

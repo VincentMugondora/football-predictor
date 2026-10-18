@@ -36,7 +36,9 @@ export function calculateProbabilityEdge(probability: number, odds: number): num
  * Net profit or loss for a single bet based on its settled status.
  * Pending and Void bets contribute 0 net profit.
  */
-export function calculateBetProfit(bet: Pick<BetRecord, 'odds' | 'stake' | 'result'>): number {
+export function calculateBetProfit(
+  bet: Pick<BetRecord, 'odds' | 'stake' | 'result'>
+): number {
   if (bet.stake <= 0) {
     return 0;
   }
@@ -55,7 +57,7 @@ export function calculateBetProfit(bet: Pick<BetRecord, 'odds' | 'stake' | 'resu
  * Total net profit across a list of bets.
  */
 export function calculateTotalProfit(
-  bets: ReadonlyArray<Pick<BetRecord, 'odds' | 'stake' | 'result'>>
+  bets: readonly Pick<BetRecord, 'odds' | 'stake' | 'result'>[]
 ): number {
   return bets.reduce((sum, bet) => sum + calculateBetProfit(bet), 0);
 }
@@ -65,14 +67,19 @@ export function calculateTotalProfit(
  * Only Win and Loss bets count toward active settled capital at risk.
  */
 export function calculateROI(
-  bets: ReadonlyArray<Pick<BetRecord, 'odds' | 'stake' | 'result'>>
+  bets: readonly Pick<BetRecord, 'odds' | 'stake' | 'result'>[]
 ): number {
-  const settledBets = bets.filter((bet) => bet.result === 'Win' || bet.result === 'Loss');
+  const settledBets = bets.filter(
+    (bet) => bet.result === 'Win' || bet.result === 'Loss'
+  );
   const totalStaked = settledBets.reduce((sum, bet) => sum + bet.stake, 0);
   if (totalStaked <= 0) {
     return 0;
   }
-  const totalProfit = settledBets.reduce((sum, bet) => sum + calculateBetProfit(bet), 0);
+  const totalProfit = settledBets.reduce(
+    (sum, bet) => sum + calculateBetProfit(bet),
+    0
+  );
   return totalProfit / totalStaked;
 }
 
@@ -88,7 +95,7 @@ export interface WinRateComparison {
  * break-even probability implied by the odds of those settled bets.
  */
 export function calculateWinRateVsBreakEven(
-  bets: ReadonlyArray<Pick<BetRecord, 'odds' | 'stake' | 'result'>>
+  bets: readonly Pick<BetRecord, 'odds' | 'stake' | 'result'>[]
 ): WinRateComparison {
   const settled = bets.filter((bet) => bet.result === 'Win' || bet.result === 'Loss');
   if (settled.length === 0) {
@@ -122,7 +129,7 @@ export function calculateWinRateVsBreakEven(
  */
 export function calculateRunningBankroll(
   startingBankroll: number,
-  bets: ReadonlyArray<Pick<BetRecord, 'odds' | 'stake' | 'result' | 'createdAt'>>
+  bets: readonly Pick<BetRecord, 'odds' | 'stake' | 'result' | 'createdAt'>[]
 ): number[] {
   const sorted = [...bets].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -152,7 +159,7 @@ export interface DrawdownSummary {
  */
 export function calculateDrawdownFromPeak(
   startingBankroll: number,
-  bets: ReadonlyArray<Pick<BetRecord, 'odds' | 'stake' | 'result' | 'createdAt'>>
+  bets: readonly Pick<BetRecord, 'odds' | 'stake' | 'result' | 'createdAt'>[]
 ): DrawdownSummary {
   const curve = calculateRunningBankroll(startingBankroll, bets);
   let peak = startingBankroll > 0 ? startingBankroll : 0;
@@ -171,7 +178,8 @@ export function calculateDrawdownFromPeak(
   }
 
   const currentBankroll = curve[curve.length - 1] ?? startingBankroll;
-  const currentDrawdownPct = peak > 0 ? Math.max(0, (peak - currentBankroll) / peak) : 0;
+  const currentDrawdownPct =
+    peak > 0 ? Math.max(0, (peak - currentBankroll) / peak) : 0;
 
   return {
     currentBankroll,

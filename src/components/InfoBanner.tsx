@@ -22,7 +22,8 @@ export function InfoBanner({ title, subtitle, tone = 'info' }: InfoBannerProps) 
       style={styles.banner}
       accessible={true}
       accessibilityRole="alert"
-      accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}>
+      accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}
+    >
       <View style={styles.iconCircle}>
         <Text style={styles.iconText}>{iconSymbol}</Text>
       </View>

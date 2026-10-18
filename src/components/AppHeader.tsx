@@ -18,7 +18,10 @@ export function AppHeader({
   isSearchActive = false,
 }: AppHeaderProps) {
   const theme = useAppTheme();
-  const styles = useMemo(() => createStyles(theme, isSearchActive), [theme, isSearchActive]);
+  const styles = useMemo(
+    () => createStyles(theme, isSearchActive),
+    [theme, isSearchActive]
+  );
 
   const handleOpenSettings = () => {
     router.push('/settings');
@@ -39,7 +42,8 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleBack}
           accessibilityRole="button"
-          accessibilityLabel="Go back">
+          accessibilityLabel="Go back"
+        >
           <Text style={styles.iconGlyph}>←</Text>
         </TouchableOpacity>
         <Text style={styles.detailTitle} numberOfLines={1}>
@@ -49,7 +53,8 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleOpenSettings}
           accessibilityRole="button"
-          accessibilityLabel="Open settings">
+          accessibilityLabel="Open settings"
+        >
           <Text style={styles.iconGlyph}>⋮</Text>
         </TouchableOpacity>
       </View>
@@ -70,7 +75,8 @@ export function AppHeader({
             style={[styles.iconButton, isSearchActive ? styles.iconButtonActive : null]}
             onPress={onSearchPress}
             accessibilityRole="button"
-            accessibilityLabel="Toggle search matches">
+            accessibilityLabel="Toggle search matches"
+          >
             <Text style={styles.iconGlyph}>⌕</Text>
           </TouchableOpacity>
         ) : null}
@@ -78,7 +84,8 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleOpenSettings}
           accessibilityRole="button"
-          accessibilityLabel="Open settings">
+          accessibilityLabel="Open settings"
+        >
           <Text style={styles.iconGlyph}>⋮</Text>
         </TouchableOpacity>
       </View>

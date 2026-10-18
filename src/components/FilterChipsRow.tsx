@@ -18,7 +18,8 @@ export function FilterChipsRow({ options, selected, onSelect }: FilterChipsRowPr
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         {options.map((option) => {
           const isActive = option === selected;
           return (
@@ -28,12 +29,14 @@ export function FilterChipsRow({ options, selected, onSelect }: FilterChipsRowPr
               onPress={() => onSelect(option)}
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
-              accessibilityLabel={`Filter by ${option}`}>
+              accessibilityLabel={`Filter by ${option}`}
+            >
               <Text
                 style={[
                   styles.chipText,
                   isActive ? styles.chipTextActive : styles.chipTextInactive,
-                ]}>
+                ]}
+              >
                 {option}
               </Text>
             </TouchableOpacity>
