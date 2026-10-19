@@ -1,4 +1,4 @@
-"""Daily model training, fixture prediction, and picks.json publisher (Phase 4)."""
+"""Daily model training, fixture prediction, post-match result comparison, and picks.json publisher."""
 
 from __future__ import annotations
 
@@ -10,18 +10,58 @@ from pathlib import Path
 import pandas as pd
 
 from model import config
-from model.backtest import BacktestReport, run_walk_forward_backtest
+from model.backtest import (
+    BacktestReport,
+    multiclass_brier_score,
+    multiclass_log_loss,
+    run_walk_forward_backtest,
+)
 from model.data import fetch_upcoming_fixtures, load_historical_matches
 from model.model import OnlinePoissonModel
 
-SCHEMA_VERSION = "1.0"
-MODEL_VERSION = "poisson-dc-v1.0"
+SCHEMA_VERSION = "1.1"
+MODEL_VERSION = "poisson-dc-v1.1"
+OUTCOME_LABELS = ("Home", "Draw", "Away")
 
 
 def _slugify_match_id(home: str, away: str, date_str: str) -> str:
     h_slug = re.sub(r"[^a-z0-9]+", "-", home.lower()).strip("-")[:6]
     a_slug = re.sub(r"[^a-z0-9]+", "-", away.lower()).strip("-")[:6]
     return f"{h_slug}-{a_slug}-{date_str}"
+
+
+def _ftr_to_outcome_label(ftr: str) -> str:
+    if ftr == "H":
+        return "Home"
+    if ftr == "D":
+        return "Draw"
+    return "Away"
+
+
+def _top_outcome_label(probs: tuple[float, float, float] | list[float]) -> str:
+    best_idx = int(max(range(3), key=lambda i: probs[i]))
+    return OUTCOME_LABELS[best_idx]
+
+
+def _load_predictions_history(history_path: Path) -> dict[str, dict[str, object]]:
+    if not history_path.exists():
+        return {}
+    try:
+        data = json.loads(history_path.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            return data
+    except Exception:
+        pass
+    return {}
+
+
+def _save_predictions_history(
+    history: dict[str, dict[str, object]], history_path: Path
+) -> None:
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    # Keep most recent 400 predictions so history file stays compact
+    items = list(history.items())[-400:]
+    history_path.write_text(json.dumps(dict(items), indent=2), encoding="utf-8")
 
 
 def _build_our_take(
@@ -67,40 +107,32 @@ def _build_our_take(
 def build_picks_payload(
     df_hist: pd.DataFrame,
     report: BacktestReport,
-    max_matches: int = 24,
+    max_matches: int = 20,
+    max_comparisons: int = 16,
+    history_path: Path = config.PREDICTIONS_HISTORY_PATH,
 ) -> dict[str, object]:
     """
-    Produces the picks.json payload from real football-data.co.uk data.
-    Uses upcoming fixtures from fixtures.csv if published; otherwise evaluates the final
-    matchweek window across active leagues using a model trained strictly on prior dates
-    (zero look-ahead).
+    1. Walks chronologically through historical matches, predicting each match strictly BEFORE
+       observing its real result.
+    2. Reconciles completed matches against stored pre-match predictions to produce
+       `recent_comparisons` (Predicted Outcome & Probabilities vs. Real Scoreline & Result).
+    3. Generates upcoming match predictions and stores them in `predictions_history.json`
+       so when those matches finish, their real results are automatically compared next day.
     """
+    pred_history = _load_predictions_history(history_path)
     upcoming_df = fetch_upcoming_fixtures(config.ACTIVE_LEAGUES)
 
     if not upcoming_df.empty:
-        # Train on 100% of historical completed matches
-        trained_model = OnlinePoissonModel()
-        for row in df_hist.itertuples(index=False):
-            hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
-            as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
-            trained_model.observe_match(
-                str(row.Div),
-                str(row.HomeTeam),
-                str(row.AwayTeam),
-                int(row.FTHG),
-                int(row.FTAG),
-                hs,
-                as_,
-            )
+        train_df = df_hist.copy()
         target_fixtures = upcoming_df.head(max_matches).copy()
     else:
-        # Select the latest real matchweek per active league from historical CSVs,
-        # and train the model strictly on matches BEFORE the cutoff date (no look-ahead).
+        # When between matchweeks, hold out the final round (5 matches per league) as the active
+        # fixture slate and use the round immediately preceding it for recent post-match comparisons.
         latest_per_league: list[pd.DataFrame] = []
         for div in config.ACTIVE_LEAGUES:
             div_df = df_hist[df_hist["Div"] == div]
             if not div_df.empty:
-                latest_per_league.append(div_df.tail(6))
+                latest_per_league.append(div_df.tail(5))
 
         target_fixtures = (
             pd.concat(latest_per_league, ignore_index=True)
@@ -109,29 +141,96 @@ def build_picks_payload(
             .reset_index(drop=True)
         )
         cutoff_date = target_fixtures["Date"].min()
-        prior_df = df_hist[df_hist["Date"] < cutoff_date]
+        train_df = df_hist[df_hist["Date"] < cutoff_date].copy()
 
-        trained_model = OnlinePoissonModel()
-        for row in prior_df.itertuples(index=False):
-            hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
-            as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
-            trained_model.observe_match(
-                str(row.Div),
-                str(row.HomeTeam),
-                str(row.AwayTeam),
-                int(row.FTHG),
-                int(row.FTAG),
-                hs,
-                as_,
+    # Walk-forward through train_df, recording pre-match predictions on the most recent completed matches
+    trained_model = OnlinePoissonModel()
+    completed_evaluations: list[dict[str, object]] = []
+    eval_start_idx = max(0, len(train_df) - 60)
+
+    for idx, row in enumerate(train_df.itertuples(index=False)):
+        div = str(row.Div)
+        home = str(row.HomeTeam)
+        away = str(row.AwayTeam)
+        dt_str = pd.Timestamp(row.Date).strftime("%Y-%m-%d")
+        match_id = _slugify_match_id(home, away, dt_str)
+
+        # 1. Predict strictly BEFORE observing real match result
+        p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
+
+        if idx >= eval_start_idx:
+            # If this match was previously saved in pred_history before kickoff, use that exact stored prediction
+            stored = pred_history.get(match_id)
+            if stored and isinstance(stored.get("p"), list) and len(stored["p"]) == 3:
+                p_used = (
+                    float(stored["p"][0]),
+                    float(stored["p"][1]),
+                    float(stored["p"][2]),
+                )
+            else:
+                p_used = (p_h, p_d, p_a)
+
+            p_list = [
+                round(p_used[0], 4),
+                round(p_used[1], 4),
+                round(1.0 - round(p_used[0], 4) - round(p_used[1], 4), 4),
+            ]
+            pred_outcome = _top_outcome_label(p_list)
+            fthg = int(row.FTHG)
+            ftag = int(row.FTAG)
+            ftr = str(row.FTR)
+            actual_outcome = _ftr_to_outcome_label(ftr)
+            is_correct = pred_outcome == actual_outcome
+
+            # Also check if bookmaker favourite was right
+            odds_tuple = (float(row.OddsH), float(row.OddsD), float(row.OddsA))
+            book_fav_idx = int(min(range(3), key=lambda k: odds_tuple[k]))
+            book_fav_outcome = OUTCOME_LABELS[book_fav_idx]
+
+            completed_evaluations.append(
+                {
+                    "id": match_id,
+                    "date": f"{dt_str}T15:00:00Z",
+                    "league": config.LEAGUE_DISPLAY_NAMES.get(div, div),
+                    "home": home,
+                    "away": away,
+                    "p": p_list,
+                    "odds": [
+                        round(odds_tuple[0], 2),
+                        round(odds_tuple[1], 2),
+                        round(odds_tuple[2], 2),
+                    ],
+                    "predicted_outcome": pred_outcome,
+                    "actual_score": f"{fthg} - {ftag}",
+                    "actual_outcome": actual_outcome,
+                    "correct": is_correct,
+                    "book_favourite": book_fav_outcome,
+                    "book_correct": book_fav_outcome == actual_outcome,
+                    "log_loss": round(multiclass_log_loss(p_used, ftr), 4),
+                    "brier": round(multiclass_brier_score(p_used, ftr), 4),
+                }
             )
+
+        # 2. Observe real match result AFTER predicting
+        hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
+        as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
+        trained_model.observe_match(div, home, away, int(row.FTHG), int(row.FTAG), hs, as_)
+
+    # Take the most recent completed evaluations across active leagues
+    recent_comparisons = completed_evaluations[-max_comparisons:][::-1]
+    if completed_evaluations:
+        model_hits = sum(1 for item in completed_evaluations if item["correct"])
+        book_hits = sum(1 for item in completed_evaluations if item["book_correct"])
+        hit_rate_model = round(model_hits / len(completed_evaluations), 4)
+        hit_rate_book = round(book_hits / len(completed_evaluations), 4)
+    else:
+        hit_rate_model = 0.0
+        hit_rate_book = 0.0
 
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     matches_out: list[dict[str, object]] = []
-
-    # Assign practical kickoff times (15:00, 17:30, 20:00 UTC) when CSV only stores Date
     kickoff_hours = ("15:00:00Z", "17:30:00Z", "20:00:00Z", "18:30:00Z")
 
-    # Mark the first Premier League fixture (or index 0 if none) as Match of the Week
     featured_idx = 0
     for idx_cand, row_cand in enumerate(target_fixtures.itertuples(index=False)):
         if str(row_cand.Div) == "E0":
@@ -145,6 +244,7 @@ def build_picks_payload(
         away = str(row.AwayTeam)
         dt_str = pd.Timestamp(row.Date).strftime("%Y-%m-%d")
         kickoff_iso = f"{dt_str}T{kickoff_hours[i % len(kickoff_hours)]}"
+        match_id = _slugify_match_id(home, away, dt_str)
 
         p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
         p_tuple = [round(p_h, 4), round(p_d, 4), round(1.0 - round(p_h, 4) - round(p_d, 4), 4)]
@@ -163,42 +263,56 @@ def build_picks_payload(
         home_summary = trained_model.get_team_summary(home)
         away_summary = trained_model.get_team_summary(away)
 
-        matches_out.append(
-            {
-                "id": _slugify_match_id(home, away, dt_str),
-                "date": kickoff_iso,
-                "league": league_name,
-                "home": home,
-                "away": away,
-                "p": p_tuple,
-                "fair_odds": fair_odds,
-                "odds": ref_odds,
-                "reference_source": ref_source,
-                "featured": i == featured_idx,
-                "isDemo": False,
-                "homeForm": home_summary["form"],
-                "awayForm": away_summary["form"],
-                "stats": {
-                    "goalsPerGame": [
-                        home_summary["goals_per_game"],
-                        away_summary["goals_per_game"],
-                    ],
-                    "shots": [home_summary["shots"], away_summary["shots"]],
-                    "possession": [
-                        home_summary["possession"],
-                        away_summary["possession"],
-                    ],
-                },
-                "ourTake": _build_our_take(
-                    home,
-                    away,
-                    (p_h, p_d, p_a),
-                    (ref_odds[0], ref_odds[1], ref_odds[2]),
-                    home_summary,
-                    away_summary,
-                ),
-            }
-        )
+        match_entry: dict[str, object] = {
+            "id": match_id,
+            "date": kickoff_iso,
+            "league": league_name,
+            "home": home,
+            "away": away,
+            "p": p_tuple,
+            "fair_odds": fair_odds,
+            "odds": ref_odds,
+            "reference_source": ref_source,
+            "featured": i == featured_idx,
+            "isDemo": False,
+            "homeForm": home_summary["form"],
+            "awayForm": away_summary["form"],
+            "stats": {
+                "goalsPerGame": [
+                    home_summary["goals_per_game"],
+                    away_summary["goals_per_game"],
+                ],
+                "shots": [home_summary["shots"], away_summary["shots"]],
+                "possession": [
+                    home_summary["possession"],
+                    away_summary["possession"],
+                ],
+            },
+            "ourTake": _build_our_take(
+                home,
+                away,
+                (p_h, p_d, p_a),
+                (ref_odds[0], ref_odds[1], ref_odds[2]),
+                home_summary,
+                away_summary,
+            ),
+        }
+        matches_out.append(match_entry)
+
+        # Save pre-match prediction in history so it can be compared after the match finishes
+        pred_history[match_id] = {
+            "id": match_id,
+            "date": kickoff_iso,
+            "league": league_name,
+            "home": home,
+            "away": away,
+            "p": p_tuple,
+            "predicted_outcome": _top_outcome_label(p_tuple),
+            "odds": ref_odds,
+            "generated_at": now_utc,
+        }
+
+    _save_predictions_history(pred_history, history_path)
 
     payload: dict[str, object] = {
         "schema_version": SCHEMA_VERSION,
@@ -212,13 +326,19 @@ def build_picks_payload(
             "verdict_code": report.verdict,
             "verdict": report.verdict_message,
             "clv_mean": report.clv_mean,
+            "recent_evaluated": len(completed_evaluations),
+            "recent_hit_rate_model": hit_rate_model,
+            "recent_hit_rate_book": hit_rate_book,
         },
         "matches": matches_out,
+        "recent_comparisons": recent_comparisons,
     }
     return payload
 
 
-def write_status_file(status: str, message: str, status_path: Path = config.STATUS_JSON_PATH) -> None:
+def write_status_file(
+    status: str, message: str, status_path: Path = config.STATUS_JSON_PATH
+) -> None:
     status_path.parent.mkdir(parents=True, exist_ok=True)
     status_payload = {
         "status": status,
@@ -234,8 +354,11 @@ def run_daily_pipeline(
     status_path: Path = config.STATUS_JSON_PATH,
 ) -> dict[str, object]:
     """
-    Runs the daily pipeline end-to-end.
-    On any failure, leaves the previous picks.json untouched and writes status.json.
+    Runs the daily pipeline end-to-end:
+    - Refreshes completed match results & upcoming fixtures
+    - Compares completed matches against pre-match predictions
+    - Generates new predictions and saves pre-match snapshot
+    - On any failure, leaves the previous picks.json untouched and writes status.json
     """
     try:
         df_hist = load_historical_matches()
@@ -258,7 +381,7 @@ def run_daily_pipeline(
 
         write_status_file(
             "ok",
-            f"Published {len(payload['matches'])} matches ({byte_len} bytes).",
+            f"Published {len(payload['matches'])} predictions and {len(payload['recent_comparisons'])} post-match comparisons ({byte_len} bytes).",
             status_path=status_path,
         )
         return payload
@@ -271,6 +394,8 @@ if __name__ == "__main__":
     result = run_daily_pipeline()
     bt = result["backtest"]
     matches = result["matches"]
+    comparisons = result["recent_comparisons"]
     print(f"Successfully generated {config.PICKS_JSON_PATH} and {config.APP_REAL_PICKS_PATH}")
-    print(f"Matches published : {len(matches)}")
-    print(f"Backtest verdict  : {bt['verdict']} (Model {bt['log_loss_model']} vs Book {bt['log_loss_book']})")
+    print(f"Upcoming predictions : {len(matches)}")
+    print(f"Post-match results   : {len(comparisons)} compared (Model Hit Rate: {bt['recent_hit_rate_model'] * 100:.1f}% vs Market Fav: {bt['recent_hit_rate_book'] * 100:.1f}%)")
+    print(f"Backtest verdict     : {bt['verdict']} (Model {bt['log_loss_model']} vs Book {bt['log_loss_book']})")

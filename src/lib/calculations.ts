@@ -222,3 +222,13 @@ export function analyzeMatchOutcomes(
 
   return [mapped[0], mapped[1], mapped[2]];
 }
+
+/**
+ * Formats a probability ratio in [0, 1] as a percentage string (e.g. 0.542 -> "54%" or "54.2%").
+ */
+export function formatPercentage(ratio: number, decimals = 0): string {
+  if (!Number.isFinite(ratio)) {
+    return '0%';
+  }
+  return `${(ratio * 100).toFixed(decimals)}%`;
+}

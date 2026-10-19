@@ -52,7 +52,8 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "jest --watchAll=false",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "model:daily": "python -m model.run_daily"
   },
   "jest": {
     "preset": "jest-expo",

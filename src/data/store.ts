@@ -3,7 +3,13 @@ import { create } from 'zustand';
 import { createJSONStorage, persist, StateStorage } from 'zustand/middleware';
 
 import { INITIAL_SAMPLE_BETS } from '@/data/mockPicks';
-import { BetDraft, BetRecord, BetResult, UserSettings } from '@/data/types';
+import {
+  BetDraft,
+  BetRecord,
+  BetResult,
+  MatchResultComparison,
+  UserSettings,
+} from '@/data/types';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   startingBankroll: 100,
@@ -39,6 +45,14 @@ const safeStorage: StateStorage = {
 
 export const DEFAULT_FAVOURITE_TEAMS = ['Arsenal', 'Barcelona', 'Inter'];
 
+function normaliseMatchKey(matchStr: string): string {
+  return matchStr
+    .toLowerCase()
+    .replace(/\s+vs\.?\s+|\s+v\s+/g, ' vs ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export interface AppStoreState {
   bets: BetRecord[];
   settings: UserSettings;
@@ -47,6 +61,7 @@ export interface AppStoreState {
   draftBet: BetDraft | null;
   addBet: (bet: Omit<BetRecord, 'id' | 'createdAt'>) => void;
   updateBetResult: (id: string, result: BetResult) => void;
+  reconcileBetsWithResults: (comparisons: MatchResultComparison[]) => number;
   deleteBet: (id: string) => void;
   updateSettings: (partial: Partial<UserSettings>) => void;
   toggleFavouriteMatch: (matchId: string) => void;
@@ -57,7 +72,7 @@ export interface AppStoreState {
 
 export const useAppStore = create<AppStoreState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       bets: INITIAL_SAMPLE_BETS,
       settings: DEFAULT_USER_SETTINGS,
       favouriteMatchIds: [],
@@ -81,6 +96,41 @@ export const useAppStore = create<AppStoreState>()(
         set((state) => ({
           bets: state.bets.map((bet) => (bet.id === id ? { ...bet, result } : bet)),
         })),
+
+      reconcileBetsWithResults: (comparisons) => {
+        if (!comparisons || comparisons.length === 0) {
+          return 0;
+        }
+        const byMatchKey = new Map<string, MatchResultComparison>();
+        for (const comp of comparisons) {
+          byMatchKey.set(normaliseMatchKey(`${comp.home} vs ${comp.away}`), comp);
+        }
+
+        let settledCount = 0;
+        const currentBets = get().bets;
+        const nextBets = currentBets.map((bet) => {
+          if (bet.result !== 'Pending') {
+            return bet;
+          }
+          const matched = byMatchKey.get(normaliseMatchKey(bet.match));
+          if (!matched) {
+            return bet;
+          }
+          settledCount += 1;
+          const settledResult: BetResult =
+            bet.pick === matched.actual_outcome ? 'Win' : 'Loss';
+          return {
+            ...bet,
+            result: settledResult,
+            scoreline: matched.actual_score.replace(/\s*-\s*/, ' - '),
+          };
+        });
+
+        if (settledCount > 0) {
+          set({ bets: nextBets });
+        }
+        return settledCount;
+      },
 
       deleteBet: (id) =>
         set((state) => ({

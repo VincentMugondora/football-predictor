@@ -27,7 +27,7 @@ jest.mock('expo-router', () => ({
     back: jest.fn(),
     canGoBack: jest.fn(() => true),
   },
-  useLocalSearchParams: jest.fn(() => ({ id: 'man-ut-aston--2025-05-25' })),
+  useLocalSearchParams: jest.fn(() => ({ id: 'newcas-everto-2025-05-25' })),
 }));
 
 const MockSafeAreaView = View;
@@ -53,8 +53,8 @@ describe('Tab Screen Render Tests', () => {
 
     expect(screen.getByText('No proven edge: treat these as estimates.')).toBeTruthy();
 
-    expect(screen.getAllByText('Man Utd').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Aston Villa').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Newcastle').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Everton').length).toBeGreaterThan(0);
     expect(
       screen.getByText('Estimates, not advice. Only bet money you can afford to lose.')
     ).toBeTruthy();
@@ -64,8 +64,8 @@ describe('Tab Screen Render Tests', () => {
     await render(<PredictionsScreen />);
 
     expect(screen.getByText('No proven edge: treat these as estimates.')).toBeTruthy();
-    expect(screen.getAllByText('33%').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('63%').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('55%').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('75%').length).toBeGreaterThan(0);
   });
 
   it('renders FavouritesScreen with YOUR FAVOURITE TEAMS and ADD TEAMS sections and toggles favourite state', async () => {
@@ -85,22 +85,47 @@ describe('Tab Screen Render Tests', () => {
   it('renders MatchDetailScreen with RECENT FORM, MATCH OUTCOME PROBABILITIES, KEY STATS, and OUR TAKE', async () => {
     await render(<MatchDetailScreen />);
 
-    expect(screen.getByText('Man Utd vs Aston Villa')).toBeTruthy();
+    expect(screen.getByText('Newcastle vs Everton')).toBeTruthy();
     expect(screen.getByText('RECENT FORM')).toBeTruthy();
     expect(screen.getByText('MATCH OUTCOME PROBABILITIES')).toBeTruthy();
     expect(screen.getByText('KEY STATS (PER GAME)')).toBeTruthy();
     expect(screen.getByText('OUR TAKE')).toBeTruthy();
     expect(
       screen.getByText(
-        'Balanced fixture (Man Utd 33%, Draw 27%, Aston Villa 40%) based on multi-season Poisson ratings.'
+        "Model projects Newcastle at 55% (2.1 goals/game vs Everton's 1.4). Market reference price closely reflects the home projection."
       )
     ).toBeTruthy();
   });
 
-  it('renders BetLogScreen, validates bet form inputs, and warns when stake exceeds maxStakePct', async () => {
+  it('renders BetLogScreen with Predicted vs Actual comparisons, auto-settles matching pending bets, and validates My Bets form', async () => {
+    // Seed a pending bet on a completed match so we can verify automatic post-match settlement
+    useAppStore.getState().addBet({
+      match: 'Chelsea vs Man Utd',
+      pick: 'Home',
+      odds: 1.56,
+      stake: 5,
+      tag: 'EPL',
+      result: 'Pending',
+    });
+
     await render(<BetLogScreen />);
 
-    expect(screen.getByText('Offline Bet Tracker — Local device storage')).toBeTruthy();
+    // 1. Default tab shows Post-Match Verification (Predicted vs Actual)
+    expect(screen.getByText(/Post-Match Verification/)).toBeTruthy();
+    expect(screen.getByText(/Completed match comparisons/)).toBeTruthy();
+
+    // 2. Pending bet on Chelsea vs Man Utd (1 - 0, Home) was automatically settled as Win!
+    const settledBet = useAppStore.getState().bets[0];
+    expect(settledBet?.result).toBe('Win');
+    expect(settledBet?.scoreline).toBe('1 - 0');
+
+    // 3. Switch to My Bets tab and validate form inputs
+    const myBetsTab = screen.getByLabelText('Show your logged bets and bankroll tracker');
+    await fireEvent.press(myBetsTab);
+
+    expect(
+      screen.getByText('Offline Bet Tracker — Auto-settled from real results')
+    ).toBeTruthy();
 
     const addBtn = screen.getByLabelText('Open form to log a new bet');
     await fireEvent.press(addBtn);
@@ -116,7 +141,7 @@ describe('Tab Screen Render Tests', () => {
 
     expect(screen.getByText('Decimal odds must be greater than 1.00.')).toBeTruthy();
 
-    // Fix odds, enter stake above 5% maxStakePct (e.g. $12 on $100.00 bankroll)
+    // Fix odds, enter stake above 5% maxStakePct (e.g. $12 on $104.25 bankroll)
     await fireEvent.changeText(oddsInput, '2.40');
     await fireEvent.changeText(stakeInput, '12');
     await fireEvent.press(screen.getByLabelText('Save bet'));

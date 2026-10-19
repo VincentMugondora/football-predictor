@@ -1,0 +1,458 @@
+{
+  "hoffen-bayern-2025-05-17": {
+    "id": "hoffen-bayern-2025-05-17",
+    "date": "2025-05-17T17:30:00Z",
+    "league": "Bundesliga",
+    "home": "Hoffenheim",
+    "away": "Bayern Munich",
+    "p": [
+      0.2154,
+      0.2067,
+      0.5779
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      4.5,
+      4.61,
+      1.67
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "mainz--bayer--2025-05-17": {
+    "id": "mainz--bayer--2025-05-17",
+    "date": "2025-05-17T20:00:00Z",
+    "league": "Bundesliga",
+    "home": "Mainz 05",
+    "away": "Bayer Leverkusen",
+    "p": [
+      0.3758,
+      0.2555,
+      0.3687
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      2.55,
+      3.72,
+      2.73
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "rb-lei-stuttg-2025-05-17": {
+    "id": "rb-lei-stuttg-2025-05-17",
+    "date": "2025-05-17T18:30:00Z",
+    "league": "Bundesliga",
+    "home": "RB Leipzig",
+    "away": "Stuttgart",
+    "p": [
+      0.4094,
+      0.2505,
+      0.3401
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.91,
+      4.4,
+      3.6
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "st-pau-bochum-2025-05-17": {
+    "id": "st-pau-bochum-2025-05-17",
+    "date": "2025-05-17T15:00:00Z",
+    "league": "Bundesliga",
+    "home": "St Pauli",
+    "away": "Bochum",
+    "p": [
+      0.4741,
+      0.2721,
+      0.2538
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.76,
+      4.09,
+      4.57
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "real-m-real-s-2025-05-24": {
+    "id": "real-m-real-s-2025-05-24",
+    "date": "2025-05-24T20:00:00Z",
+    "league": "La Liga",
+    "home": "Real Madrid",
+    "away": "Real Sociedad",
+    "p": [
+      0.6346,
+      0.2219,
+      0.1435
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.38,
+      5.59,
+      7.46
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "nottin-chelse-2025-05-25": {
+    "id": "nottin-chelse-2025-05-25",
+    "date": "2025-05-25T15:00:00Z",
+    "league": "Premier League",
+    "home": "Nottingham Forest",
+    "away": "Chelsea",
+    "p": [
+      0.3224,
+      0.2666,
+      0.411
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      3.5,
+      3.87,
+      2.07
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "southa-arsena-2025-05-25": {
+    "id": "southa-arsena-2025-05-25",
+    "date": "2025-05-25T17:30:00Z",
+    "league": "Premier League",
+    "home": "Southampton",
+    "away": "Arsenal",
+    "p": [
+      0.0859,
+      0.1621,
+      0.752
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      11.73,
+      6.54,
+      1.25
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "totten-bright-2025-05-25": {
+    "id": "totten-bright-2025-05-25",
+    "date": "2025-05-25T20:00:00Z",
+    "league": "Premier League",
+    "home": "Tottenham",
+    "away": "Brighton",
+    "p": [
+      0.4352,
+      0.2384,
+      0.3264
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      3.83,
+      4.06,
+      1.92
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "wolves-brentf-2025-05-25": {
+    "id": "wolves-brentf-2025-05-25",
+    "date": "2025-05-25T18:30:00Z",
+    "league": "Premier League",
+    "home": "Wolves",
+    "away": "Brentford",
+    "p": [
+      0.3059,
+      0.2626,
+      0.4315
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      3.0,
+      3.82,
+      2.31
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "lazio-lecce-2025-05-25": {
+    "id": "lazio-lecce-2025-05-25",
+    "date": "2025-05-25T17:30:00Z",
+    "league": "Serie A",
+    "home": "Lazio",
+    "away": "Lecce",
+    "p": [
+      0.5591,
+      0.2617,
+      0.1792
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.45,
+      4.59,
+      8.07
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "torino-roma-2025-05-25": {
+    "id": "torino-roma-2025-05-25",
+    "date": "2025-05-25T20:00:00Z",
+    "league": "Serie A",
+    "home": "Torino",
+    "away": "Roma",
+    "p": [
+      0.3046,
+      0.3119,
+      0.3835
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      5.7,
+      4.5,
+      1.57
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "udines-fioren-2025-05-25": {
+    "id": "udines-fioren-2025-05-25",
+    "date": "2025-05-25T18:30:00Z",
+    "league": "Serie A",
+    "home": "Udinese",
+    "away": "Fiorentina",
+    "p": [
+      0.281,
+      0.289,
+      0.43
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      3.08,
+      3.44,
+      2.43
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "venezi-juvent-2025-05-25": {
+    "id": "venezi-juvent-2025-05-25",
+    "date": "2025-05-25T15:00:00Z",
+    "league": "Serie A",
+    "home": "Venezia",
+    "away": "Juventus",
+    "p": [
+      0.2681,
+      0.3052,
+      0.4267
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      6.82,
+      4.77,
+      1.47
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "athlet-barcel-2025-05-25": {
+    "id": "athlet-barcel-2025-05-25",
+    "date": "2025-05-25T17:30:00Z",
+    "league": "La Liga",
+    "home": "Athletic Club",
+    "away": "Barcelona",
+    "p": [
+      0.3504,
+      0.2625,
+      0.3871
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      3.34,
+      3.95,
+      2.1
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "girona-atl-ti-2025-05-25": {
+    "id": "girona-atl-ti-2025-05-25",
+    "date": "2025-05-25T20:00:00Z",
+    "league": "La Liga",
+    "home": "Girona",
+    "away": "Atl\u00e9tico Madrid",
+    "p": [
+      0.3352,
+      0.2681,
+      0.3967
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      3.33,
+      3.57,
+      2.23
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "villar-sevill-2025-05-25": {
+    "id": "villar-sevill-2025-05-25",
+    "date": "2025-05-25T18:30:00Z",
+    "league": "La Liga",
+    "home": "Villarreal",
+    "away": "Sevilla",
+    "p": [
+      0.5451,
+      0.2369,
+      0.218
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.78,
+      4.08,
+      4.45
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "arsena-liverp-2024-02-06": {
+    "id": "arsena-liverp-2024-02-06",
+    "date": "2024-02-06T15:00:00Z",
+    "league": "Premier League",
+    "home": "Arsenal",
+    "away": "Liverpool",
+    "p": [
+      0.3796,
+      0.308,
+      0.3124
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      2.1,
+      3.4,
+      3.5
+    ],
+    "generated_at": "2026-10-19T16:08:00Z"
+  },
+  "liverp-chelse-2024-02-07": {
+    "id": "liverp-chelse-2024-02-07",
+    "date": "2024-02-07T17:30:00Z",
+    "league": "Premier League",
+    "home": "Liverpool",
+    "away": "Chelsea",
+    "p": [
+      0.4128,
+      0.2962,
+      0.291
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      2.1,
+      3.4,
+      3.5
+    ],
+    "generated_at": "2026-10-19T16:08:00Z"
+  },
+  "chelse-totten-2024-02-08": {
+    "id": "chelse-totten-2024-02-08",
+    "date": "2024-02-08T20:00:00Z",
+    "league": "Premier League",
+    "home": "Chelsea",
+    "away": "Tottenham",
+    "p": [
+      0.4475,
+      0.2963,
+      0.2562
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      2.1,
+      3.4,
+      3.5
+    ],
+    "generated_at": "2026-10-19T16:08:00Z"
+  },
+  "totten-everto-2024-02-09": {
+    "id": "totten-everto-2024-02-09",
+    "date": "2024-02-09T18:30:00Z",
+    "league": "Premier League",
+    "home": "Tottenham",
+    "away": "Everton",
+    "p": [
+      0.4177,
+      0.3037,
+      0.2786
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      2.1,
+      3.4,
+      3.5
+    ],
+    "generated_at": "2026-10-19T16:08:00Z"
+  },
+  "heiden-werder-2025-05-17": {
+    "id": "heiden-werder-2025-05-17",
+    "date": "2025-05-17T15:00:00Z",
+    "league": "Bundesliga",
+    "home": "Heidenheim",
+    "away": "Werder Bremen",
+    "p": [
+      0.3659,
+      0.2601,
+      0.374
+    ],
+    "predicted_outcome": "Away",
+    "odds": [
+      2.74,
+      3.77,
+      2.52
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "rayo-v-mallor-2025-05-24": {
+    "id": "rayo-v-mallor-2025-05-24",
+    "date": "2025-05-24T17:30:00Z",
+    "league": "La Liga",
+    "home": "Rayo Vallecano",
+    "away": "Mallorca",
+    "p": [
+      0.3912,
+      0.3245,
+      0.2843
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.5,
+      4.34,
+      7.25
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "newcas-everto-2025-05-25": {
+    "id": "newcas-everto-2025-05-25",
+    "date": "2025-05-25T18:30:00Z",
+    "league": "Premier League",
+    "home": "Newcastle",
+    "away": "Everton",
+    "p": [
+      0.5482,
+      0.2509,
+      0.2009
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      1.28,
+      6.19,
+      10.36
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  },
+  "empoli-hellas-2025-05-25": {
+    "id": "empoli-hellas-2025-05-25",
+    "date": "2025-05-25T15:00:00Z",
+    "league": "Serie A",
+    "home": "Empoli",
+    "away": "Hellas Verona",
+    "p": [
+      0.3733,
+      0.3083,
+      0.3184
+    ],
+    "predicted_outcome": "Home",
+    "odds": [
+      2.01,
+      2.95,
+      5.19
+    ],
+    "generated_at": "2026-10-19T16:11:52Z"
+  }
+}

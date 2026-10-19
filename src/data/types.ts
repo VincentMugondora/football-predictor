@@ -29,6 +29,24 @@ export interface MatchPick {
   fair_odds?: OutcomeTuple;
 }
 
+export interface MatchResultComparison {
+  id: string;
+  date: string;
+  league: string;
+  home: string;
+  away: string;
+  p: OutcomeTuple;
+  odds: OutcomeTuple;
+  predicted_outcome: OutcomeKey;
+  actual_score: string;
+  actual_outcome: OutcomeKey;
+  correct: boolean;
+  book_favourite: OutcomeKey;
+  book_correct: boolean;
+  log_loss: number;
+  brier: number;
+}
+
 export interface BacktestSummary {
   verdict: string;
   log_loss_model: number;
@@ -37,6 +55,9 @@ export interface BacktestSummary {
   gap?: number;
   verdict_code?: string;
   clv_mean?: number;
+  recent_evaluated?: number;
+  recent_hit_rate_model?: number;
+  recent_hit_rate_book?: number;
 }
 
 export interface PicksPayload {
@@ -45,6 +66,7 @@ export interface PicksPayload {
   generated_at: string;
   backtest: BacktestSummary;
   matches: MatchPick[];
+  recent_comparisons?: MatchResultComparison[];
 }
 
 export type BetResult = 'Pending' | 'Win' | 'Loss' | 'Void';
