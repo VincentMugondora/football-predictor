@@ -28,11 +28,16 @@ jest.mock('expo-router', () => ({
 }));
 
 const MockSafeAreaView = View;
+const MockIcon = View;
 
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaView: ({ children, style }: { children: React.ReactNode; style?: object }) => (
     <MockSafeAreaView style={style}>{children}</MockSafeAreaView>
   ),
+}));
+
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: () => <MockIcon />,
 }));
 
 describe('Tab Screen Render Tests', () => {
