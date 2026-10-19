@@ -40,59 +40,38 @@ export function formatUpdatedRelative(
 }
 
 /**
- * Formats a match date into a section header like "Saturday 24 Oct".
+ * Formats a match date into an uppercase section pill header like "SAT 24 OCT".
  */
 export function formatMatchDayHeader(isoDate: string): string {
   const date = new Date(isoDate);
   if (Number.isNaN(date.getTime())) {
-    return isoDate;
+    return isoDate.toUpperCase();
   }
-  const days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
+  const shortDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
   ];
-  const dayName = days[date.getUTCDay()] ?? '';
+  const dayName = shortDays[date.getUTCDay()] ?? '';
   const dayNum = date.getUTCDate();
   const monthName = months[date.getUTCMonth()] ?? '';
   return `${dayName} ${dayNum} ${monthName}`;
 }
 
 /**
- * Formats a match kickoff time in 24-hour HH:mm UTC so tests and devices render deterministically.
+ * Formats a match date into "Sat 24 Oct" for the Match of the Week card.
  */
-export function formatKickoffTime(isoDate: string): string {
-  const date = new Date(isoDate);
-  if (Number.isNaN(date.getTime())) {
-    return '--:--';
-  }
-  const hours = String(date.getUTCHours()).padStart(2, '0');
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-}
-
-/**
- * Formats a compact header timestamp like "Sat 24 Oct, 19:30".
- */
-export function formatShortDayAndTime(isoDate: string): string {
+export function formatShortDayAndMonth(isoDate: string): string {
   const date = new Date(isoDate);
   if (Number.isNaN(date.getTime())) {
     return isoDate;
@@ -115,5 +94,25 @@ export function formatShortDayAndTime(isoDate: string): string {
   const dayName = shortDays[date.getUTCDay()] ?? '';
   const dayNum = date.getUTCDate();
   const monthName = months[date.getUTCMonth()] ?? '';
-  return `${dayName} ${dayNum} ${monthName}, ${formatKickoffTime(isoDate)}`;
+  return `${dayName} ${dayNum} ${monthName}`;
+}
+
+/**
+ * Formats a match kickoff time in 24-hour HH:mm UTC so tests and devices render deterministically.
+ */
+export function formatKickoffTime(isoDate: string): string {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) {
+    return '--:--';
+  }
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+/**
+ * Formats a compact header timestamp like "Sat 24 Oct, 19:30".
+ */
+export function formatShortDayAndTime(isoDate: string): string {
+  return `${formatShortDayAndMonth(isoDate)}, ${formatKickoffTime(isoDate)}`;
 }

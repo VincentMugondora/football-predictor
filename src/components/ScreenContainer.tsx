@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
@@ -14,7 +14,18 @@ export function ScreenContainer({ children }: ScreenContainerProps) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.inner}>{children}</View>
+      <View style={styles.pitchBackdrop} pointerEvents="none">
+        <View style={styles.pitchStripe} />
+        <View style={styles.pitchStripeAlt} />
+        <View style={styles.pitchStripe} />
+        <View style={styles.pitchStripeAlt} />
+        <View style={styles.pitchStripe} />
+      </View>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={styles.inner}>{children}</View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -24,6 +35,21 @@ function createStyles(theme: AppTheme) {
     safeArea: {
       flex: 1,
       backgroundColor: theme.colors.background,
+    },
+    pitchBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      flexDirection: 'row',
+    },
+    pitchStripe: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    pitchStripeAlt: {
+      flex: 1,
+      backgroundColor: theme.colors.pitchStripe,
+    },
+    keyboardView: {
+      flex: 1,
     },
     inner: {
       flex: 1,

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -42,9 +43,12 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleBack}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
-        >
-          <Text style={styles.iconGlyph}>←</Text>
+          accessibilityLabel="Go back">
+          <Ionicons
+            name="arrow-back"
+            size={22}
+            color={theme.colors.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.detailTitle} numberOfLines={1}>
           {title}
@@ -53,9 +57,12 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleOpenSettings}
           accessibilityRole="button"
-          accessibilityLabel="Open settings"
-        >
-          <Text style={styles.iconGlyph}>⋮</Text>
+          accessibilityLabel="Open settings">
+          <Ionicons
+            name="ellipsis-vertical"
+            size={20}
+            color={theme.colors.textPrimary}
+          />
         </TouchableOpacity>
       </View>
     );
@@ -67,26 +74,37 @@ export function AppHeader({
         <Text style={styles.brandTitle} accessibilityRole="header">
           Match<Text style={styles.brandTitleAccent}>Sense</Text>
         </Text>
-        <Text style={styles.brandSubtitle}>Football insights for smarter fans</Text>
+        <Text style={styles.brandSubtitle}>FOOTBALL PREDICTIONS</Text>
       </View>
       <View style={styles.actionsRow}>
         {onSearchPress ? (
           <TouchableOpacity
-            style={[styles.iconButton, isSearchActive ? styles.iconButtonActive : null]}
+            style={[
+              styles.iconButton,
+              isSearchActive ? styles.iconButtonActive : null,
+            ]}
             onPress={onSearchPress}
             accessibilityRole="button"
-            accessibilityLabel="Toggle search matches"
-          >
-            <Text style={styles.iconGlyph}>⌕</Text>
+            accessibilityLabel="Toggle search matches">
+            <Ionicons
+              name="search"
+              size={22}
+              color={
+                isSearchActive ? theme.colors.primary : theme.colors.textPrimary
+              }
+            />
           </TouchableOpacity>
         ) : null}
         <TouchableOpacity
           style={styles.iconButton}
           onPress={handleOpenSettings}
           accessibilityRole="button"
-          accessibilityLabel="Open settings"
-        >
-          <Text style={styles.iconGlyph}>⋮</Text>
+          accessibilityLabel="Open settings">
+          <Ionicons
+            name="ellipsis-vertical"
+            size={20}
+            color={theme.colors.textPrimary}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -104,26 +122,29 @@ function createStyles(theme: AppTheme, isSearchActive: boolean) {
     },
     brandTitleGroup: {
       flex: 1,
-      gap: theme.spacing.xxs,
+      gap: 1,
     },
     brandTitle: {
       color: theme.colors.textPrimary,
       fontSize: theme.typography.sizes.brandTitle,
       lineHeight: theme.typography.lineHeights.brandTitle,
       fontWeight: theme.typography.weights.bold,
+      letterSpacing: -0.3,
     },
     brandTitleAccent: {
       color: theme.colors.primary,
     },
     brandSubtitle: {
       color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.body,
-      lineHeight: theme.typography.lineHeights.body,
+      fontSize: theme.typography.sizes.badge,
+      lineHeight: theme.typography.lineHeights.badge,
+      fontWeight: theme.typography.weights.semibold,
+      letterSpacing: 1.8,
     },
     actionsRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.xs,
+      gap: theme.spacing.xxs,
     },
     detailHeader: {
       flexDirection: 'row',
@@ -147,12 +168,7 @@ function createStyles(theme: AppTheme, isSearchActive: boolean) {
       justifyContent: 'center',
     },
     iconButtonActive: {
-      backgroundColor: theme.colors.primaryMuted,
-    },
-    iconGlyph: {
-      color: isSearchActive ? theme.colors.primary : theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.screenTitle,
-      fontWeight: theme.typography.weights.bold,
+      backgroundColor: isSearchActive ? theme.colors.primaryMuted : 'transparent',
     },
   });
 }

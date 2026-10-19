@@ -5,9 +5,8 @@ import { PillBadge } from '@/components/PillBadge';
 import { TeamCrest } from '@/components/TeamCrest';
 import { MatchPick, OutcomeKey } from '@/data/types';
 import { OutcomeEdgeRow } from '@/features/picks/components/OutcomeEdgeRow';
-import { StackedProbBar } from '@/features/picks/components/StackedProbBar';
 import { analyzeMatchOutcomes } from '@/lib/calculations';
-import { formatShortDayAndTime } from '@/lib/dateUtils';
+import { formatKickoffTime, formatShortDayAndMonth } from '@/lib/dateUtils';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
 export interface FeaturedMatchCardProps {
@@ -34,36 +33,43 @@ export function FeaturedMatchCard({
 
   return (
     <View style={styles.card}>
+      {/* Decorative centre pitch line & circle motif behind the hero content */}
+      <View style={styles.pitchLineVertical} pointerEvents="none" />
+      <View style={styles.pitchCenterCircle} pointerEvents="none" />
+
       <TouchableOpacity
         style={styles.heroTouchable}
         onPress={() => onPressMatch(match.id)}
         accessibilityRole="button"
-        accessibilityLabel={`Featured match ${matchTitle}. Tap to view detailed breakdown`}
-      >
+        accessibilityLabel={`Match of the week ${matchTitle}. Tap to view detailed breakdown`}>
         <View style={styles.topRow}>
-          <Text style={styles.featuredLabel}>FEATURED MATCH</Text>
+          <Text style={styles.featuredLabel}>MATCH OF THE WEEK</Text>
           {match.isDemo ? <PillBadge label="DEMO DATA" variant="gold" /> : null}
         </View>
 
         <View style={styles.teamsRow}>
           <View style={styles.teamColumn}>
             <TeamCrest teamName={match.home} size="lg" />
-            <Text style={styles.teamName}>{match.home}</Text>
+            <Text style={styles.teamName} numberOfLines={1}>
+              {match.home}
+            </Text>
           </View>
 
           <View style={styles.centerColumn}>
-            <Text style={styles.kickoffText}>{formatShortDayAndTime(match.date)}</Text>
-            <Text style={styles.vsText}>VS</Text>
-            <Text style={styles.leagueSub}>{match.league}</Text>
+            <Text style={styles.heroTimeText}>{formatKickoffTime(match.date)}</Text>
+            <View style={styles.timeUnderline} />
+            <Text style={styles.kickoffDateText}>
+              {formatShortDayAndMonth(match.date)}
+            </Text>
           </View>
 
           <View style={styles.teamColumn}>
             <TeamCrest teamName={match.away} size="lg" />
-            <Text style={styles.teamName}>{match.away}</Text>
+            <Text style={styles.teamName} numberOfLines={1}>
+              {match.away}
+            </Text>
           </View>
         </View>
-
-        <StackedProbBar probabilities={match.p} />
       </TouchableOpacity>
 
       <View style={styles.outcomesSection}>
@@ -90,6 +96,28 @@ function createStyles(theme: AppTheme) {
       padding: theme.spacing.lg,
       gap: theme.spacing.md,
       marginVertical: theme.spacing.xs,
+      overflow: 'hidden',
+    },
+    pitchLineVertical: {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: '50%',
+      width: 1,
+      backgroundColor: theme.colors.border,
+      opacity: 0.65,
+    },
+    pitchCenterCircle: {
+      position: 'absolute',
+      top: 38,
+      left: '50%',
+      width: 132,
+      height: 132,
+      marginLeft: -66,
+      borderRadius: theme.radii.pill,
+      borderColor: theme.colors.borderAccent,
+      borderWidth: 2,
+      opacity: 0.45,
     },
     heroTouchable: {
       gap: theme.spacing.md,
@@ -100,16 +128,16 @@ function createStyles(theme: AppTheme) {
       justifyContent: 'space-between',
     },
     featuredLabel: {
-      color: theme.colors.primary,
-      fontSize: theme.typography.sizes.badge,
-      fontWeight: theme.typography.weights.bold,
-      letterSpacing: 0.6,
+      color: theme.colors.textSecondary,
+      fontSize: theme.typography.sizes.caption,
+      fontWeight: theme.typography.weights.semibold,
+      letterSpacing: 1.5,
     },
     teamsRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: theme.spacing.xs,
+      paddingVertical: theme.spacing.sm,
     },
     teamColumn: {
       flex: 1,
@@ -119,30 +147,35 @@ function createStyles(theme: AppTheme) {
     teamName: {
       color: theme.colors.textPrimary,
       fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.semibold,
+      lineHeight: theme.typography.lineHeights.bodyStrong,
+      fontWeight: theme.typography.weights.bold,
       textAlign: 'center',
     },
     centerColumn: {
       alignItems: 'center',
-      gap: theme.spacing.xs,
+      justifyContent: 'center',
       paddingHorizontal: theme.spacing.sm,
+      gap: theme.spacing.xs,
     },
-    kickoffText: {
+    heroTimeText: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.sizes.heroTime,
+      lineHeight: theme.typography.lineHeights.heroTime,
+      fontWeight: theme.typography.weights.bold,
+      letterSpacing: -1,
+    },
+    timeUnderline: {
+      width: 48,
+      height: 1,
+      backgroundColor: theme.colors.borderAccent,
+    },
+    kickoffDateText: {
       color: theme.colors.textSecondary,
       fontSize: theme.typography.sizes.body,
       fontWeight: theme.typography.weights.medium,
     },
-    vsText: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.screenTitle,
-      fontWeight: theme.typography.weights.bold,
-    },
-    leagueSub: {
-      color: theme.colors.textMuted,
-      fontSize: theme.typography.sizes.caption,
-    },
     outcomesSection: {
-      borderTopColor: theme.colors.borderAccent,
+      borderTopColor: theme.colors.border,
       borderTopWidth: theme.layout.borderWidth,
       paddingTop: theme.spacing.sm,
       gap: theme.spacing.xs,

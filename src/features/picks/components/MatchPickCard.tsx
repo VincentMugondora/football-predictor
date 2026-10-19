@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -26,13 +27,14 @@ function MatchPickCardComponent({
   onLogOutcome,
 }: MatchPickCardProps) {
   const theme = useAppTheme();
-  const styles = useMemo(() => createStyles(theme, isFavourite), [theme, isFavourite]);
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const outcomes = useMemo(
     () => analyzeMatchOutcomes(match.p, match.odds, edgeThreshold),
     [match.p, match.odds, edgeThreshold]
   );
 
   const matchTitle = `${match.home} vs ${match.away}`;
+  const kickoff = formatKickoffTime(match.date);
 
   return (
     <View style={styles.card}>
@@ -41,25 +43,24 @@ function MatchPickCardComponent({
           style={styles.teamsTouchArea}
           onPress={() => onPressMatch(match.id)}
           accessibilityRole="button"
-          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${formatKickoffTime(match.date)}`}
-        >
-          <View style={styles.homeGroup}>
-            <TeamCrest teamName={match.home} size="sm" />
-            <Text style={styles.teamName} numberOfLines={1}>
-              {match.home}
-            </Text>
+          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${kickoff}`}>
+          <View style={styles.timeColumn}>
+            <Text style={styles.timeText}>{kickoff}</Text>
           </View>
 
-          <View style={styles.timeBox}>
-            <Text style={styles.timeText}>{formatKickoffTime(match.date)}</Text>
-            <Text style={styles.leagueText}>{match.league}</Text>
-          </View>
-
-          <View style={styles.awayGroup}>
-            <Text style={[styles.teamName, styles.awayName]} numberOfLines={1}>
-              {match.away}
-            </Text>
-            <TeamCrest teamName={match.away} size="sm" />
+          <View style={styles.stackedTeamsColumn}>
+            <View style={styles.teamLine}>
+              <TeamCrest teamName={match.home} size="sm" />
+              <Text style={styles.teamName} numberOfLines={1}>
+                {match.home}
+              </Text>
+            </View>
+            <View style={styles.teamLine}>
+              <TeamCrest teamName={match.away} size="sm" />
+              <Text style={styles.teamName} numberOfLines={1}>
+                {match.away}
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
 
@@ -72,9 +73,12 @@ function MatchPickCardComponent({
             isFavourite
               ? `Remove ${matchTitle} from favourites`
               : `Add ${matchTitle} to favourites`
-          }
-        >
-          <Text style={styles.starIcon}>{isFavourite ? '★' : '☆'}</Text>
+          }>
+          <Ionicons
+            name={isFavourite ? 'star' : 'star-outline'}
+            size={24}
+            color={isFavourite ? theme.colors.primary : theme.colors.textSecondary}
+          />
         </TouchableOpacity>
       </View>
 
@@ -94,74 +98,63 @@ function MatchPickCardComponent({
 
 export const MatchPickCard = memo(MatchPickCardComponent);
 
-function createStyles(theme: AppTheme, isFavourite: boolean) {
+function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     card: {
       backgroundColor: theme.colors.surface,
       borderColor: theme.colors.border,
       borderWidth: theme.layout.borderWidth,
       borderRadius: theme.radii.card,
-      padding: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
       gap: theme.spacing.sm,
-      marginBottom: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
     },
     fixtureRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.xs,
+      justifyContent: 'space-between',
+      gap: theme.spacing.sm,
     },
     teamsTouchArea: {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      gap: theme.spacing.lg,
       minHeight: theme.layout.minTouchTarget,
+    },
+    timeColumn: {
+      minWidth: 74,
+      justifyContent: 'center',
+    },
+    timeText: {
+      color: theme.colors.textPrimary,
+      fontSize: theme.typography.sizes.fixtureTime,
+      lineHeight: theme.typography.lineHeights.fixtureTime,
+      fontWeight: theme.typography.weights.bold,
+      letterSpacing: -0.5,
+    },
+    stackedTeamsColumn: {
+      flex: 1,
       gap: theme.spacing.xs,
     },
-    homeGroup: {
-      flex: 1,
+    teamLine: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    awayGroup: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
       gap: theme.spacing.sm,
     },
     teamName: {
       flexShrink: 1,
       color: theme.colors.textPrimary,
       fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    awayName: {
-      textAlign: 'right',
-    },
-    timeBox: {
-      alignItems: 'center',
-      paddingHorizontal: theme.spacing.xs,
-    },
-    timeText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.body,
+      lineHeight: theme.typography.lineHeights.bodyStrong,
       fontWeight: theme.typography.weights.medium,
-    },
-    leagueText: {
-      color: theme.colors.textMuted,
-      fontSize: theme.typography.sizes.badge,
     },
     starButton: {
       minWidth: theme.layout.minTouchTarget,
       minHeight: theme.layout.minTouchTarget,
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    starIcon: {
-      color: isFavourite ? theme.colors.badgeGold : theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.screenTitle,
     },
     outcomesList: {
       borderTopColor: theme.colors.border,
