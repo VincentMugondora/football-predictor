@@ -1,12 +1,12 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { AppHeader } from '@/components/AppHeader';
 import { DisclaimerFooter } from '@/components/DisclaimerFooter';
 import { EmptyState } from '@/components/EmptyState';
 import { FormBadge } from '@/components/FormBadge';
-import { PillBadge } from '@/components/PillBadge';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { TeamCrest } from '@/components/TeamCrest';
 import { MOCK_PICKS_PAYLOAD } from '@/data/mockPicks';
@@ -23,6 +23,7 @@ export function MatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const [showOddsDetail, setShowOddsDetail] = useState(false);
 
   const edgeThreshold = useAppStore((s) => s.settings.edgeThreshold);
   const setDraftBet = useAppStore((s) => s.setDraftBet);
@@ -41,7 +42,7 @@ export function MatchDetailScreen() {
         <EmptyState
           title="Match not found"
           message="This fixture could not be found in the local cache."
-          actionLabel="Back to Picks"
+          actionLabel="Back to Matches"
           onAction={() => router.replace('/')}
         />
       </ScreenContainer>
@@ -50,7 +51,12 @@ export function MatchDetailScreen() {
 
   const matchTitle = `${match.home} vs ${match.away}`;
   const outcomes = analyzeMatchOutcomes(match.p, match.odds, edgeThreshold);
-  const updatedLabel = formatUpdatedRelative(MOCK_PICKS_PAYLOAD.generated_at);
+  const updatedLabel =
+    match.updatedAtLabel ?? formatUpdatedRelative(MOCK_PICKS_PAYLOAD.generated_at);
+
+  const homePct = Math.round(match.p[0] * 100);
+  const drawPct = Math.round(match.p[1] * 100);
+  const awayPct = Math.max(0, 100 - homePct - drawPct);
 
   const handleLogOutcome = (outcome: OutcomeKey, odds: number) => {
     setDraftBet({
@@ -69,11 +75,8 @@ export function MatchDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Hero Card matching Image 1 */}
-        <View style={styles.heroCard}>
-          <View style={styles.heroBadgeRow}>
-            {match.isDemo ? <PillBadge label="DEMO DATA" variant="gold" /> : null}
-          </View>
+        {/* Card 1: Match Hero Card */}
+        <View style={[styles.heroCard, theme.shadows.card]}>
           <View style={styles.heroTeamsRow}>
             <View style={styles.heroTeamCol}>
               <TeamCrest teamName={match.home} size="lg" />
@@ -89,10 +92,10 @@ export function MatchDetailScreen() {
           </View>
         </View>
 
-        {/* Recent form card matching Image 1 */}
+        {/* Card 2: RECENT FORM */}
         {match.homeForm && match.awayForm ? (
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Recent form</Text>
+          <View style={[styles.sectionCard, theme.shadows.card]}>
+            <Text style={styles.sectionHeaderCaps}>RECENT FORM</Text>
             <View style={styles.formSplitRow}>
               <View style={styles.formGroup}>
                 {match.homeForm.map((res, idx) => (
@@ -109,34 +112,93 @@ export function MatchDetailScreen() {
           </View>
         ) : null}
 
-        {/* Match probabilities + break-even + edge card matching Image 1 */}
-        <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Match probabilities</Text>
-          <View style={styles.probabilitiesList}>
-            {outcomes.map((item) => (
-              <OutcomeEdgeRow
-                key={item.outcome}
-                analysis={item}
-                matchTitle={matchTitle}
-                onLogPress={handleLogOutcome}
-              />
-            ))}
+        {/* Card 3: MATCH OUTCOME PROBABILITIES */}
+        <View style={[styles.sectionCard, theme.shadows.card]}>
+          <Text style={styles.sectionHeaderCaps}>MATCH OUTCOME PROBABILITIES</Text>
+
+          <View style={styles.probColumnsRow}>
+            <View style={styles.probCol}>
+              <Text style={styles.probColTitle}>Home</Text>
+              <Text style={styles.probColHeroPct}>{homePct}%</Text>
+              <View style={styles.probIndividualTrack}>
+                <View
+                  style={[
+                    styles.probIndividualFillPrimary,
+                    { width: `${Math.min(100, Math.max(8, homePct))}%` },
+                  ]}
+                />
+              </View>
+            </View>
+
+            <View style={styles.probCol}>
+              <Text style={styles.probColTitle}>Draw</Text>
+              <Text style={styles.probColHeroPct}>{drawPct}%</Text>
+              <View style={styles.probIndividualTrack}>
+                <View
+                  style={[
+                    styles.probIndividualFillSecondary,
+                    { width: `${Math.min(100, Math.max(8, drawPct))}%` },
+                  ]}
+                />
+              </View>
+            </View>
+
+            <View style={styles.probCol}>
+              <Text style={styles.probColTitle}>Away</Text>
+              <Text style={styles.probColHeroPct}>{awayPct}%</Text>
+              <View style={styles.probIndividualTrack}>
+                <View
+                  style={[
+                    styles.probIndividualFillSecondary,
+                    { width: `${Math.min(100, Math.max(8, awayPct))}%` },
+                  ]}
+                />
+              </View>
+            </View>
           </View>
-          <Text style={styles.updatedMeta}>
-            {updatedLabel} • <Text style={styles.demoInline}>DEMO DATA</Text>
-          </Text>
+
+          <View style={styles.probFooterRow}>
+            <Text style={styles.updatedMeta}>
+              {updatedLabel} • <Text style={styles.demoInline}>DEMO DATA</Text>
+            </Text>
+
+            <TouchableOpacity
+              style={styles.logBetToggle}
+              onPress={() => setShowOddsDetail((prev) => !prev)}
+              accessibilityRole="button"
+              accessibilityLabel="Toggle bookmaker odds and log bet actions"
+            >
+              <Text style={styles.logBetToggleText}>
+                {showOddsDetail ? 'Hide Odds' : 'Odds & Log Bet'}
+              </Text>
+              <Ionicons
+                name={showOddsDetail ? 'chevron-up' : 'chevron-down'}
+                size={14}
+                color={theme.colors.primary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {showOddsDetail ? (
+            <View style={styles.probabilitiesList}>
+              {outcomes.map((item) => (
+                <OutcomeEdgeRow
+                  key={item.outcome}
+                  analysis={item}
+                  matchTitle={matchTitle}
+                  onLogPress={handleLogOutcome}
+                />
+              ))}
+            </View>
+          ) : null}
         </View>
 
-        {/* Key stats (per game) card matching Image 1 */}
+        {/* Card 4: KEY STATS (PER GAME) */}
         {match.stats ? (
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Key stats (per game)</Text>
-            <View style={styles.statsClubsSubheader}>
-              <Text style={styles.statsClubLabel}>{match.home}</Text>
-              <Text style={styles.statsClubLabel}>{match.away}</Text>
-            </View>
+          <View style={[styles.sectionCard, theme.shadows.card]}>
+            <Text style={styles.sectionHeaderCaps}>KEY STATS (PER GAME)</Text>
             <StatComparisonRow
-              label="Goals per game"
+              label="Goals/game"
               homeValue={match.stats.goalsPerGame[0].toFixed(1)}
               awayValue={match.stats.goalsPerGame[1].toFixed(1)}
             />
@@ -154,19 +216,16 @@ export function MatchDetailScreen() {
           </View>
         ) : null}
 
-        {/* Our take card matching Image 1 */}
+        {/* Card 5: OUR TAKE */}
         {match.ourTake ? (
-          <View style={styles.sectionCard}>
-            <View style={styles.ourTakeHeader}>
-              <View style={styles.ourTakeTitleRow}>
-                <View style={styles.chartIconBox}>
-                  <Text style={styles.chartIconText}>▮▮▮</Text>
-                </View>
-                <Text style={styles.sectionTitle}>Our take</Text>
-              </View>
-              {match.isDemo ? <PillBadge label="DEMO DATA" variant="gold" /> : null}
+          <View style={[styles.ourTakeCard, theme.shadows.card]}>
+            <View style={styles.ourTakeCircleIcon}>
+              <Ionicons name="stats-chart" size={22} color={theme.colors.textSecondary} />
             </View>
-            <Text style={styles.ourTakeBody}>{match.ourTake}</Text>
+            <View style={styles.ourTakeContentCol}>
+              <Text style={styles.sectionHeaderCaps}>OUR TAKE</Text>
+              <Text style={styles.ourTakeBody}>{match.ourTake}</Text>
+            </View>
           </View>
         ) : null}
 
@@ -183,17 +242,12 @@ function createStyles(theme: AppTheme) {
       paddingBottom: theme.spacing.xxl,
     },
     heroCard: {
-      backgroundColor: theme.colors.surfaceHero,
-      borderColor: theme.colors.borderAccent,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.border,
       borderWidth: theme.layout.borderWidth,
       borderRadius: theme.radii.card,
       padding: theme.spacing.lg,
-      gap: theme.spacing.sm,
       marginTop: theme.spacing.xs,
-    },
-    heroBadgeRow: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
     },
     heroTeamsRow: {
       flexDirection: 'row',
@@ -208,8 +262,9 @@ function createStyles(theme: AppTheme) {
     },
     heroTeamName: {
       color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.semibold,
+      fontSize: theme.typography.sizes.statValue,
+      lineHeight: theme.typography.lineHeights.statValue,
+      fontWeight: theme.typography.weights.bold,
       textAlign: 'center',
     },
     heroCenterCol: {
@@ -229,11 +284,11 @@ function createStyles(theme: AppTheme) {
       padding: theme.spacing.lg,
       gap: theme.spacing.md,
     },
-    sectionTitle: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.sectionTitle,
-      lineHeight: theme.typography.lineHeights.sectionTitle,
-      fontWeight: theme.typography.weights.semibold,
+    sectionHeaderCaps: {
+      color: theme.colors.textSecondary,
+      fontSize: theme.typography.sizes.caption,
+      fontWeight: theme.typography.weights.bold,
+      letterSpacing: 1.5,
     },
     formSplitRow: {
       flexDirection: 'row',
@@ -252,52 +307,106 @@ function createStyles(theme: AppTheme) {
       height: 28,
       backgroundColor: theme.colors.border,
     },
-    probabilitiesList: {
-      gap: theme.spacing.sm,
+    probColumnsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      gap: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+    },
+    probCol: {
+      flex: 1,
+      alignItems: 'center',
+      gap: theme.spacing.xs,
+    },
+    probColTitle: {
+      color: theme.colors.textPrimary,
+      fontSize: theme.typography.sizes.body,
+      fontWeight: theme.typography.weights.medium,
+    },
+    probColHeroPct: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.sizes.probHero,
+      lineHeight: theme.typography.lineHeights.probHero,
+      fontWeight: theme.typography.weights.bold,
+    },
+    probIndividualTrack: {
+      width: '100%',
+      height: theme.layout.progressBarHeight,
+      borderRadius: theme.radii.pill,
+      backgroundColor: theme.colors.neutralBarTrack,
+      overflow: 'hidden',
+      marginTop: theme.spacing.xxs,
+    },
+    probIndividualFillPrimary: {
+      height: '100%',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.radii.pill,
+    },
+    probIndividualFillSecondary: {
+      height: '100%',
+      backgroundColor: theme.colors.probBarDraw,
+      borderRadius: theme.radii.pill,
+    },
+    probFooterRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingTop: theme.spacing.xs,
     },
     updatedMeta: {
-      color: theme.colors.textMuted,
+      color: theme.colors.textSecondary,
       fontSize: theme.typography.sizes.caption,
     },
     demoInline: {
       color: theme.colors.badgeGold,
       fontWeight: theme.typography.weights.bold,
     },
-    statsClubsSubheader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    statsClubLabel: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.body,
-    },
-    ourTakeHeader: {
+    logBetToggle: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      gap: theme.spacing.xs,
+      backgroundColor: theme.colors.primaryMuted,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.radii.pill,
     },
-    ourTakeTitleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
+    logBetToggleText: {
+      color: theme.colors.primary,
+      fontSize: theme.typography.sizes.caption,
+      fontWeight: theme.typography.weights.semibold,
+    },
+    probabilitiesList: {
+      borderTopColor: theme.colors.border,
+      borderTopWidth: theme.layout.borderWidth,
+      paddingTop: theme.spacing.sm,
       gap: theme.spacing.sm,
     },
-    chartIconBox: {
-      width: 28,
-      height: 28,
-      borderRadius: theme.radii.xs,
-      backgroundColor: theme.colors.primaryMuted,
+    ourTakeCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.border,
+      borderWidth: theme.layout.borderWidth,
+      borderRadius: theme.radii.card,
+      padding: theme.spacing.lg,
+      gap: theme.spacing.md,
+    },
+    ourTakeCircleIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: theme.radii.pill,
+      backgroundColor: theme.colors.surfaceElevated,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    chartIconText: {
-      color: theme.colors.primary,
-      fontSize: theme.typography.sizes.badge,
-      fontWeight: theme.typography.weights.bold,
+    ourTakeContentCol: {
+      flex: 1,
+      gap: theme.spacing.xs,
     },
     ourTakeBody: {
       color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.body,
-      lineHeight: theme.typography.lineHeights.body,
+      fontSize: theme.typography.sizes.bodyStrong,
+      lineHeight: theme.typography.lineHeights.bodyStrong,
     },
   });
 }

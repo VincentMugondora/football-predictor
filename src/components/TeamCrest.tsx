@@ -82,11 +82,7 @@ export function TeamCrest({ teamName, size = 'sm' }: TeamCrestProps) {
   );
 }
 
-function createStyles(
-  theme: AppTheme,
-  identity: ClubColors,
-  size: 'sm' | 'md' | 'lg'
-) {
+function createStyles(theme: AppTheme, identity: ClubColors, size: 'sm' | 'md' | 'lg') {
   const dimension =
     size === 'lg'
       ? theme.layout.crestSizeLarge

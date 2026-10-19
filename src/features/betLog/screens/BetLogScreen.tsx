@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
 
@@ -46,15 +47,24 @@ export function BetLogScreen() {
           <Text style={styles.sectionTitle} accessibilityRole="header">
             Recent results ({bets.length})
           </Text>
-          {!form.isFormOpen ? (
+          <View style={styles.actionsGroup}>
             <AppButton
-              label="+ Add Bet"
-              onPress={form.openBlankForm}
-              variant="primary"
+              label="Summary"
+              onPress={() => router.push('/summary')}
+              variant="secondary"
               compact
-              accessibilityLabel="Open form to log a new bet"
+              accessibilityLabel="View bankroll summary and ROI"
             />
-          ) : null}
+            {!form.isFormOpen ? (
+              <AppButton
+                label="+ Add Bet"
+                onPress={form.openBlankForm}
+                variant="primary"
+                compact
+                accessibilityLabel="Open form to log a new bet"
+              />
+            ) : null}
+          </View>
         </View>
 
         {form.isFormOpen ? (
@@ -80,7 +90,14 @@ export function BetLogScreen() {
         ) : null}
       </View>
     ),
-    [styles.headerBlock, styles.sectionTitleRow, styles.sectionTitle, bets.length, form]
+    [
+      styles.headerBlock,
+      styles.sectionTitleRow,
+      styles.sectionTitle,
+      styles.actionsGroup,
+      bets.length,
+      form,
+    ]
   );
 
   return (
@@ -118,6 +135,11 @@ function createStyles(theme: AppTheme) {
       alignItems: 'center',
       justifyContent: 'space-between',
       marginTop: theme.spacing.xs,
+    },
+    actionsGroup: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.xs,
     },
     sectionTitle: {
       color: theme.colors.textSecondary,

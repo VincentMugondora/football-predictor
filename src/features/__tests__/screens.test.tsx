@@ -5,7 +5,10 @@ import { View } from 'react-native';
 
 import { useAppStore } from '@/data/store';
 import { BetLogScreen } from '@/features/betLog/screens/BetLogScreen';
+import { FavouritesScreen } from '@/features/picks/screens/FavouritesScreen';
+import { MatchDetailScreen } from '@/features/picks/screens/MatchDetailScreen';
 import { PicksScreen } from '@/features/picks/screens/PicksScreen';
+import { PredictionsScreen } from '@/features/picks/screens/PredictionsScreen';
 import { SummaryScreen } from '@/features/summary/screens/SummaryScreen';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -56,6 +59,46 @@ describe('Tab Screen Render Tests', () => {
     expect(screen.getAllByText('Liverpool').length).toBeGreaterThan(0);
     expect(
       screen.getByText('Estimates, not advice. Only bet money you can afford to lose.')
+    ).toBeTruthy();
+  });
+
+  it('renders PredictionsScreen with DEMO DATA gold banner and match probability bars', async () => {
+    await render(<PredictionsScreen />);
+
+    expect(
+      screen.getByText('DEMO DATA — sample probabilities, not real forecasts')
+    ).toBeTruthy();
+    expect(screen.getByText('46%')).toBeTruthy();
+    expect(screen.getAllByText('41%').length).toBeGreaterThan(0);
+    expect(screen.getByText('62%')).toBeTruthy();
+  });
+
+  it('renders FavouritesScreen with YOUR FAVOURITE TEAMS and ADD TEAMS sections and toggles favourite state', async () => {
+    await render(<FavouritesScreen />);
+
+    expect(screen.getByText('YOUR FAVOURITE TEAMS')).toBeTruthy();
+    expect(screen.getByText('ADD TEAMS')).toBeTruthy();
+    expect(screen.getByText('Arsenal')).toBeTruthy();
+    expect(screen.getByText('Liverpool')).toBeTruthy();
+
+    const addLivBtn = screen.getByLabelText('Add Liverpool to favourite teams');
+    await fireEvent.press(addLivBtn);
+
+    expect(useAppStore.getState().favouriteTeams).toContain('Liverpool');
+  });
+
+  it('renders MatchDetailScreen with RECENT FORM, MATCH OUTCOME PROBABILITIES, KEY STATS, and OUR TAKE', async () => {
+    await render(<MatchDetailScreen />);
+
+    expect(screen.getByText('Arsenal vs Liverpool')).toBeTruthy();
+    expect(screen.getByText('RECENT FORM')).toBeTruthy();
+    expect(screen.getByText('MATCH OUTCOME PROBABILITIES')).toBeTruthy();
+    expect(screen.getByText('KEY STATS (PER GAME)')).toBeTruthy();
+    expect(screen.getByText('OUR TAKE')).toBeTruthy();
+    expect(
+      screen.getByText(
+        "Based only on the sample data above: Arsenal's recent form gives a slight edge."
+      )
     ).toBeTruthy();
   });
 

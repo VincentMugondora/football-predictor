@@ -42,8 +42,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Picks',
-          tabBarAccessibilityLabel: 'Picks tab',
+          title: 'Matches',
+          tabBarAccessibilityLabel: 'Matches tab',
           tabBarIcon: ({ focused }) => (
             <TabCapsuleIcon
               iconName={focused ? 'home' : 'home-outline'}
@@ -53,10 +53,36 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="predictions"
+        options={{
+          title: 'Predictions',
+          tabBarAccessibilityLabel: 'Predictions tab',
+          tabBarIcon: ({ focused }) => (
+            <TabCapsuleIcon
+              iconName={focused ? 'stats-chart' : 'stats-chart-outline'}
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favourites"
+        options={{
+          title: 'Favourites',
+          tabBarAccessibilityLabel: 'Favourites tab',
+          tabBarIcon: ({ focused }) => (
+            <TabCapsuleIcon
+              iconName={focused ? 'star' : 'star-outline'}
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="bet-log"
         options={{
-          title: 'Bet log',
-          tabBarAccessibilityLabel: 'Bet log tab',
+          title: 'Results',
+          tabBarAccessibilityLabel: 'Results and bet log tab',
           tabBarIcon: ({ focused }) => (
             <TabCapsuleIcon
               iconName={focused ? 'trophy' : 'trophy-outline'}
@@ -68,14 +94,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="summary"
         options={{
+          href: null,
           title: 'Summary',
           tabBarAccessibilityLabel: 'Summary tab',
-          tabBarIcon: ({ focused }) => (
-            <TabCapsuleIcon
-              iconName={focused ? 'stats-chart' : 'stats-chart-outline'}
-              focused={focused}
-            />
-          ),
         }}
       />
     </Tabs>
