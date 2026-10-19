@@ -1,0 +1,5 @@
+{
+  "status": "error",
+  "timestamp": "2026-10-19T15:28:53Z",
+  "message": "<urlopen error [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions>"
+}
