@@ -27,7 +27,7 @@ jest.mock('expo-router', () => ({
     back: jest.fn(),
     canGoBack: jest.fn(() => true),
   },
-  useLocalSearchParams: jest.fn(() => ({ id: 'ars-liv-2026-10-24' })),
+  useLocalSearchParams: jest.fn(() => ({ id: 'man-ut-aston--2025-05-25' })),
 }));
 
 const MockSafeAreaView = View;
@@ -52,25 +52,24 @@ describe('Tab Screen Render Tests', () => {
     await render(<PicksScreen />);
 
     expect(
-      screen.getByText('Model beats closing market log-loss over 420 matches')
+      screen.getByText('No proven edge: treat these as estimates.')
     ).toBeTruthy();
 
-    expect(screen.getAllByText('Arsenal').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Liverpool').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Man Utd').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Aston Villa').length).toBeGreaterThan(0);
     expect(
       screen.getByText('Estimates, not advice. Only bet money you can afford to lose.')
     ).toBeTruthy();
   });
 
-  it('renders PredictionsScreen with DEMO DATA gold banner and match probability bars', async () => {
+  it('renders PredictionsScreen with backtest verdict banner and real match probability bars', async () => {
     await render(<PredictionsScreen />);
 
     expect(
-      screen.getByText('DEMO DATA — sample probabilities, not real forecasts')
+      screen.getByText('No proven edge: treat these as estimates.')
     ).toBeTruthy();
-    expect(screen.getByText('46%')).toBeTruthy();
-    expect(screen.getAllByText('41%').length).toBeGreaterThan(0);
-    expect(screen.getByText('62%')).toBeTruthy();
+    expect(screen.getAllByText('33%').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('63%').length).toBeGreaterThan(0);
   });
 
   it('renders FavouritesScreen with YOUR FAVOURITE TEAMS and ADD TEAMS sections and toggles favourite state', async () => {
@@ -90,14 +89,14 @@ describe('Tab Screen Render Tests', () => {
   it('renders MatchDetailScreen with RECENT FORM, MATCH OUTCOME PROBABILITIES, KEY STATS, and OUR TAKE', async () => {
     await render(<MatchDetailScreen />);
 
-    expect(screen.getByText('Arsenal vs Liverpool')).toBeTruthy();
+    expect(screen.getByText('Man Utd vs Aston Villa')).toBeTruthy();
     expect(screen.getByText('RECENT FORM')).toBeTruthy();
     expect(screen.getByText('MATCH OUTCOME PROBABILITIES')).toBeTruthy();
     expect(screen.getByText('KEY STATS (PER GAME)')).toBeTruthy();
     expect(screen.getByText('OUR TAKE')).toBeTruthy();
     expect(
       screen.getByText(
-        "Based only on the sample data above: Arsenal's recent form gives a slight edge."
+        'Balanced fixture (Man Utd 33%, Draw 27%, Aston Villa 40%) based on multi-season Poisson ratings.'
       )
     ).toBeTruthy();
   });
@@ -106,7 +105,7 @@ describe('Tab Screen Render Tests', () => {
     await render(<BetLogScreen />);
 
     expect(
-      screen.getByText('Illustrative sample results — not verified performance')
+      screen.getByText('Offline Bet Tracker — Local device storage')
     ).toBeTruthy();
 
     const addBtn = screen.getByLabelText('Open form to log a new bet');
@@ -117,13 +116,13 @@ describe('Tab Screen Render Tests', () => {
     const stakeInput = screen.getByLabelText('Bet stake');
 
     // Trigger invalid odds (<= 1)
-    await fireEvent.changeText(matchInput, 'Arsenal vs Liverpool');
+    await fireEvent.changeText(matchInput, 'Man Utd vs Aston Villa');
     await fireEvent.changeText(oddsInput, '0.95');
     await fireEvent.press(screen.getByLabelText('Save bet'));
 
     expect(screen.getByText('Decimal odds must be greater than 1.00.')).toBeTruthy();
 
-    // Fix odds, enter stake above 5% maxStakePct (e.g. $12 on ~$101.67 bankroll)
+    // Fix odds, enter stake above 5% maxStakePct (e.g. $12 on $100.00 bankroll)
     await fireEvent.changeText(oddsInput, '2.40');
     await fireEvent.changeText(stakeInput, '12');
     await fireEvent.press(screen.getByLabelText('Save bet'));
