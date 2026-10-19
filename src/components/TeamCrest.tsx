@@ -12,7 +12,7 @@ interface ClubColors {
 
 const CLUB_PALETTE: Record<string, ClubColors> = {
   Arsenal: { bg: '#EF0107', border: '#D4AF37', text: '#FFFFFF', shortCode: 'ARS' },
-  Liverpool: { bg: '#C8102E', border: '#F6EB61', text: '#F6EB61', shortCode: 'LFC' },
+  Liverpool: { bg: '#FFFFFF', border: '#C8102E', text: '#C8102E', shortCode: 'LFC' },
   Chelsea: { bg: '#034694', border: '#DBA111', text: '#FFFFFF', shortCode: 'CHE' },
   Tottenham: { bg: '#FFFFFF', border: '#132257', text: '#132257', shortCode: 'TOT' },
   Everton: { bg: '#003399', border: '#FFFFFF', text: '#FFFFFF', shortCode: 'EVE' },

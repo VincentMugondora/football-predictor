@@ -1,23 +1,26 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
 interface TabCapsuleIconProps {
-  glyph: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
   focused: boolean;
 }
 
-function TabCapsuleIcon({ glyph, focused }: TabCapsuleIconProps) {
+function TabCapsuleIcon({ iconName, focused }: TabCapsuleIconProps) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
     <View style={[styles.capsule, focused ? styles.capsuleActive : null]}>
-      <Text style={[styles.glyph, focused ? styles.glyphActive : styles.glyphInactive]}>
-        {glyph}
-      </Text>
+      <Ionicons
+        name={iconName}
+        size={20}
+        color={focused ? theme.colors.primary : theme.colors.textSecondary}
+      />
     </View>
   );
 }
@@ -41,7 +44,12 @@ export default function TabsLayout() {
         options={{
           title: 'Picks',
           tabBarAccessibilityLabel: 'Picks tab',
-          tabBarIcon: ({ focused }) => <TabCapsuleIcon glyph="⚽" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabCapsuleIcon
+              iconName={focused ? 'home' : 'home-outline'}
+              focused={focused}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -49,7 +57,12 @@ export default function TabsLayout() {
         options={{
           title: 'Bet log',
           tabBarAccessibilityLabel: 'Bet log tab',
-          tabBarIcon: ({ focused }) => <TabCapsuleIcon glyph="🏆" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabCapsuleIcon
+              iconName={focused ? 'trophy' : 'trophy-outline'}
+              focused={focused}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -57,7 +70,12 @@ export default function TabsLayout() {
         options={{
           title: 'Summary',
           tabBarAccessibilityLabel: 'Summary tab',
-          tabBarIcon: ({ focused }) => <TabCapsuleIcon glyph="▮▮▮" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabCapsuleIcon
+              iconName={focused ? 'stats-chart' : 'stats-chart-outline'}
+              focused={focused}
+            />
+          ),
         }}
       />
     </Tabs>
@@ -67,10 +85,10 @@ export default function TabsLayout() {
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     tabBar: {
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.background,
       borderTopColor: theme.colors.border,
       borderTopWidth: theme.layout.borderWidth,
-      height: 68,
+      height: 70,
       paddingTop: theme.spacing.xs,
       paddingBottom: theme.spacing.sm,
     },
@@ -88,16 +106,6 @@ function createStyles(theme: AppTheme) {
     },
     capsuleActive: {
       backgroundColor: theme.colors.primaryMuted,
-    },
-    glyph: {
-      fontSize: theme.typography.sizes.sectionTitle,
-      fontWeight: theme.typography.weights.bold,
-    },
-    glyphActive: {
-      color: theme.colors.primary,
-    },
-    glyphInactive: {
-      color: theme.colors.textSecondary,
     },
   });
 }

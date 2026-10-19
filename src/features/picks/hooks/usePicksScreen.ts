@@ -92,6 +92,15 @@ export function usePicksScreen() {
     const query = searchQuery.trim().toLowerCase();
 
     const filtered = payload.matches.filter((match) => {
+      if (
+        selectedLeague === 'All' &&
+        query.length === 0 &&
+        featuredMatch &&
+        match.id === featuredMatch.id
+      ) {
+        return false;
+      }
+
       if (selectedLeague === '★ Favourites') {
         if (!favouriteMatchIds.includes(match.id)) {
           return false;
@@ -119,7 +128,7 @@ export function usePicksScreen() {
         dayHeader: showHeader ? dayHeader : undefined,
       };
     });
-  }, [payload, selectedLeague, searchQuery, favouriteMatchIds]);
+  }, [payload, selectedLeague, searchQuery, favouriteMatchIds, featuredMatch]);
 
   const updatedLabel = useMemo(() => {
     if (!payload) {

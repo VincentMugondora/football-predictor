@@ -57,9 +57,11 @@ export function PicksScreen() {
     ({ item }: ListRenderItemInfo<MatchListItem>) => (
       <View>
         {item.dayHeader ? (
-          <Text style={styles.dayHeader} accessibilityRole="header">
-            {item.dayHeader}
-          </Text>
+          <View style={styles.dayHeaderPill}>
+            <Text style={styles.dayHeaderText} accessibilityRole="header">
+              {item.dayHeader}
+            </Text>
+          </View>
         ) : null}
         <MatchPickCard
           match={item.match}
@@ -72,7 +74,8 @@ export function PicksScreen() {
       </View>
     ),
     [
-      styles.dayHeader,
+      styles.dayHeaderPill,
+      styles.dayHeaderText,
       edgeThreshold,
       favouriteMatchIds,
       toggleFavouriteMatch,
@@ -105,6 +108,15 @@ export function PicksScreen() {
           onSelect={setSelectedLeague}
         />
 
+        {featuredMatch && selectedLeague === 'All' && searchQuery.trim().length === 0 ? (
+          <FeaturedMatchCard
+            match={featuredMatch}
+            edgeThreshold={edgeThreshold}
+            onPressMatch={handlePressMatch}
+            onLogOutcome={handleLogOutcome}
+          />
+        ) : null}
+
         <InfoBanner
           title={payload.backtest.verdict}
           subtitle={backtestSubtitle}
@@ -116,7 +128,7 @@ export function PicksScreen() {
           {staleWarning ? (
             <PillBadge label="STALE (>3 DAYS OLD)" variant="warning" />
           ) : (
-            <PillBadge label="DEMO DATA" variant="gold" />
+            <PillBadge label="OFFLINE READY" variant="positive" />
           )}
         </View>
 
@@ -125,15 +137,6 @@ export function PicksScreen() {
             title="Predictions are over 3 days old"
             subtitle="Odds and team news may have shifted significantly since this snapshot."
             tone="warning"
-          />
-        ) : null}
-
-        {featuredMatch && selectedLeague === 'All' && searchQuery.trim().length === 0 ? (
-          <FeaturedMatchCard
-            match={featuredMatch}
-            edgeThreshold={edgeThreshold}
-            onPressMatch={handlePressMatch}
-            onLogOutcome={handleLogOutcome}
           />
         ) : null}
       </View>
@@ -217,7 +220,7 @@ function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     headerBlock: {
       gap: theme.spacing.sm,
-      marginBottom: theme.spacing.sm,
+      marginBottom: theme.spacing.xs,
     },
     freshnessRow: {
       flexDirection: 'row',
@@ -230,12 +233,21 @@ function createStyles(theme: AppTheme) {
       fontSize: theme.typography.sizes.caption,
       fontWeight: theme.typography.weights.medium,
     },
-    dayHeader: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.sectionTitle,
-      fontWeight: theme.typography.weights.semibold,
-      marginTop: theme.spacing.md,
+    dayHeaderPill: {
+      backgroundColor: theme.colors.surfaceDayPill,
+      borderRadius: theme.radii.sm,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      marginTop: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
+      borderWidth: theme.layout.borderWidth,
+      borderColor: theme.colors.border,
+    },
+    dayHeaderText: {
+      color: theme.colors.textSecondary,
+      fontSize: theme.typography.sizes.caption,
+      fontWeight: theme.typography.weights.bold,
+      letterSpacing: 1.4,
     },
     listContent: {
       paddingBottom: theme.spacing.xxl,
