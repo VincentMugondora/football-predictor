@@ -159,7 +159,12 @@ export function MatchDetailScreen() {
 
           <View style={styles.probFooterRow}>
             <Text style={styles.updatedMeta}>
-              {updatedLabel} • <Text style={styles.demoInline}>DEMO DATA</Text>
+              {updatedLabel} •{' '}
+              <Text style={styles.demoInline}>
+                {match.isDemo
+                  ? 'DEMO DATA'
+                  : `REF: ${match.reference_source ?? 'PINNACLE'} • POISSON-DC`}
+              </Text>
             </Text>
 
             <TouchableOpacity

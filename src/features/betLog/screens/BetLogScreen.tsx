@@ -38,7 +38,7 @@ export function BetLogScreen() {
     () => (
       <View style={styles.headerBlock}>
         <InfoBanner
-          title="Illustrative sample results — not verified performance"
+          title="Offline Bet Tracker — Local device storage"
           subtitle="All bets are stored locally on your device. Never connect a bookmaker."
           tone="info"
         />

@@ -221,7 +221,7 @@ def fetch_upcoming_fixtures(
     """Fetches upcoming fixtures from football-data.co.uk/fixtures.csv if available."""
     dest = raw_dir / "fixtures.csv"
     try:
-        _download_file(config.FIXTURES_CSV_URL, dest, timeout=20)
+        _download_file(config.FIXTURES_CSV_URL, dest, timeout=3, retries=1)
     except Exception:
         if not dest.exists():
             return pd.DataFrame()

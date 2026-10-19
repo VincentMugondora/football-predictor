@@ -56,8 +56,11 @@ export function PredictionsScreen() {
     [edgeThreshold, updatedLabel, handlePressMatch, handleLogOutcome]
   );
 
-  const listHeader = useMemo(
-    () => (
+  const listHeader = useMemo(() => {
+    const verdictText =
+      payload?.backtest.verdict ?? 'No proven edge: treat these as estimates.';
+
+    return (
       <View style={styles.headerContainer}>
         {isSearchVisible ? (
           <AppInput
@@ -72,23 +75,21 @@ export function PredictionsScreen() {
           <View style={styles.demoIconCircle}>
             <Ionicons name="information" size={14} color={theme.colors.demoBannerText} />
           </View>
-          <Text style={styles.demoBannerText}>
-            DEMO DATA — sample probabilities, not real forecasts
-          </Text>
+          <Text style={styles.demoBannerText}>{verdictText}</Text>
         </View>
       </View>
-    ),
-    [
-      styles.headerContainer,
-      styles.demoGoldBanner,
-      styles.demoIconCircle,
-      styles.demoBannerText,
-      theme.colors.demoBannerText,
-      isSearchVisible,
-      searchQuery,
-      setSearchQuery,
-    ]
-  );
+    );
+  }, [
+    payload,
+    styles.headerContainer,
+    styles.demoGoldBanner,
+    styles.demoIconCircle,
+    styles.demoBannerText,
+    theme.colors.demoBannerText,
+    isSearchVisible,
+    searchQuery,
+    setSearchQuery,
+  ]);
 
   return (
     <ScreenContainer>
