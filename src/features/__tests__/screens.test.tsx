@@ -51,9 +51,7 @@ describe('Tab Screen Render Tests', () => {
   it('renders PicksScreen with backtest verdict banner, featured match, and compliance footer', async () => {
     await render(<PicksScreen />);
 
-    expect(
-      screen.getByText('No proven edge: treat these as estimates.')
-    ).toBeTruthy();
+    expect(screen.getByText('No proven edge: treat these as estimates.')).toBeTruthy();
 
     expect(screen.getAllByText('Man Utd').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Aston Villa').length).toBeGreaterThan(0);
@@ -65,9 +63,7 @@ describe('Tab Screen Render Tests', () => {
   it('renders PredictionsScreen with backtest verdict banner and real match probability bars', async () => {
     await render(<PredictionsScreen />);
 
-    expect(
-      screen.getByText('No proven edge: treat these as estimates.')
-    ).toBeTruthy();
+    expect(screen.getByText('No proven edge: treat these as estimates.')).toBeTruthy();
     expect(screen.getAllByText('33%').length).toBeGreaterThan(0);
     expect(screen.getAllByText('63%').length).toBeGreaterThan(0);
   });
@@ -104,9 +100,7 @@ describe('Tab Screen Render Tests', () => {
   it('renders BetLogScreen, validates bet form inputs, and warns when stake exceeds maxStakePct', async () => {
     await render(<BetLogScreen />);
 
-    expect(
-      screen.getByText('Offline Bet Tracker — Local device storage')
-    ).toBeTruthy();
+    expect(screen.getByText('Offline Bet Tracker — Local device storage')).toBeTruthy();
 
     const addBtn = screen.getByLabelText('Open form to log a new bet');
     await fireEvent.press(addBtn);
