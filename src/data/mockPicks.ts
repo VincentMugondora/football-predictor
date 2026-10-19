@@ -28,7 +28,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
         possession: [54, 51],
       },
       ourTake:
-        "Based only on the sample data shown: Arsenal's stronger recent form edges the estimate.",
+        "Based only on the sample data above: Arsenal's recent form gives a slight edge.",
+      updatedAtLabel: 'Updated 2h ago',
     },
     {
       id: 'che-tot-2026-10-24',
@@ -36,8 +37,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
       league: 'Premier League',
       home: 'Chelsea',
       away: 'Tottenham',
-      p: [0.49, 0.25, 0.26],
-      odds: [2.2, 3.65, 3.4],
+      p: [0.41, 0.29, 0.3],
+      odds: [2.55, 3.65, 3.4],
       isDemo: true,
       homeForm: ['W', 'D', 'W', 'W', 'L'],
       awayForm: ['L', 'W', 'D', 'L', 'W'],
@@ -47,7 +48,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
         possession: [56, 52],
       },
       ourTake:
-        'Based only on the sample data shown: Chelsea creates more shots at home and holds a slight probability edge.',
+        'Based only on the sample data above: Chelsea creates more shots at home and holds a slight probability edge.',
+      updatedAtLabel: 'Updated 3h ago',
     },
     {
       id: 'eve-avl-2026-10-24',
@@ -66,7 +68,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
         possession: [44, 53],
       },
       ourTake:
-        'Based only on the sample data shown: Aston Villa away form outpaces Everton attacking output.',
+        'Based only on the sample data above: Aston Villa away form outpaces Everton attacking output.',
+      updatedAtLabel: 'Updated 3h ago',
     },
     {
       id: 'bar-sev-2026-10-25',
@@ -74,7 +77,7 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
       league: 'La Liga',
       home: 'Barcelona',
       away: 'Sevilla',
-      p: [0.64, 0.21, 0.15],
+      p: [0.62, 0.22, 0.16],
       odds: [1.68, 4.1, 5.2],
       isDemo: true,
       homeForm: ['W', 'W', 'W', 'D', 'W'],
@@ -85,7 +88,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
         possession: [63, 48],
       },
       ourTake:
-        'Based only on the sample data shown: Barcelona controls possession and shot volume at home.',
+        'Based only on the sample data above: Barcelona controls possession and shot volume at home.',
+      updatedAtLabel: 'Updated 1h ago',
     },
     {
       id: 'int-rom-2026-10-25',
@@ -104,7 +108,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
         possession: [55, 49],
       },
       ourTake:
-        'Based only on the sample data shown: Inter home goal differential drives the higher win estimate.',
+        'Based only on the sample data above: Inter home goal differential drives the higher win estimate.',
+      updatedAtLabel: 'Updated 2h ago',
     },
     {
       id: 'bay-dor-2026-10-25',
@@ -123,7 +128,8 @@ export const MOCK_PICKS_PAYLOAD: PicksPayload = {
         possession: [60, 52],
       },
       ourTake:
-        'Based only on the sample data shown: High-scoring fixture where Bayern shot volume leads the projection.',
+        'Based only on the sample data above: High-scoring fixture where Bayern shot volume leads the projection.',
+      updatedAtLabel: 'Updated 4h ago',
     },
   ],
 };

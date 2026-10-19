@@ -14,6 +14,7 @@ export interface FeaturedMatchCardProps {
   edgeThreshold: number;
   onPressMatch: (matchId: string) => void;
   onLogOutcome: (match: MatchPick, outcome: OutcomeKey, odds: number) => void;
+  showOddsBreakdown?: boolean;
 }
 
 export function FeaturedMatchCard({
@@ -21,6 +22,7 @@ export function FeaturedMatchCard({
   edgeThreshold,
   onPressMatch,
   onLogOutcome,
+  showOddsBreakdown = false,
 }: FeaturedMatchCardProps) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -32,7 +34,7 @@ export function FeaturedMatchCard({
   const matchTitle = `${match.home} vs ${match.away}`;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, theme.shadows.card]}>
       {/* Decorative centre pitch line & circle motif behind the hero content */}
       <View style={styles.pitchLineVertical} pointerEvents="none" />
       <View style={styles.pitchCenterCircle} pointerEvents="none" />
@@ -41,7 +43,8 @@ export function FeaturedMatchCard({
         style={styles.heroTouchable}
         onPress={() => onPressMatch(match.id)}
         accessibilityRole="button"
-        accessibilityLabel={`Match of the week ${matchTitle}. Tap to view detailed breakdown`}>
+        accessibilityLabel={`Match of the week ${matchTitle}. Tap to view detailed breakdown`}
+      >
         <View style={styles.topRow}>
           <Text style={styles.featuredLabel}>MATCH OF THE WEEK</Text>
           {match.isDemo ? <PillBadge label="DEMO DATA" variant="gold" /> : null}
@@ -72,16 +75,18 @@ export function FeaturedMatchCard({
         </View>
       </TouchableOpacity>
 
-      <View style={styles.outcomesSection}>
-        {outcomes.map((item) => (
-          <OutcomeEdgeRow
-            key={item.outcome}
-            analysis={item}
-            matchTitle={matchTitle}
-            onLogPress={(outcome, odds) => onLogOutcome(match, outcome, odds)}
-          />
-        ))}
-      </View>
+      {showOddsBreakdown ? (
+        <View style={styles.outcomesSection}>
+          {outcomes.map((item) => (
+            <OutcomeEdgeRow
+              key={item.outcome}
+              analysis={item}
+              matchTitle={matchTitle}
+              onLogPress={(outcome, odds) => onLogOutcome(match, outcome, odds)}
+            />
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }

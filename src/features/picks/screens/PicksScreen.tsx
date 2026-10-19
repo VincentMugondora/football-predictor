@@ -89,8 +89,6 @@ export function PicksScreen() {
       return undefined;
     }
 
-    const backtestSubtitle = `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${payload.backtest.log_loss_book.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
-
     return (
       <View style={styles.headerBlock}>
         {isSearchVisible ? (
@@ -116,7 +114,31 @@ export function PicksScreen() {
             onLogOutcome={handleLogOutcome}
           />
         ) : null}
+      </View>
+    );
+  }, [
+    payload,
+    edgeThreshold,
+    styles.headerBlock,
+    isSearchVisible,
+    searchQuery,
+    setSearchQuery,
+    selectedLeague,
+    setSelectedLeague,
+    featuredMatch,
+    handlePressMatch,
+    handleLogOutcome,
+  ]);
 
+  const listFooter = useMemo(() => {
+    if (!payload) {
+      return <DisclaimerFooter />;
+    }
+
+    const backtestSubtitle = `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${payload.backtest.log_loss_book.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
+
+    return (
+      <View style={styles.footerBlock}>
         <InfoBanner
           title={payload.backtest.verdict}
           subtitle={backtestSubtitle}
@@ -128,7 +150,7 @@ export function PicksScreen() {
           {staleWarning ? (
             <PillBadge label="STALE (>3 DAYS OLD)" variant="warning" />
           ) : (
-            <PillBadge label="OFFLINE READY" variant="positive" />
+            <PillBadge label="OFFLINE READY" variant="emerald" />
           )}
         </View>
 
@@ -139,24 +161,18 @@ export function PicksScreen() {
             tone="warning"
           />
         ) : null}
+
+        <DisclaimerFooter />
       </View>
     );
   }, [
     payload,
     edgeThreshold,
-    styles.headerBlock,
+    styles.footerBlock,
     styles.freshnessRow,
     styles.updatedText,
-    isSearchVisible,
-    searchQuery,
-    setSearchQuery,
-    selectedLeague,
-    setSelectedLeague,
     updatedLabel,
     staleWarning,
-    featuredMatch,
-    handlePressMatch,
-    handleLogOutcome,
   ]);
 
   if (isLoading) {
@@ -196,11 +212,7 @@ export function PicksScreen() {
         ListEmptyComponent={
           <EmptyState
             title="No matches found"
-            message={
-              selectedLeague === '★ Favourites'
-                ? 'Tap the star icon on any fixture to save it to your favourites.'
-                : 'No fixtures match your current filter or search.'
-            }
+            message="No fixtures match your current filter or search."
             actionLabel="Show All Matches"
             onAction={() => {
               setSelectedLeague('All');
@@ -208,7 +220,7 @@ export function PicksScreen() {
             }}
           />
         }
-        ListFooterComponent={<DisclaimerFooter />}
+        ListFooterComponent={listFooter}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
       />
@@ -221,6 +233,10 @@ function createStyles(theme: AppTheme) {
     headerBlock: {
       gap: theme.spacing.sm,
       marginBottom: theme.spacing.xs,
+    },
+    footerBlock: {
+      marginTop: theme.spacing.md,
+      gap: theme.spacing.sm,
     },
     freshnessRow: {
       flexDirection: 'row',

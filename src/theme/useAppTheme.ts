@@ -6,6 +6,7 @@ import {
   layout,
   lightColors,
   radii,
+  shadows,
   spacing,
   typography,
 } from '@/theme/tokens';
@@ -17,6 +18,7 @@ export interface AppTheme {
   radii: typeof radii;
   typography: typeof typography;
   layout: typeof layout;
+  shadows: typeof shadows;
 }
 
 /**
@@ -34,5 +36,6 @@ export function useAppTheme(): AppTheme {
     radii,
     typography,
     layout,
+    shadows,
   };
 }

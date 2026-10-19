@@ -37,16 +37,20 @@ const safeStorage: StateStorage = {
   },
 };
 
+export const DEFAULT_FAVOURITE_TEAMS = ['Arsenal', 'Barcelona', 'Inter'];
+
 export interface AppStoreState {
   bets: BetRecord[];
   settings: UserSettings;
   favouriteMatchIds: string[];
+  favouriteTeams: string[];
   draftBet: BetDraft | null;
   addBet: (bet: Omit<BetRecord, 'id' | 'createdAt'>) => void;
   updateBetResult: (id: string, result: BetResult) => void;
   deleteBet: (id: string) => void;
   updateSettings: (partial: Partial<UserSettings>) => void;
   toggleFavouriteMatch: (matchId: string) => void;
+  toggleFavouriteTeam: (teamName: string) => void;
   setDraftBet: (draft: BetDraft | null) => void;
   resetStoreToDefaults: () => void;
 }
@@ -57,6 +61,7 @@ export const useAppStore = create<AppStoreState>()(
       bets: INITIAL_SAMPLE_BETS,
       settings: DEFAULT_USER_SETTINGS,
       favouriteMatchIds: [],
+      favouriteTeams: DEFAULT_FAVOURITE_TEAMS,
       draftBet: null,
 
       addBet: (newBet) =>
@@ -100,6 +105,16 @@ export const useAppStore = create<AppStoreState>()(
           };
         }),
 
+      toggleFavouriteTeam: (teamName) =>
+        set((state) => {
+          const exists = state.favouriteTeams.includes(teamName);
+          return {
+            favouriteTeams: exists
+              ? state.favouriteTeams.filter((t) => t !== teamName)
+              : [...state.favouriteTeams, teamName],
+          };
+        }),
+
       setDraftBet: (draft) => set({ draftBet: draft }),
 
       resetStoreToDefaults: () =>
@@ -107,6 +122,7 @@ export const useAppStore = create<AppStoreState>()(
           bets: INITIAL_SAMPLE_BETS,
           settings: DEFAULT_USER_SETTINGS,
           favouriteMatchIds: [],
+          favouriteTeams: DEFAULT_FAVOURITE_TEAMS,
           draftBet: null,
         }),
     }),
@@ -117,6 +133,7 @@ export const useAppStore = create<AppStoreState>()(
         bets: state.bets,
         settings: state.settings,
         favouriteMatchIds: state.favouriteMatchIds,
+        favouriteTeams: state.favouriteTeams,
       }),
     }
   )

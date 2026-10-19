@@ -12,7 +12,6 @@ import {
 
 export const LEAGUE_FILTERS = [
   'All',
-  '★ Favourites',
   'Premier League',
   'La Liga',
   'Serie A',

@@ -26,11 +26,11 @@ export function FormBadge({ result }: FormBadgeProps) {
 }
 
 function createStyles(theme: AppTheme, result: FormResult) {
-  let bg = theme.colors.neutralBadge;
+  let bg = theme.colors.formDraw;
   if (result === 'W') {
-    bg = theme.colors.primary;
+    bg = theme.colors.formWin;
   } else if (result === 'L') {
-    bg = theme.colors.danger;
+    bg = theme.colors.formLoss;
   }
 
   return StyleSheet.create({
@@ -43,7 +43,7 @@ function createStyles(theme: AppTheme, result: FormResult) {
       justifyContent: 'center',
     },
     letter: {
-      color: result === 'W' ? theme.colors.primaryTextOnColor : '#FFFFFF',
+      color: theme.colors.primaryTextOnColor,
       fontSize: theme.typography.sizes.caption,
       fontWeight: theme.typography.weights.bold,
     },

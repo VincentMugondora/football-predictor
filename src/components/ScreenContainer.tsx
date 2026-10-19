@@ -23,7 +23,8 @@ export function ScreenContainer({ children }: ScreenContainerProps) {
       </View>
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <View style={styles.inner}>{children}</View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -37,7 +38,11 @@ function createStyles(theme: AppTheme) {
       backgroundColor: theme.colors.background,
     },
     pitchBackdrop: {
-      ...StyleSheet.absoluteFillObject,
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
       flexDirection: 'row',
     },
     pitchStripe: {

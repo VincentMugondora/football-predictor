@@ -59,7 +59,7 @@ function getClubIdentity(teamName: string): ClubColors {
 
 export interface TeamCrestProps {
   teamName: string;
-  size?: 'sm' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export function TeamCrest({ teamName, size = 'sm' }: TeamCrestProps) {
@@ -82,17 +82,29 @@ export function TeamCrest({ teamName, size = 'sm' }: TeamCrestProps) {
   );
 }
 
-function createStyles(theme: AppTheme, identity: ClubColors, size: 'sm' | 'lg') {
+function createStyles(
+  theme: AppTheme,
+  identity: ClubColors,
+  size: 'sm' | 'md' | 'lg'
+) {
   const dimension =
-    size === 'lg' ? theme.layout.crestSizeLarge : theme.layout.crestSizeSmall;
+    size === 'lg'
+      ? theme.layout.crestSizeLarge
+      : size === 'md'
+        ? theme.layout.crestSizeMedium
+        : theme.layout.crestSizeSmall;
   const fontSize =
-    size === 'lg' ? theme.typography.sizes.bodyStrong : theme.typography.sizes.badge;
+    size === 'lg'
+      ? theme.typography.sizes.bodyStrong
+      : size === 'md'
+        ? theme.typography.sizes.caption
+        : theme.typography.sizes.badge;
 
   return StyleSheet.create({
     shield: {
       width: dimension,
       height: dimension,
-      borderRadius: size === 'lg' ? theme.radii.card : theme.radii.pill,
+      borderRadius: size === 'sm' ? theme.radii.pill : theme.radii.card,
       backgroundColor: identity.bg,
       borderColor: identity.border,
       borderWidth: 2,

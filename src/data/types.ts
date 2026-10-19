@@ -24,6 +24,7 @@ export interface MatchPick {
   awayForm?: FormResult[];
   stats?: MatchKeyStats;
   ourTake?: string;
+  updatedAtLabel?: string;
 }
 
 export interface BacktestSummary {

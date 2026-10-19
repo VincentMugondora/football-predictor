@@ -43,12 +43,9 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleBack}
           accessibilityRole="button"
-          accessibilityLabel="Go back">
-          <Ionicons
-            name="arrow-back"
-            size={22}
-            color={theme.colors.textPrimary}
-          />
+          accessibilityLabel="Go back"
+        >
+          <Ionicons name="arrow-back" size={22} color={theme.colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.detailTitle} numberOfLines={1}>
           {title}
@@ -57,12 +54,9 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleOpenSettings}
           accessibilityRole="button"
-          accessibilityLabel="Open settings">
-          <Ionicons
-            name="ellipsis-vertical"
-            size={20}
-            color={theme.colors.textPrimary}
-          />
+          accessibilityLabel="Open settings"
+        >
+          <Ionicons name="ellipsis-vertical" size={20} color={theme.colors.textPrimary} />
         </TouchableOpacity>
       </View>
     );
@@ -79,19 +73,15 @@ export function AppHeader({
       <View style={styles.actionsRow}>
         {onSearchPress ? (
           <TouchableOpacity
-            style={[
-              styles.iconButton,
-              isSearchActive ? styles.iconButtonActive : null,
-            ]}
+            style={[styles.iconButton, isSearchActive ? styles.iconButtonActive : null]}
             onPress={onSearchPress}
             accessibilityRole="button"
-            accessibilityLabel="Toggle search matches">
+            accessibilityLabel="Toggle search matches"
+          >
             <Ionicons
               name="search"
               size={22}
-              color={
-                isSearchActive ? theme.colors.primary : theme.colors.textPrimary
-              }
+              color={isSearchActive ? theme.colors.primary : theme.colors.textPrimary}
             />
           </TouchableOpacity>
         ) : null}
@@ -99,12 +89,9 @@ export function AppHeader({
           style={styles.iconButton}
           onPress={handleOpenSettings}
           accessibilityRole="button"
-          accessibilityLabel="Open settings">
-          <Ionicons
-            name="ellipsis-vertical"
-            size={20}
-            color={theme.colors.textPrimary}
-          />
+          accessibilityLabel="Open settings"
+        >
+          <Ionicons name="ellipsis-vertical" size={20} color={theme.colors.textPrimary} />
         </TouchableOpacity>
       </View>
     </View>

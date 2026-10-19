@@ -16,6 +16,7 @@ export interface MatchPickCardProps {
   onToggleFavourite: (matchId: string) => void;
   onPressMatch: (matchId: string) => void;
   onLogOutcome: (match: MatchPick, outcome: OutcomeKey, odds: number) => void;
+  showOddsBreakdown?: boolean;
 }
 
 function MatchPickCardComponent({
@@ -25,6 +26,7 @@ function MatchPickCardComponent({
   onToggleFavourite,
   onPressMatch,
   onLogOutcome,
+  showOddsBreakdown = false,
 }: MatchPickCardProps) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -37,13 +39,14 @@ function MatchPickCardComponent({
   const kickoff = formatKickoffTime(match.date);
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, theme.shadows.card]}>
       <View style={styles.fixtureRow}>
         <TouchableOpacity
           style={styles.teamsTouchArea}
           onPress={() => onPressMatch(match.id)}
           accessibilityRole="button"
-          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${kickoff}`}>
+          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${kickoff}`}
+        >
           <View style={styles.timeColumn}>
             <Text style={styles.timeText}>{kickoff}</Text>
           </View>
@@ -73,7 +76,8 @@ function MatchPickCardComponent({
             isFavourite
               ? `Remove ${matchTitle} from favourites`
               : `Add ${matchTitle} to favourites`
-          }>
+          }
+        >
           <Ionicons
             name={isFavourite ? 'star' : 'star-outline'}
             size={24}
@@ -82,16 +86,18 @@ function MatchPickCardComponent({
         </TouchableOpacity>
       </View>
 
-      <View style={styles.outcomesList}>
-        {outcomes.map((item) => (
-          <OutcomeEdgeRow
-            key={item.outcome}
-            analysis={item}
-            matchTitle={matchTitle}
-            onLogPress={(outcome, odds) => onLogOutcome(match, outcome, odds)}
-          />
-        ))}
-      </View>
+      {showOddsBreakdown ? (
+        <View style={styles.outcomesList}>
+          {outcomes.map((item) => (
+            <OutcomeEdgeRow
+              key={item.outcome}
+              analysis={item}
+              matchTitle={matchTitle}
+              onLogPress={(outcome, odds) => onLogOutcome(match, outcome, odds)}
+            />
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }

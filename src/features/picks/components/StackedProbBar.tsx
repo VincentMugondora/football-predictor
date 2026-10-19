@@ -32,15 +32,18 @@ export function StackedProbBar({ probabilities }: StackedProbBarProps) {
         <View style={styles.awaySegment} />
       </View>
       <View style={styles.labelsRow}>
-        <Text style={styles.labelBase}>
-          Home <Text style={styles.homePctText}>{homePct}%</Text>
-        </Text>
-        <Text style={styles.labelBase}>
-          Draw <Text style={styles.drawPctText}>{drawPct}%</Text>
-        </Text>
-        <Text style={styles.labelBase}>
-          Away <Text style={styles.awayPctText}>{awayPct}%</Text>
-        </Text>
+        <View style={styles.statCol}>
+          <Text style={styles.pctText}>{homePct}%</Text>
+          <Text style={styles.outcomeLabel}>Home</Text>
+        </View>
+        <View style={styles.statCol}>
+          <Text style={styles.pctText}>{drawPct}%</Text>
+          <Text style={styles.outcomeLabel}>Draw</Text>
+        </View>
+        <View style={styles.statCol}>
+          <Text style={styles.pctText}>{awayPct}%</Text>
+          <Text style={styles.outcomeLabel}>Away</Text>
+        </View>
       </View>
     </View>
   );
@@ -54,48 +57,51 @@ function createStyles(
 ) {
   return StyleSheet.create({
     wrapper: {
-      gap: theme.spacing.sm,
+      gap: theme.spacing.md,
     },
     barTrack: {
       flexDirection: 'row',
       height: theme.layout.stackedBarHeight,
       borderRadius: theme.radii.pill,
       overflow: 'hidden',
-      backgroundColor: theme.colors.neutralBarTrack,
+      backgroundColor: theme.colors.probBarAway,
     },
     homeSegment: {
       flex: Math.max(1, homePct),
       backgroundColor: theme.colors.primary,
+      borderTopRightRadius: theme.radii.pill,
+      borderBottomRightRadius: theme.radii.pill,
     },
     drawSegment: {
       flex: Math.max(1, drawPct),
-      backgroundColor: theme.colors.neutralBadge,
+      backgroundColor: theme.colors.probBarDraw,
+      borderTopRightRadius: theme.radii.pill,
+      borderBottomRightRadius: theme.radii.pill,
     },
     awaySegment: {
       flex: Math.max(1, awayPct),
-      backgroundColor: theme.colors.neutralBarTrack,
+      backgroundColor: theme.colors.probBarAway,
     },
     labelsRow: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-around',
       alignItems: 'center',
     },
-    labelBase: {
+    statCol: {
+      flex: 1,
+      alignItems: 'center',
+      gap: theme.spacing.xxs,
+    },
+    pctText: {
+      color: theme.colors.textPrimary,
+      fontSize: theme.typography.sizes.statValue,
+      lineHeight: theme.typography.lineHeights.statValue,
+      fontWeight: theme.typography.weights.bold,
+    },
+    outcomeLabel: {
       color: theme.colors.textSecondary,
       fontSize: theme.typography.sizes.body,
-      fontWeight: theme.typography.weights.medium,
-    },
-    homePctText: {
-      color: theme.colors.primary,
-      fontWeight: theme.typography.weights.bold,
-    },
-    drawPctText: {
-      color: theme.colors.textPrimary,
-      fontWeight: theme.typography.weights.bold,
-    },
-    awayPctText: {
-      color: theme.colors.textSecondary,
-      fontWeight: theme.typography.weights.bold,
+      fontWeight: theme.typography.weights.regular,
     },
   });
 }
