@@ -7,14 +7,32 @@ MODEL_DIR = REPO_ROOT / "model"
 RAW_DATA_DIR = MODEL_DIR / "data" / "raw"
 SITE_DIR = REPO_ROOT / "site"
 PICKS_JSON_PATH = SITE_DIR / "picks.json"
+APP_REAL_PICKS_PATH = REPO_ROOT / "src" / "data" / "realPicks.json"
 STATUS_JSON_PATH = SITE_DIR / "status.json"
+BACKTEST_REPORT_PATH = SITE_DIR / "backtest_report.json"
 
 # Hard limit from Section 2 Rule 8: keep picks.json under 50 KB
 MAX_PICKS_JSON_BYTES = 50 * 1024
 
-# Leagues configured for football-data.co.uk CSV ingestion (start with E0 in Phase 1)
-ACTIVE_LEAGUES: tuple[str, ...] = ("E0",)
+# Seasons to download from football-data.co.uk (6 full seasons)
+SEASONS: tuple[str, ...] = ("1920", "2021", "2122", "2223", "2324", "2425")
+
+# Leagues configured for football-data.co.uk CSV ingestion
+ACTIVE_LEAGUES: tuple[str, ...] = ("E0", "SP1", "I1", "D1")
 ALL_SUPPORTED_LEAGUES: tuple[str, ...] = ("E0", "E1", "SP1", "D1", "I1")
+
+LEAGUE_DISPLAY_NAMES: dict[str, str] = {
+    "E0": "Premier League",
+    "E1": "Championship",
+    "SP1": "La Liga",
+    "I1": "Serie A",
+    "D1": "Bundesliga",
+}
+
+HISTORICAL_CSV_URL_TEMPLATE = (
+    "https://www.football-data.co.uk/mmz4281/{season}/{league}.csv"
+)
+FIXTURES_CSV_URL = "https://www.football-data.co.uk/fixtures.csv"
 
 # Required historical CSV columns (Section 5.2)
 REQUIRED_MATCH_COLUMNS: tuple[str, ...] = (
@@ -36,20 +54,40 @@ ODDS_SOURCE_PRIORITY: tuple[tuple[str, tuple[str, str, str]], ...] = (
 )
 
 # Default online Poisson hyperparameters (Section 6.1)
-DEFAULT_LR = 0.01
+DEFAULT_LR = 0.012
 DEFAULT_LR_GLOBAL = 0.003
-DEFAULT_DECAY = 0.001
+DEFAULT_DECAY = 0.0015
+DEFAULT_DIXON_COLES_RHO = -0.06
 
-# Team name normalisation mapping (expanded in Phase 1)
+# Team name normalisation mapping (Section 5.3)
 TEAM_NAME_MAP: dict[str, str] = {
     "Man United": "Man Utd",
     "Manchester United": "Man Utd",
     "Manchester City": "Man City",
     "Spurs": "Tottenham",
     "Tottenham Hotspur": "Tottenham",
-    "Wolverhampton Wanderers": "Wolves",
     "Nott'm Forest": "Nottingham Forest",
     "Brighton and Hove Albion": "Brighton",
     "West Ham United": "West Ham",
     "Newcastle United": "Newcastle",
+    "Sheffield United": "Sheffield Utd",
+    "Wolverhampton Wanderers": "Wolves",
+    "Ath Madrid": "Atlético Madrid",
+    "Ath Bilbao": "Athletic Club",
+    "Betis": "Real Betis",
+    "Sociedad": "Real Sociedad",
+    "Espanol": "Espanyol",
+    "Vallecano": "Rayo Vallecano",
+    "Alaves": "Alavés",
+    "Leganes": "Leganés",
+    "Inter": "Inter",
+    "Internazionale": "Inter",
+    "Verona": "Hellas Verona",
+    "Bayern Munich": "Bayern Munich",
+    "Dortmund": "Dortmund",
+    "Leverkusen": "Bayer Leverkusen",
+    "M'gladbach": "Gladbach",
+    "Ein Frankfurt": "Eintracht Frankfurt",
+    "FC Koln": "Köln",
+    "Mainz": "Mainz 05",
 }
