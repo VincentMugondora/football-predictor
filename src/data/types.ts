@@ -25,15 +25,23 @@ export interface MatchPick {
   stats?: MatchKeyStats;
   ourTake?: string;
   updatedAtLabel?: string;
+  reference_source?: string;
+  fair_odds?: OutcomeTuple;
 }
 
 export interface BacktestSummary {
   verdict: string;
   log_loss_model: number;
   log_loss_book: number;
+  test_matches?: number;
+  gap?: number;
+  verdict_code?: string;
+  clv_mean?: number;
 }
 
 export interface PicksPayload {
+  schema_version?: string;
+  model_version?: string;
   generated_at: string;
   backtest: BacktestSummary;
   matches: MatchPick[];
