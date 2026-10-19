@@ -131,13 +131,20 @@ def build_picks_payload(
     # Assign practical kickoff times (15:00, 17:30, 20:00 UTC) when CSV only stores Date
     kickoff_hours = ("15:00:00Z", "17:30:00Z", "20:00:00Z", "18:30:00Z")
 
+    # Mark the first Premier League fixture (or index 0 if none) as Match of the Week
+    featured_idx = 0
+    for idx_cand, row_cand in enumerate(target_fixtures.itertuples(index=False)):
+        if str(row_cand.Div) == "E0":
+            featured_idx = idx_cand
+            break
+
     for i, row in enumerate(target_fixtures.itertuples(index=False)):
         div = str(row.Div)
         league_name = config.LEAGUE_DISPLAY_NAMES.get(div, div)
         home = str(row.HomeTeam)
         away = str(row.AwayTeam)
         dt_str = pd.Timestamp(row.Date).strftime("%Y-%m-%d")
-        iso_date = f"{dt_str}T{kickoff_hours[i % len(kickoff_hours)]}"
+        kickoff_iso = f"{dt_str}T{kickoff_hours[i % len(kickoff_hours)]}"
 
         p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
         p_tuple = [round(p_h, 4), round(p_d, 4), round(1.0 - round(p_h, 4) - round(p_d, 4), 4)]
@@ -159,7 +166,7 @@ def build_picks_payload(
         matches_out.append(
             {
                 "id": _slugify_match_id(home, away, dt_str),
-                "date": iso_date,
+                "date": kickoff_iso,
                 "league": league_name,
                 "home": home,
                 "away": away,
@@ -167,7 +174,7 @@ def build_picks_payload(
                 "fair_odds": fair_odds,
                 "odds": ref_odds,
                 "reference_source": ref_source,
-                "featured": i == 0,
+                "featured": i == featured_idx,
                 "isDemo": False,
                 "homeForm": home_summary["form"],
                 "awayForm": away_summary["form"],

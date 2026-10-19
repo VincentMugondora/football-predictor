@@ -21,15 +21,24 @@ def normalise_team_name(name: str) -> str:
     return config.TEAM_NAME_MAP.get(cleaned, cleaned)
 
 
-def _download_file(url: str, dest: Path, timeout: int = 30) -> Path:
+def _download_file(url: str, dest: Path, timeout: int = 45, retries: int = 3) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        content = response.read()
-    if not content or len(content) < 64:
-        raise ValueError(f"Downloaded file from {url} is empty or truncated.")
-    dest.write_bytes(content)
-    return dest
+    last_err: Exception | None = None
+    for attempt in range(1, retries + 1):
+        try:
+            print(f"Downloading {url} -> {dest.name} (attempt {attempt}/{retries})...", flush=True)
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                content = response.read()
+            if not content or len(content) < 64:
+                raise ValueError(f"Downloaded file from {url} is empty or truncated.")
+            dest.write_bytes(content)
+            return dest
+        except Exception as exc:
+            last_err = exc
+            if attempt < retries:
+                time.sleep(2 * attempt)
+    raise RuntimeError(f"Failed to download {url} after {retries} attempts: {last_err}") from last_err
 
 
 def download_season_csv(
@@ -175,10 +184,21 @@ def load_historical_matches(
     """Loads and combines all league/season CSVs into a single chronological DataFrame."""
     frames: list[pd.DataFrame] = []
     for league in leagues:
+        existing_for_league = [
+            raw_dir / f"{league}_{s}.csv"
+            for s in seasons
+            if (raw_dir / f"{league}_{s}.csv").exists()
+        ]
         for season in seasons:
             csv_path = raw_dir / f"{league}_{season}.csv"
-            if not csv_path.exists() and download_missing:
-                download_season_csv(league, season, raw_dir=raw_dir)
+            if not csv_path.exists() and download_missing and len(existing_for_league) == 0:
+                try:
+                    download_season_csv(league, season, raw_dir=raw_dir)
+                except Exception as exc:
+                    print(
+                        f"Skipping download of {league}_{season}.csv ({exc}); using cached files.",
+                        flush=True,
+                    )
             if csv_path.exists():
                 frames.append(load_csv_file(csv_path))
 
@@ -186,9 +206,11 @@ def load_historical_matches(
         raise RuntimeError("No historical match files found or downloaded.")
 
     combined = pd.concat(frames, ignore_index=True)
-    combined = combined.drop_duplicates(
-        subset=["Div", "Date", "HomeTeam", "AwayTeam"]
-    ).sort_values(["Date", "Div", "HomeTeam", "AwayTeam"]).reset_index(drop=True)
+    combined = (
+        combined.drop_duplicates(subset=["Div", "Date", "HomeTeam", "AwayTeam"])
+        .sort_values(["Date", "Div", "HomeTeam", "AwayTeam"])
+        .reset_index(drop=True)
+    )
     return combined
 
 

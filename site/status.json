@@ -1,5 +1,5 @@
 {
-  "status": "error",
-  "timestamp": "2026-10-19T15:28:53Z",
-  "message": "<urlopen error [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions>"
+  "status": "ok",
+  "timestamp": "2026-10-19T15:37:29Z",
+  "message": "Published 24 matches (24013 bytes)."
 }
