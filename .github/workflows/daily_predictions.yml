@@ -10,10 +10,15 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   run-daily-model:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,6 +35,15 @@ jobs:
           pip install -r model/requirements.txt
 
       - name: Run daily prediction & post-match result comparison pipeline
+        env:
+          # Secrets are optional where the provider supports anonymous access. The model
+          # never enables historical CSV downloads in CI.
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+          ODDS_REGION: ${{ vars.ODDS_REGION || 'uk' }}
+          ODDS_MIN_CREDITS_REMAINING: ${{ vars.ODDS_MIN_CREDITS_REMAINING || '10' }}
+          ALLOW_FOOTBALL_DATA_DOWNLOADS: 'false'
         run: python -m model.run_daily
 
       - name: Run model unit tests
@@ -46,3 +60,15 @@ jobs:
             git commit -m "chore(model): update daily predictions and post-match result comparisons"
             git push
           fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static prediction site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Publish site to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
