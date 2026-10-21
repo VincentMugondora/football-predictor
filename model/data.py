@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from model import config
+from model.providers.teams import canonical_team
 
 USER_AGENT = "MatchSenseDataPipeline/1.0 (Offline-First Statistical Model)"
 
@@ -18,7 +19,7 @@ USER_AGENT = "MatchSenseDataPipeline/1.0 (Offline-First Statistical Model)"
 def normalise_team_name(name: str) -> str:
     """Normalises club names using config.TEAM_NAME_MAP."""
     cleaned = str(name).strip()
-    return config.TEAM_NAME_MAP.get(cleaned, cleaned)
+    return canonical_team(cleaned, "football-data.co.uk")
 
 
 def _download_file(url: str, dest: Path, timeout: int = 45, retries: int = 3) -> Path:

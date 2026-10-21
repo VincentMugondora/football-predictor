@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -16,18 +17,16 @@ from model.backtest import (
     multiclass_log_loss,
     run_walk_forward_backtest,
 )
-from model.data import fetch_upcoming_fixtures, load_historical_matches
+from model.data import load_historical_matches
 from model.model import OnlinePoissonModel
+from model.providers.base import Fixture
+from model.providers.football_data_csv import FootballDataCsvProvider
+from model.providers.football_data_org import FootballDataOrgProvider
+from model.providers.the_odds_api import TheOddsApiProvider
 
-SCHEMA_VERSION = "1.1"
-MODEL_VERSION = "poisson-dc-v1.1"
+SCHEMA_VERSION = "2.0"
+MODEL_VERSION = "poisson-dc-v2.0"
 OUTCOME_LABELS = ("Home", "Draw", "Away")
-
-
-def _slugify_match_id(home: str, away: str, date_str: str) -> str:
-    h_slug = re.sub(r"[^a-z0-9]+", "-", home.lower()).strip("-")[:6]
-    a_slug = re.sub(r"[^a-z0-9]+", "-", away.lower()).strip("-")[:6]
-    return f"{h_slug}-{a_slug}-{date_str}"
 
 
 def _ftr_to_outcome_label(ftr: str) -> str:
@@ -107,9 +106,12 @@ def _build_our_take(
 def build_picks_payload(
     df_hist: pd.DataFrame,
     report: BacktestReport,
-    max_matches: int = 20,
+    max_matches: int = 100,
     max_comparisons: int = 16,
     history_path: Path = config.PREDICTIONS_HISTORY_PATH,
+    fixtures: list[Fixture] | None = None,
+    reference_odds: dict[str, dict[str, object]] | None = None,
+    odds_credits_remaining: int | None = None,
 ) -> dict[str, object]:
     """
     1. Walks chronologically through historical matches, predicting each match strictly BEFORE
@@ -120,28 +122,9 @@ def build_picks_payload(
        so when those matches finish, their real results are automatically compared next day.
     """
     pred_history = _load_predictions_history(history_path)
-    upcoming_df = fetch_upcoming_fixtures(config.ACTIVE_LEAGUES)
-
-    if not upcoming_df.empty:
-        train_df = df_hist.copy()
-        target_fixtures = upcoming_df.head(max_matches).copy()
-    else:
-        # When between matchweeks, hold out the final round (5 matches per league) as the active
-        # fixture slate and use the round immediately preceding it for recent post-match comparisons.
-        latest_per_league: list[pd.DataFrame] = []
-        for div in config.ACTIVE_LEAGUES:
-            div_df = df_hist[df_hist["Div"] == div]
-            if not div_df.empty:
-                latest_per_league.append(div_df.tail(5))
-
-        target_fixtures = (
-            pd.concat(latest_per_league, ignore_index=True)
-            .sort_values(["Date", "Div", "HomeTeam"])
-            .tail(max_matches)
-            .reset_index(drop=True)
-        )
-        cutoff_date = target_fixtures["Date"].min()
-        train_df = df_hist[df_hist["Date"] < cutoff_date].copy()
+    fixtures = sorted(fixtures or [], key=lambda item: item.kickoff)[:max_matches]
+    reference_odds = reference_odds or {}
+    train_df = df_hist.sort_values(["Date", "Div", "HomeTeam", "AwayTeam"]).copy()
 
     # Walk-forward through train_df, recording pre-match predictions on the most recent completed matches
     trained_model = OnlinePoissonModel()
@@ -153,7 +136,7 @@ def build_picks_payload(
         home = str(row.HomeTeam)
         away = str(row.AwayTeam)
         dt_str = pd.Timestamp(row.Date).strftime("%Y-%m-%d")
-        match_id = _slugify_match_id(home, away, dt_str)
+        match_id = f"history-{idx}-{dt_str}"
 
         # 1. Predict strictly BEFORE observing real match result
         p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
@@ -229,22 +212,20 @@ def build_picks_payload(
 
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     matches_out: list[dict[str, object]] = []
-    kickoff_hours = ("15:00:00Z", "17:30:00Z", "20:00:00Z", "18:30:00Z")
-
     featured_idx = 0
-    for idx_cand, row_cand in enumerate(target_fixtures.itertuples(index=False)):
-        if str(row_cand.Div) == "E0":
+    for idx_cand, fixture_cand in enumerate(fixtures):
+        if fixture_cand.competition in {"PL", "E0"}:
             featured_idx = idx_cand
             break
 
-    for i, row in enumerate(target_fixtures.itertuples(index=False)):
-        div = str(row.Div)
-        league_name = config.LEAGUE_DISPLAY_NAMES.get(div, div)
-        home = str(row.HomeTeam)
-        away = str(row.AwayTeam)
-        dt_str = pd.Timestamp(row.Date).strftime("%Y-%m-%d")
-        kickoff_iso = f"{dt_str}T{kickoff_hours[i % len(kickoff_hours)]}"
-        match_id = _slugify_match_id(home, away, dt_str)
+    for i, fixture in enumerate(fixtures):
+        if not fixture.id or fixture.kickoff.tzinfo is None or not fixture.home or not fixture.away:
+            raise ValueError("A fixture lacks a real ID, timezone-aware kickoff, or mapped team")
+        div = next((key for key, value in FootballDataOrgProvider.COMPETITIONS.items() if value == fixture.competition), fixture.competition)
+        league_name = config.LEAGUE_DISPLAY_NAMES.get(div, fixture.competition)
+        home, away = fixture.home, fixture.away
+        kickoff_iso = fixture.kickoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        match_id = fixture.id
 
         p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
         p_tuple = [round(p_h, 4), round(p_d, 4), round(1.0 - round(p_h, 4) - round(p_d, 4), 4)]
@@ -253,12 +234,9 @@ def build_picks_payload(
             round(1.0 / max(0.01, p_tuple[1]), 2),
             round(1.0 / max(0.01, p_tuple[2]), 2),
         ]
-        ref_odds = [
-            round(float(row.OddsH), 2),
-            round(float(row.OddsD), 2),
-            round(float(row.OddsA), 2),
-        ]
-        ref_source = str(row.OddsSource)
+        reference = reference_odds.get(match_id)
+        ref_odds = reference.get("odds") if reference else None
+        ref_source = reference.get("source") if reference else None
 
         home_summary = trained_model.get_team_summary(home)
         away_summary = trained_model.get_team_summary(away)
@@ -292,7 +270,7 @@ def build_picks_payload(
                 home,
                 away,
                 (p_h, p_d, p_a),
-                (ref_odds[0], ref_odds[1], ref_odds[2]),
+                (ref_odds[0], ref_odds[1], ref_odds[2]) if ref_odds else (0.0, 0.0, 0.0),
                 home_summary,
                 away_summary,
             ),
@@ -318,6 +296,9 @@ def build_picks_payload(
         "schema_version": SCHEMA_VERSION,
         "generated_at": now_utc,
         "model_version": MODEL_VERSION,
+        "data_status": "ok" if matches_out else "no_fixtures",
+        "sources_used": ["football-data.org v4", "football-data.co.uk CSV cache"],
+        "odds_credits_remaining": odds_credits_remaining,
         "backtest": {
             "test_matches": report.test_matches,
             "log_loss_model": report.log_loss_model,
