@@ -117,6 +117,7 @@ def build_picks_payload(
     fixtures: list[Fixture] | None = None,
     reference_odds: dict[str, dict[str, object]] | None = None,
     odds_credits_remaining: int | None = None,
+    odds_credits_used: int = 0,
 ) -> dict[str, object]:
     """
     1. Walks chronologically through historical matches, predicting each match strictly BEFORE
@@ -126,99 +127,21 @@ def build_picks_payload(
     3. Generates upcoming match predictions and stores them in `predictions_history.json`
        so when those matches finish, their real results are automatically compared next day.
     """
-    pred_history = _load_predictions_history(history_path)
     fixtures = sorted(fixtures or [], key=lambda item: item.kickoff)[:max_matches]
     reference_odds = reference_odds or {}
     train_df = df_hist.sort_values(["Date", "Div", "HomeTeam", "AwayTeam"]).copy()
 
-    # Walk-forward through train_df, recording pre-match predictions on the most recent completed matches
+    # Train chronologically, predicting each real historical result before observing it.
     trained_model = OnlinePoissonModel()
-    completed_evaluations: list[dict[str, object]] = []
-    eval_start_idx = max(0, len(train_df) - 60)
 
-    for idx, row in enumerate(train_df.itertuples(index=False)):
+    for row in train_df.itertuples(index=False):
         div = str(row.Div)
         home = str(row.HomeTeam)
         away = str(row.AwayTeam)
-        dt_str = pd.Timestamp(row.Date).strftime("%Y-%m-%d")
-        match_id = f"history-{idx}-{dt_str}"
-
-        # 1. Predict strictly BEFORE observing real match result
-        p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
-
-        if idx >= eval_start_idx:
-            raw_odds = (getattr(row, "OddsH", None), getattr(row, "OddsD", None), getattr(row, "OddsA", None))
-            if not all(pd.notna(value) and float(value) > 1 for value in raw_odds):
-                # Keep learning from verified scores, but do not fabricate market comparisons.
-                trained_model.observe_match(div, home, away, int(row.FTHG), int(row.FTAG))
-                continue
-            # If this match was previously saved in pred_history before kickoff, use that exact stored prediction
-            stored = pred_history.get(match_id)
-            if stored and isinstance(stored.get("p"), list) and len(stored["p"]) == 3:
-                p_used = (
-                    float(stored["p"][0]),
-                    float(stored["p"][1]),
-                    float(stored["p"][2]),
-                )
-            else:
-                p_used = (p_h, p_d, p_a)
-
-            p_list = [
-                round(p_used[0], 4),
-                round(p_used[1], 4),
-                round(1.0 - round(p_used[0], 4) - round(p_used[1], 4), 4),
-            ]
-            pred_outcome = _top_outcome_label(p_list)
-            fthg = int(row.FTHG)
-            ftag = int(row.FTAG)
-            ftr = str(row.FTR)
-            actual_outcome = _ftr_to_outcome_label(ftr)
-            is_correct = pred_outcome == actual_outcome
-
-            # Also check if bookmaker favourite was right
-            odds_tuple = (float(row.OddsH), float(row.OddsD), float(row.OddsA))
-            book_fav_idx = int(min(range(3), key=lambda k: odds_tuple[k]))
-            book_fav_outcome = OUTCOME_LABELS[book_fav_idx]
-
-            completed_evaluations.append(
-                {
-                    "id": match_id,
-                    "date": f"{dt_str}T15:00:00Z",
-                    "league": config.LEAGUE_DISPLAY_NAMES.get(div, div),
-                    "home": home,
-                    "away": away,
-                    "p": p_list,
-                    "odds": [
-                        round(odds_tuple[0], 2),
-                        round(odds_tuple[1], 2),
-                        round(odds_tuple[2], 2),
-                    ],
-                    "predicted_outcome": pred_outcome,
-                    "actual_score": f"{fthg} - {ftag}",
-                    "actual_outcome": actual_outcome,
-                    "correct": is_correct,
-                    "book_favourite": book_fav_outcome,
-                    "book_correct": book_fav_outcome == actual_outcome,
-                    "log_loss": round(multiclass_log_loss(p_used, ftr), 4),
-                    "brier": round(multiclass_brier_score(p_used, ftr), 4),
-                }
-            )
-
-        # 2. Observe real match result AFTER predicting
+        trained_model.predict_proba(div, home, away)
         hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
         as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
         trained_model.observe_match(div, home, away, int(row.FTHG), int(row.FTAG), hs, as_)
-
-    # Take the most recent completed evaluations across active leagues
-    recent_comparisons = completed_evaluations[-max_comparisons:][::-1]
-    if completed_evaluations:
-        model_hits = sum(1 for item in completed_evaluations if item["correct"])
-        book_hits = sum(1 for item in completed_evaluations if item["book_correct"])
-        hit_rate_model = round(model_hits / len(completed_evaluations), 4)
-        hit_rate_book = round(book_hits / len(completed_evaluations), 4)
-    else:
-        hit_rate_model = 0.0
-        hit_rate_book = 0.0
 
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     matches_out: list[dict[str, object]] = []
@@ -283,24 +206,9 @@ def build_picks_payload(
                 (ref_odds[0], ref_odds[1], ref_odds[2]) if ref_odds else (0.0, 0.0, 0.0),
                 home_summary,
                 away_summary,
-            ),
+            ) if ref_odds else "Model-only estimate; no validated reference odds are available.",
         }
         matches_out.append(match_entry)
-
-        # Save pre-match prediction in history so it can be compared after the match finishes
-        pred_history[match_id] = {
-            "id": match_id,
-            "date": kickoff_iso,
-            "league": league_name,
-            "home": home,
-            "away": away,
-            "p": p_tuple,
-            "predicted_outcome": _top_outcome_label(p_tuple),
-            "odds": ref_odds,
-            "generated_at": now_utc,
-        }
-
-    _save_predictions_history(pred_history, history_path)
 
     payload: dict[str, object] = {
         "schema_version": SCHEMA_VERSION,
@@ -309,6 +217,7 @@ def build_picks_payload(
         "data_status": "ok" if matches_out else "no_fixtures",
         "sources_used": ["football-data.org v4", "football-data.co.uk CSV cache"],
         "odds_credits_remaining": odds_credits_remaining,
+        "odds_credits_used": odds_credits_used,
         "backtest": {
             "test_matches": report.test_matches,
             "log_loss_model": report.log_loss_model,
@@ -317,12 +226,9 @@ def build_picks_payload(
             "verdict_code": report.verdict,
             "verdict": report.verdict_message,
             "clv_mean": report.clv_mean,
-            "recent_evaluated": len(completed_evaluations),
-            "recent_hit_rate_model": hit_rate_model,
-            "recent_hit_rate_book": hit_rate_book,
         },
         "matches": matches_out,
-        "recent_comparisons": recent_comparisons,
+        "recent_comparisons": [],
     }
     return payload
 
@@ -341,7 +247,7 @@ def write_status_file(
 
 def run_daily_pipeline(
     picks_path: Path = config.PICKS_JSON_PATH,
-    app_picks_path: Path | None = config.APP_REAL_PICKS_PATH,
+    app_picks_path: Path | None = None,
     status_path: Path = config.STATUS_JSON_PATH,
 ) -> dict[str, object]:
     """
@@ -371,16 +277,25 @@ def run_daily_pipeline(
         fixtures = provider.get_fixtures(now, now + timedelta(days=7))
         odds_by_fixture: dict[str, dict[str, object]] = {}
         credits_remaining = None
+        credits_used = 0
         if os.getenv("THE_ODDS_API_KEY"):
             odds_provider = TheOddsApiProvider(sport_by_competition={
                 "PL": "soccer_epl", "ELC": "soccer_efl_champ", "BL1": "soccer_germany_bundesliga",
                 "SA": "soccer_italy_serie_a", "PD": "soccer_spain_la_liga",
             })
-            odds_by_fixture = odds_provider.get_h2h_odds(fixtures)
-            credits_remaining = odds_provider.credits_remaining
+            try:
+                min_credits = int(os.getenv("ODDS_MIN_CREDITS_REMAINING", "10"))
+                if len(fixtures) and len(fixtures) > 0:
+                    odds_by_fixture = odds_provider.get_h2h_odds(fixtures, min_credits_remaining=min_credits)
+                credits_remaining = odds_provider.credits_remaining
+                credits_used = odds_provider.credits_used
+            except Exception as odds_error:
+                # Odds are auxiliary; preserve verified fixtures and predictions if quota or odds service fails.
+                print(f"Reference odds unavailable: {odds_error}", flush=True)
         payload = build_picks_payload(df_hist, report, fixtures=fixtures,
                                       reference_odds=odds_by_fixture,
-                                      odds_credits_remaining=credits_remaining)
+                                      odds_credits_remaining=credits_remaining,
+                                      odds_credits_used=credits_used)
 
         serialized = json.dumps(payload, indent=2, allow_nan=False)
         byte_len = len(serialized.encode("utf-8"))
@@ -402,7 +317,7 @@ def run_daily_pipeline(
 
         write_status_file(
             "ok",
-            f"Published {len(payload['matches'])} predictions and {len(payload['recent_comparisons'])} post-match comparisons ({byte_len} bytes).",
+            f"Published {len(payload['matches'])} verified upcoming predictions ({byte_len} bytes).",
             status_path=status_path,
         )
         return payload
@@ -415,8 +330,6 @@ if __name__ == "__main__":
     result = run_daily_pipeline()
     bt = result["backtest"]
     matches = result["matches"]
-    comparisons = result["recent_comparisons"]
     print(f"Successfully generated {config.PICKS_JSON_PATH}")
     print(f"Upcoming predictions : {len(matches)}")
-    print(f"Post-match results   : {len(comparisons)} compared (Model Hit Rate: {bt['recent_hit_rate_model'] * 100:.1f}% vs Market Fav: {bt['recent_hit_rate_book'] * 100:.1f}%)")
     print(f"Backtest verdict     : {bt['verdict']} (Model {bt['log_loss_model']} vs Book {bt['log_loss_book']})")

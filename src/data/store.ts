@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist, StateStorage } from 'zustand/middleware';
 
-import { INITIAL_SAMPLE_BETS } from '@/data/mockPicks';
+import { INITIAL_SAMPLE_BETS } from '@/data/betDefaults';
 import {
   BetDraft,
   BetRecord,

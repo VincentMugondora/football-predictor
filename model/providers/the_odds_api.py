@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -21,8 +22,11 @@ class TheOddsApiProvider(OddsProvider):
             raise RuntimeError("THE_ODDS_API_KEY is required for The Odds API.")
         self.sport_by_competition = sport_by_competition or {}
         self.credits_remaining: int | None = None
+        self.credits_used: int = 0
+        self.cache_dir = Path(__file__).resolve().parents[1] / "data" / "provider_cache"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-    def get_h2h_odds(self, fixtures: list[Fixture]) -> dict[str, dict[str, object]]:
+    def get_h2h_odds(self, fixtures: list[Fixture], min_credits_remaining: int = 10) -> dict[str, dict[str, object]]:
         results: dict[str, dict[str, object]] = {}
         by_sport: dict[str, list[Fixture]] = {}
         for fixture in fixtures:
@@ -30,18 +34,35 @@ class TheOddsApiProvider(OddsProvider):
             if sport:
                 by_sport.setdefault(sport, []).append(fixture)
         for sport, sport_fixtures in by_sport.items():
+            cache_path = self.cache_dir / f"odds_{sport}_{datetime.now(timezone.utc).date().isoformat()}.json"
+            if (
+                self.credits_remaining is not None
+                and self.credits_remaining <= min_credits_remaining
+                and not cache_path.exists()
+            ):
+                break
             query = urllib.parse.urlencode({"apiKey": self.api_key, "regions": os.getenv("ODDS_REGION", "uk"),
                                             "markets": "h2h", "oddsFormat": "decimal"})
             url = f"{self.BASE_URL}/sports/{urllib.parse.quote(sport)}/odds?{query}"
             request = urllib.request.Request(url)
-            try:
-                with urllib.request.urlopen(request, timeout=20) as response:
-                    remaining = response.headers.get("x-requests-remaining")
-                    if remaining is not None:
-                        self.credits_remaining = int(remaining)
-                    payload = json.loads(response.read().decode("utf-8"))
-            except (urllib.error.URLError, ValueError, OSError) as exc:
-                raise RuntimeError(f"The Odds API request failed: {exc}") from exc
+            if cache_path.exists():
+                cached = json.loads(cache_path.read_text(encoding="utf-8"))
+                payload = cached["payload"]
+                self.credits_remaining = cached.get("credits_remaining")
+            else:
+                try:
+                    with urllib.request.urlopen(request, timeout=20) as response:
+                        remaining = response.headers.get("x-requests-remaining")
+                        if remaining is not None:
+                            self.credits_remaining = int(remaining)
+                        last_cost = response.headers.get("x-requests-last")
+                        if last_cost is not None:
+                            self.credits_used += int(last_cost)
+                        payload = json.loads(response.read().decode("utf-8"))
+                    cache_path.write_text(json.dumps({"payload": payload, "credits_remaining": self.credits_remaining}), encoding="utf-8")
+                except (urllib.error.URLError, ValueError, OSError) as exc:
+                    safe_error = str(exc).replace(self.api_key, "[redacted]")
+                    raise RuntimeError(f"The Odds API request failed: {safe_error}") from exc
             if not isinstance(payload, list):
                 raise ValueError("The Odds API response must be a list")
             for item in payload:

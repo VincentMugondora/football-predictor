@@ -89,3 +89,11 @@ src/
 4. **Offline Club Crests on Low-End Android:**
    - *Context:* Remote crest images fail offline and large bundled PNG sheets increase APK size and memory pressure on budget devices.
    - *Resolution:* `TeamCrest` renders zero-network, deterministic club shields using each team's authentic primary/border/text colours and 3-letter club code.
+## Real data pipeline
+
+The daily job uses football-data.org v4 for verified fixtures and recent final results. Add its token as `FOOTBALL_DATA_TOKEN` in a local ignored `.env` or CI secret. Historical football-data.co.uk CSVs are read from `model/data/raw/`; automated downloads stay disabled unless the source's current fair-use/data-training terms have been resolved and `ALLOW_FOOTBALL_DATA_DOWNLOADS=true` is set. See [docs/data-sources.md](docs/data-sources.md).
+
+The Odds API is optional. Set `THE_ODDS_API_KEY` to add h2h reference prices. The job uses one region and h2h only, caches at most one request per competition per UTC day, records quota use in `picks.json`, and skips further calls when remaining credits are at or below `ODDS_MIN_CREDITS_REMAINING`. Without a configured key or available odds, real model predictions still publish with no reference price.
+
+Set `EXPO_PUBLIC_PICKS_URL` to the published static `picks.json` URL when building the Expo app. The app validates the response and stores the last valid payload in AsyncStorage; a fresh install with no network/cache shows no matches. Copy `.env.example` as a variable-name template; never commit real keys.
+

@@ -45,6 +45,9 @@ function validatePayload(value: unknown): PicksPayload {
     ) {
       throw new Error('The live picks response contains an invalid match.');
     }
+    if (Date.parse(match.date) <= Date.parse(candidate.generated_at)) {
+      throw new Error('The live picks response contains a fixture that kicked off before publication.');
+    }
   }
   return candidate as PicksPayload;
 }

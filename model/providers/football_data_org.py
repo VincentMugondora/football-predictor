@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import time
 import urllib.error
@@ -34,7 +35,7 @@ class FootballDataOrgProvider(FixtureProvider):
     def _get(self, path: str, params: dict[str, str]) -> dict[str, Any]:
         query = urllib.parse.urlencode(params)
         url = f"{self.BASE_URL}{path}?{query}"
-        cache_path = self.cache_dir / (str(abs(hash(url))) + ".json")
+        cache_path = self.cache_dir / (hashlib.sha256(url.encode("utf-8")).hexdigest() + ".json")
         now = time.time()
         if cache_path.exists() and now - cache_path.stat().st_mtime < 900:
             return json.loads(cache_path.read_text(encoding="utf-8"))
@@ -75,7 +76,7 @@ class FootballDataOrgProvider(FixtureProvider):
     def _matches(self, start: datetime, end: datetime, status: str | None = None) -> list[dict[str, Any]]:
         items: list[dict[str, Any]] = []
         for competition in self.COMPETITIONS.values():
-            params = {"dateFrom": start.date().isoformat(), "dateTo": end.date().isoformat()}
+            params = {"dateFrom": start.date().isoformat(), "dateTo": end.date().isoformat(), "limit": "500"}
             if status:
                 params["status"] = status
             payload = self._get(f"/competitions/{competition}/matches", params)

@@ -15,7 +15,7 @@ import { OutcomeKey } from '@/data/types';
 import { OutcomeEdgeRow } from '@/features/picks/components/OutcomeEdgeRow';
 import { StatComparisonRow } from '@/features/picks/components/StatComparisonRow';
 import { analyzeMatchOutcomes } from '@/lib/calculations';
-import { formatShortDayAndTime, formatUpdatedRelative } from '@/lib/dateUtils';
+import { formatShortDayAndTime } from '@/lib/dateUtils';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
 export function MatchDetailScreen() {

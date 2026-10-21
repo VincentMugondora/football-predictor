@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import pandas as pd
 
 from model import config
@@ -13,4 +15,5 @@ class FootballDataCsvProvider(HistoryProvider):
     def load(self) -> pd.DataFrame:
         # A CSV is downloaded only when an explicit opt-in acknowledges the source's
         # twice-weekly automated download ceiling and training-use restriction.
-        return load_historical_matches(download_missing=config.ALLOW_FOOTBALL_DATA_DOWNLOADS)
+        allow_downloads = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"
+        return load_historical_matches(download_missing=allow_downloads)
