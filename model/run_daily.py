@@ -144,7 +144,6 @@ def build_picks_payload(
             "odds": ref_odds,
             "reference_source": ref_source,
             "featured": i == featured_idx,
-            "isDemo": False,
             "homeForm": home_summary["form"],
             "awayForm": away_summary["form"],
             "stats": {
@@ -179,6 +178,7 @@ def build_picks_payload(
         "odds_credits_used": odds_credits_used,
         "backtest": {
             "test_matches": report.test_matches,
+            "bookmaker_test_matches": report.bookmaker_test_matches,
             "log_loss_model": report.log_loss_model,
             "log_loss_book": report.log_loss_book,
             "gap": report.gap,

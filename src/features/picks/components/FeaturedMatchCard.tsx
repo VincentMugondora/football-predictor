@@ -47,11 +47,7 @@ export function FeaturedMatchCard({
       >
         <View style={styles.topRow}>
           <Text style={styles.featuredLabel}>MATCH OF THE WEEK</Text>
-          {match.isDemo ? (
-            <PillBadge label="DEMO DATA" variant="gold" />
-          ) : (
-            <PillBadge label={match.league.toUpperCase()} variant="emerald" />
-          )}
+          <PillBadge label={match.league.toUpperCase()} variant="emerald" />
         </View>
 
         <View style={styles.teamsRow}>

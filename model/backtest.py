@@ -46,6 +46,7 @@ def multiclass_brier_score(
 @dataclass
 class BacktestReport:
     test_matches: int
+    bookmaker_test_matches: int
     log_loss_model: float
     log_loss_book: float | None
     log_loss_baseline: float
@@ -156,10 +157,10 @@ def run_walk_forward_backtest(
     gap = ll_model - ll_book if ll_book is not None else None
 
     # Gate G1 & G2 verdict rule (Section 2 Rule 7 & Section 6)
-    if test_matches >= 1500 and gap is not None and gap <= 0.0:
+    if test_matches >= 1500 and len(book_losses) >= 1500 and gap is not None and gap <= 0.0:
         verdict = "ahead"
         verdict_message = f"Model beats closing market log-loss over {test_matches:,} test matches"
-    elif test_matches >= 1500 and gap is not None and gap <= 0.002:
+    elif test_matches >= 1500 and len(book_losses) >= 1500 and gap is not None and gap <= 0.002:
         verdict = "level"
         verdict_message = f"Model is level with market log-loss over {test_matches:,} test matches"
     else:
@@ -182,6 +183,7 @@ def run_walk_forward_backtest(
 
     report = BacktestReport(
         test_matches=test_matches,
+        bookmaker_test_matches=len(book_losses),
         log_loss_model=round(ll_model, 4),
         log_loss_book=round(ll_book, 4) if ll_book is not None else None,
         log_loss_baseline=round(ll_base, 4),
@@ -209,9 +211,12 @@ def main() -> None:
     )
     print(f"Walk-forward backtest complete over {report.test_matches:,} test matches:")
     print(f"  Model Log-Loss : {report.log_loss_model:.4f} (Brier {report.brier_model:.4f})")
-    print(f"  Book  Log-Loss : {report.log_loss_book:.4f} (Brier {report.brier_book:.4f})")
+    book_loss = f"{report.log_loss_book:.4f}" if report.log_loss_book is not None else "unavailable"
+    book_brier = f"{report.brier_book:.4f}" if report.brier_book is not None else "unavailable"
+    gap = f"{report.gap:+.4f}" if report.gap is not None else "unavailable"
+    print(f"  Book  Log-Loss : {book_loss} (Brier {book_brier})")
     print(f"  Base  Log-Loss : {report.log_loss_baseline:.4f}")
-    print(f"  Gap            : {report.gap:+.4f}")
+    print(f"  Gap            : {gap}")
     print(f"  Verdict        : {report.verdict} — {report.verdict_message}")
 
 

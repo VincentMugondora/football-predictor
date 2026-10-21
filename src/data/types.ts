@@ -19,7 +19,6 @@ export interface MatchPick {
   p: OutcomeTuple; // Model probabilities [H, D, A] in [0, 1]
   odds: OutcomeTuple | null; // Optional validated reference odds [H, D, A]
   featured?: boolean;
-  isDemo?: boolean;
   homeForm?: FormResult[];
   awayForm?: FormResult[];
   stats?: MatchKeyStats;
@@ -52,6 +51,7 @@ export interface BacktestSummary {
   log_loss_model: number;
   log_loss_book: number | null;
   test_matches?: number;
+  bookmaker_test_matches?: number;
   gap?: number | null;
   verdict_code?: string;
   clv_mean?: number;

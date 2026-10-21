@@ -160,9 +160,7 @@ export function MatchDetailScreen() {
             <Text style={styles.updatedMeta}>
               {updatedLabel} •{' '}
               <Text style={styles.demoInline}>
-                {match.isDemo
-                  ? 'DEMO DATA'
-                  : `REF: ${match.reference_source ?? 'PINNACLE'} • POISSON-DC`}
+                {match.reference_source ? `REF: ${match.reference_source}` : 'ODDS UNAVAILABLE'} • POISSON-DC
               </Text>
             </Text>
 

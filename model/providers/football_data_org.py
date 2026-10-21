@@ -37,7 +37,7 @@ class FootballDataOrgProvider(FixtureProvider):
         url = f"{self.BASE_URL}{path}?{query}"
         cache_path = self.cache_dir / (hashlib.sha256(url.encode("utf-8")).hexdigest() + ".json")
         now = time.time()
-        if cache_path.exists() and now - cache_path.stat().st_mtime < 900:
+        if cache_path.exists() and now - cache_path.stat().st_mtime < 6 * 60 * 60:
             return json.loads(cache_path.read_text(encoding="utf-8"))
 
         last_error: Exception | None = None

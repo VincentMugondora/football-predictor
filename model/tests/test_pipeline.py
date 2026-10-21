@@ -122,10 +122,9 @@ def test_walk_forward_backtest_and_picks_payload_schema() -> None:
     payload = build_picks_payload(df, report, max_matches=6)
     serialized = json.dumps(payload)
     assert len(serialized.encode("utf-8")) < config.MAX_PICKS_JSON_BYTES
-    assert payload["schema_version"] == "1.1"
+    assert payload["schema_version"] == "2.0"
     for match in payload["matches"]:
         assert math.isclose(sum(match["p"]), 1.0, abs_tol=1e-3)
-        assert match["isDemo"] is False
     assert payload["data_status"] == "no_fixtures"
     assert payload["matches"] == []
     assert payload["recent_comparisons"] == []
