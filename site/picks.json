@@ -1,44 +1,54 @@
 {
-  "schema_version": "1.1",
-  "generated_at": "2026-10-19T16:11:52Z",
-  "model_version": "poisson-dc-v1.1",
+  "schema_version": "2.0",
+  "generated_at": "2026-10-21T12:23:02Z",
+  "model_version": "poisson-dc-v2.0",
+  "data_status": "ok",
+  "sources_used": [
+    "football-data.org v4",
+    "football-data.co.uk CSV cache"
+  ],
+  "leagues_skipped": {
+    "SP1": "requires 5 historical seasons; found 4: 1920, 2021, 2324, 2425",
+    "I1": "requires 5 historical seasons; found 2: 2324, 2425",
+    "D1": "requires 5 historical seasons; found 1: 2425"
+  },
+  "odds_credits_remaining": 499,
+  "odds_credits_used": 1,
   "backtest": {
-    "test_matches": 1642,
-    "log_loss_model": 1.0069,
-    "log_loss_book": 0.9578,
-    "gap": 0.0491,
+    "test_matches": 1091,
+    "bookmaker_test_matches": 1024,
+    "log_loss_model": 0.9955,
+    "log_loss_book": 0.9696,
+    "gap": 0.0259,
     "verdict_code": "no_edge",
     "verdict": "No proven edge: treat these as estimates.",
-    "clv_mean": -0.0298,
-    "recent_evaluated": 60,
-    "recent_hit_rate_model": 0.55,
-    "recent_hit_rate_book": 0.6
+    "clv_mean": -0.0327
   },
   "matches": [
     {
-      "id": "heiden-werder-2025-05-17",
-      "date": "2025-05-17T15:00:00Z",
-      "league": "Bundesliga",
-      "home": "Heidenheim",
-      "away": "Werder Bremen",
+      "id": "560614",
+      "date": "2026-10-24T11:30:00Z",
+      "league": "Premier League",
+      "home": "Aston Villa",
+      "away": "Man City",
       "p": [
-        0.3659,
-        0.2601,
-        0.374
+        0.2464,
+        0.2473,
+        0.5063
       ],
       "fair_odds": [
-        2.73,
-        3.84,
-        2.67
+        4.06,
+        4.04,
+        1.98
       ],
       "odds": [
-        2.74,
-        3.77,
-        2.52
+        4.3,
+        4.0,
+        1.7
       ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
+      "reference_source": "LeoVegas",
+      "featured": true,
+      "low_confidence": false,
       "homeForm": [
         "L",
         "L",
@@ -49,1453 +59,296 @@
       "awayForm": [
         "W",
         "W",
-        "D",
-        "D",
-        "D"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          0.9,
-          1.3
-        ],
-        "shots": [
-          11,
-          13
-        ],
-        "possession": [
-          49,
-          51
-        ]
-      },
-      "ourTake": "Balanced fixture (Heidenheim 37%, Draw 26%, Werder Bremen 37%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "hoffen-bayern-2025-05-17",
-      "date": "2025-05-17T17:30:00Z",
-      "league": "Bundesliga",
-      "home": "Hoffenheim",
-      "away": "Bayern Munich",
-      "p": [
-        0.2154,
-        0.2067,
-        0.5779
-      ],
-      "fair_odds": [
-        4.64,
-        4.84,
-        1.73
-      ],
-      "odds": [
-        4.5,
-        4.61,
-        1.67
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "W",
-        "L",
-        "L",
-        "D",
-        "D"
-      ],
-      "awayForm": [
-        "D",
         "W",
         "W",
-        "D",
         "W"
       ],
       "stats": {
         "goalsPerGame": [
-          1.5,
-          2.6
+          1.7,
+          2.4
         ],
         "shots": [
           14,
           18
         ],
         "possession": [
-          52,
-          53
-        ]
-      },
-      "ourTake": "Model projects Bayern Munich at 58% (2.6 goals/game vs Hoffenheim's 1.5). Reference odds align closely with the away estimate."
-    },
-    {
-      "id": "mainz--bayer--2025-05-17",
-      "date": "2025-05-17T20:00:00Z",
-      "league": "Bundesliga",
-      "home": "Mainz 05",
-      "away": "Bayer Leverkusen",
-      "p": [
-        0.3758,
-        0.2555,
-        0.3687
-      ],
-      "fair_odds": [
-        2.66,
-        3.91,
-        2.71
-      ],
-      "odds": [
-        2.55,
-        3.72,
-        2.73
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "D",
-        "L",
-        "D",
-        "W"
-      ],
-      "awayForm": [
-        "D",
-        "D",
-        "W",
-        "D",
-        "L"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.5,
-          1.7
-        ],
-        "shots": [
-          13,
-          14
-        ],
-        "possession": [
           50,
           51
         ]
       },
-      "ourTake": "Balanced fixture (Mainz 05 38%, Draw 26%, Bayer Leverkusen 37%) based on multi-season Poisson ratings."
+      "ourTake": "Model projects Man City at 51% (2.4 goals/game vs Aston Villa's 1.7). Reference odds align closely with the away estimate."
     },
     {
-      "id": "rb-lei-stuttg-2025-05-17",
-      "date": "2025-05-17T18:30:00Z",
-      "league": "Bundesliga",
-      "home": "RB Leipzig",
-      "away": "Stuttgart",
-      "p": [
-        0.4094,
-        0.2505,
-        0.3401
-      ],
-      "fair_odds": [
-        2.44,
-        3.99,
-        2.94
-      ],
-      "odds": [
-        1.91,
-        4.4,
-        3.6
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "W",
-        "D",
-        "L",
-        "D",
-        "D"
-      ],
-      "awayForm": [
-        "L",
-        "D",
-        "L",
-        "W",
-        "W"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.3,
-          1.7
-        ],
-        "shots": [
-          13,
-          13
-        ],
-        "possession": [
-          50,
-          52
-        ]
-      },
-      "ourTake": "Balanced fixture (RB Leipzig 41%, Draw 25%, Stuttgart 34%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "st-pau-bochum-2025-05-17",
-      "date": "2025-05-17T15:00:00Z",
-      "league": "Bundesliga",
-      "home": "St Pauli",
-      "away": "Bochum",
-      "p": [
-        0.4741,
-        0.2721,
-        0.2538
-      ],
-      "fair_odds": [
-        2.11,
-        3.68,
-        3.94
-      ],
-      "odds": [
-        1.76,
-        4.09,
-        4.57
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "W",
-        "D",
-        "D",
-        "L",
-        "D"
-      ],
-      "awayForm": [
-        "L",
-        "L",
-        "D",
-        "D",
-        "L"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          0.9,
-          0.9
-        ],
-        "shots": [
-          10,
-          14
-        ],
-        "possession": [
-          46,
-          50
-        ]
-      },
-      "ourTake": "Model projects St Pauli at 47% (0.9 goals/game vs Bochum's 0.9). Market reference price closely reflects the home projection."
-    },
-    {
-      "id": "rayo-v-mallor-2025-05-24",
-      "date": "2025-05-24T17:30:00Z",
-      "league": "La Liga",
-      "home": "Rayo Vallecano",
-      "away": "Mallorca",
-      "p": [
-        0.3912,
-        0.3245,
-        0.2843
-      ],
-      "fair_odds": [
-        2.56,
-        3.08,
-        3.52
-      ],
-      "odds": [
-        1.5,
-        4.34,
-        7.25
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "D",
-        "L",
-        "W",
-        "W",
-        "D"
-      ],
-      "awayForm": [
-        "D",
-        "L",
-        "L",
-        "W",
-        "L"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          0.9,
-          1.0
-        ],
-        "shots": [
-          15,
-          10
-        ],
-        "possession": [
-          47,
-          46
-        ]
-      },
-      "ourTake": "Balanced fixture (Rayo Vallecano 39%, Draw 32%, Mallorca 28%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "real-m-real-s-2025-05-24",
-      "date": "2025-05-24T20:00:00Z",
-      "league": "La Liga",
-      "home": "Real Madrid",
-      "away": "Real Sociedad",
-      "p": [
-        0.6346,
-        0.2219,
-        0.1435
-      ],
-      "fair_odds": [
-        1.58,
-        4.51,
-        6.97
-      ],
-      "odds": [
-        1.38,
-        5.59,
-        7.46
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "W",
-        "W",
-        "W",
-        "L",
-        "W"
-      ],
-      "awayForm": [
-        "D",
-        "L",
-        "D",
-        "L",
-        "L"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.6,
-          1.0
-        ],
-        "shots": [
-          18,
-          9
-        ],
-        "possession": [
-          53,
-          47
-        ]
-      },
-      "ourTake": "Model projects Real Madrid at 63% (1.6 goals/game vs Real Sociedad's 1.0). Market reference price closely reflects the home projection."
-    },
-    {
-      "id": "newcas-everto-2025-05-25",
-      "date": "2025-05-25T18:30:00Z",
+      "id": "560616",
+      "date": "2026-10-24T14:00:00Z",
       "league": "Premier League",
-      "home": "Newcastle",
+      "home": "Arsenal",
       "away": "Everton",
       "p": [
-        0.5482,
-        0.2509,
-        0.2009
+        0.6095,
+        0.2533,
+        0.1372
       ],
       "fair_odds": [
-        1.82,
-        3.99,
-        4.98
+        1.64,
+        3.95,
+        7.29
       ],
       "odds": [
-        1.28,
-        6.19,
-        10.36
+        1.4,
+        4.6,
+        8.5
       ],
-      "reference_source": "PSC",
-      "featured": true,
-      "isDemo": false,
+      "reference_source": "Betfred (UK)",
+      "featured": false,
+      "low_confidence": false,
       "homeForm": [
+        "W",
         "W",
         "L",
         "W",
-        "D",
         "W"
       ],
       "awayForm": [
-        "W",
-        "L",
-        "L",
         "D",
-        "W"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          2.1,
-          1.4
-        ],
-        "shots": [
-          13,
-          9
-        ],
-        "possession": [
-          52,
-          44
-        ]
-      },
-      "ourTake": "Model projects Newcastle at 55% (2.1 goals/game vs Everton's 1.4). Market reference price closely reflects the home projection."
-    },
-    {
-      "id": "nottin-chelse-2025-05-25",
-      "date": "2025-05-25T15:00:00Z",
-      "league": "Premier League",
-      "home": "Nottingham Forest",
-      "away": "Chelsea",
-      "p": [
-        0.3224,
-        0.2666,
-        0.411
-      ],
-      "fair_odds": [
-        3.1,
-        3.75,
-        2.43
-      ],
-      "odds": [
-        3.5,
-        3.87,
-        2.07
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "W",
-        "L",
         "D",
-        "D"
-      ],
-      "awayForm": [
-        "W",
-        "W",
-        "W",
-        "L",
-        "W"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.7,
-          1.3
-        ],
-        "shots": [
-          12,
-          15
-        ],
-        "possession": [
-          49,
-          49
-        ]
-      },
-      "ourTake": "Balanced fixture (Nottingham Forest 32%, Draw 27%, Chelsea 41%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "southa-arsena-2025-05-25",
-      "date": "2025-05-25T17:30:00Z",
-      "league": "Premier League",
-      "home": "Southampton",
-      "away": "Arsenal",
-      "p": [
-        0.0859,
-        0.1621,
-        0.752
-      ],
-      "fair_odds": [
-        11.64,
-        6.17,
-        1.33
-      ],
-      "odds": [
-        11.73,
-        6.54,
-        1.25
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "D",
-        "L",
-        "L",
-        "D"
-      ],
-      "awayForm": [
         "D",
         "W",
-        "D",
-        "L",
-        "D"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          0.8,
-          1.7
-        ],
-        "shots": [
-          9,
-          15
-        ],
-        "possession": [
-          49,
-          48
-        ]
-      },
-      "ourTake": "Model projects Arsenal at 75% (1.7 goals/game vs Southampton's 0.8). Reference odds align closely with the away estimate."
-    },
-    {
-      "id": "totten-bright-2025-05-25",
-      "date": "2025-05-25T20:00:00Z",
-      "league": "Premier League",
-      "home": "Tottenham",
-      "away": "Brighton",
-      "p": [
-        0.4352,
-        0.2384,
-        0.3264
-      ],
-      "fair_odds": [
-        2.3,
-        4.19,
-        3.06
-      ],
-      "odds": [
-        3.83,
-        4.06,
-        1.92
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "L",
-        "D",
-        "L",
         "L"
-      ],
-      "awayForm": [
-        "D",
-        "L",
-        "W",
-        "D",
-        "W"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.2,
-          1.8
-        ],
-        "shots": [
-          12,
-          12
-        ],
-        "possession": [
-          53,
-          50
-        ]
-      },
-      "ourTake": "Balanced fixture (Tottenham 44%, Draw 24%, Brighton 33%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "wolves-brentf-2025-05-25",
-      "date": "2025-05-25T18:30:00Z",
-      "league": "Premier League",
-      "home": "Wolves",
-      "away": "Brentford",
-      "p": [
-        0.3059,
-        0.2626,
-        0.4315
-      ],
-      "fair_odds": [
-        3.27,
-        3.81,
-        2.32
-      ],
-      "odds": [
-        3.0,
-        3.82,
-        2.31
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "W",
-        "W",
-        "W",
-        "L",
-        "L"
-      ],
-      "awayForm": [
-        "D",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.3,
-          1.5
-        ],
-        "shots": [
-          12,
-          12
-        ],
-        "possession": [
-          48,
-          50
-        ]
-      },
-      "ourTake": "Model projects Brentford at 43% (1.5 goals/game vs Wolves's 1.3). Reference odds align closely with the away estimate."
-    },
-    {
-      "id": "empoli-hellas-2025-05-25",
-      "date": "2025-05-25T15:00:00Z",
-      "league": "Serie A",
-      "home": "Empoli",
-      "away": "Hellas Verona",
-      "p": [
-        0.3733,
-        0.3083,
-        0.3184
-      ],
-      "fair_odds": [
-        2.68,
-        3.24,
-        3.14
-      ],
-      "odds": [
-        2.01,
-        2.95,
-        5.19
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "D",
-        "L",
-        "L",
-        "W"
-      ],
-      "awayForm": [
-        "D",
-        "L",
-        "L",
-        "L",
-        "D"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          0.6,
-          0.5
-        ],
-        "shots": [
-          10,
-          10
-        ],
-        "possession": [
-          47,
-          48
-        ]
-      },
-      "ourTake": "Balanced fixture (Empoli 37%, Draw 31%, Hellas Verona 32%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "lazio-lecce-2025-05-25",
-      "date": "2025-05-25T17:30:00Z",
-      "league": "Serie A",
-      "home": "Lazio",
-      "away": "Lecce",
-      "p": [
-        0.5591,
-        0.2617,
-        0.1792
-      ],
-      "fair_odds": [
-        1.79,
-        3.82,
-        5.58
-      ],
-      "odds": [
-        1.45,
-        4.59,
-        8.07
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "D",
-        "W",
-        "D",
-        "W",
-        "D"
-      ],
-      "awayForm": [
-        "L",
-        "L",
-        "D",
-        "L",
-        "D"
       ],
       "stats": {
         "goalsPerGame": [
           1.5,
-          0.7
+          1.3
         ],
         "shots": [
           14,
-          13
+          12
         ],
         "possession": [
-          50,
-          47
+          47,
+          45
         ]
       },
-      "ourTake": "Model projects Lazio at 56% (1.5 goals/game vs Lecce's 0.7). Market reference price closely reflects the home projection."
+      "ourTake": "Model projects Arsenal at 61% (1.5 goals/game vs Everton's 1.3). Market reference price closely reflects the home projection."
     },
     {
-      "id": "torino-roma-2025-05-25",
-      "date": "2025-05-25T20:00:00Z",
-      "league": "Serie A",
-      "home": "Torino",
-      "away": "Roma",
+      "id": "560617",
+      "date": "2026-10-24T16:30:00Z",
+      "league": "Premier League",
+      "home": "Chelsea",
+      "away": "Tottenham",
       "p": [
-        0.3046,
-        0.3119,
-        0.3835
+        0.5432,
+        0.2352,
+        0.2216
       ],
       "fair_odds": [
-        3.28,
-        3.21,
-        2.61
+        1.84,
+        4.25,
+        4.51
       ],
       "odds": [
-        5.7,
-        4.5,
-        1.57
+        1.67,
+        4.1,
+        4.33
       ],
-      "reference_source": "PSC",
+      "reference_source": "LeoVegas",
       "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "W",
-        "L",
-        "D",
-        "L"
-      ],
-      "awayForm": [
-        "D",
-        "W",
-        "W",
-        "W",
-        "L"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.2,
-          1.3
-        ],
-        "shots": [
-          11,
-          14
-        ],
-        "possession": [
-          46,
-          49
-        ]
-      },
-      "ourTake": "Balanced fixture (Torino 30%, Draw 31%, Roma 38%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "udines-fioren-2025-05-25",
-      "date": "2025-05-25T18:30:00Z",
-      "league": "Serie A",
-      "home": "Udinese",
-      "away": "Fiorentina",
-      "p": [
-        0.281,
-        0.289,
-        0.43
-      ],
-      "fair_odds": [
-        3.56,
-        3.46,
-        2.33
-      ],
-      "odds": [
-        3.08,
-        3.44,
-        2.43
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "L",
-        "D",
-        "W",
-        "L"
-      ],
-      "awayForm": [
-        "D",
-        "W",
-        "W",
-        "L",
-        "L"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.0,
-          1.3
-        ],
-        "shots": [
-          13,
-          9
-        ],
-        "possession": [
-          48,
-          50
-        ]
-      },
-      "ourTake": "Model projects Fiorentina at 43% (1.3 goals/game vs Udinese's 1.0). Shows a +4.5% away edge vs reference odds."
-    },
-    {
-      "id": "venezi-juvent-2025-05-25",
-      "date": "2025-05-25T15:00:00Z",
-      "league": "Serie A",
-      "home": "Venezia",
-      "away": "Juventus",
-      "p": [
-        0.2681,
-        0.3052,
-        0.4267
-      ],
-      "fair_odds": [
-        3.73,
-        3.28,
-        2.34
-      ],
-      "odds": [
-        6.82,
-        4.77,
-        1.47
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
+      "low_confidence": false,
       "homeForm": [
         "W",
-        "D",
         "L",
-        "D",
+        "L",
+        "W",
         "W"
       ],
       "awayForm": [
-        "W",
         "L",
-        "W",
         "D",
+        "D",
+        "L",
         "D"
       ],
       "stats": {
         "goalsPerGame": [
-          0.7,
-          1.3
+          1.4,
+          0.8
         ],
         "shots": [
-          10,
+          14,
+          12
+        ],
+        "possession": [
+          51,
+          50
+        ]
+      },
+      "ourTake": "Model projects Chelsea at 54% (1.4 goals/game vs Tottenham's 0.8). Market reference price closely reflects the home projection."
+    },
+    {
+      "id": "560612",
+      "date": "2026-10-25T14:00:00Z",
+      "league": "Premier League",
+      "home": "Liverpool",
+      "away": "Brighton",
+      "p": [
+        0.4755,
+        0.2517,
+        0.2728
+      ],
+      "fair_odds": [
+        2.1,
+        3.97,
+        3.67
+      ],
+      "odds": [
+        2.15,
+        3.75,
+        3.1
+      ],
+      "reference_source": "Unibet (UK)",
+      "featured": false,
+      "low_confidence": false,
+      "homeForm": [
+        "W",
+        "D",
+        "W",
+        "L",
+        "W"
+      ],
+      "awayForm": [
+        "L",
+        "D",
+        "W",
+        "W",
+        "W"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.5,
+          2.1
+        ],
+        "shots": [
+          16,
           13
         ],
         "possession": [
-          48,
-          48
+          51,
+          50
         ]
       },
-      "ourTake": "Model projects Juventus at 43% (1.3 goals/game vs Venezia's 0.7). Reference odds align closely with the away estimate."
+      "ourTake": "Model projects Liverpool at 48% (1.5 goals/game vs Brighton's 2.1). Shows a +2.2% value edge vs reference odds."
     },
     {
-      "id": "athlet-barcel-2025-05-25",
-      "date": "2025-05-25T17:30:00Z",
-      "league": "La Liga",
-      "home": "Athletic Club",
-      "away": "Barcelona",
+      "id": "560613",
+      "date": "2026-10-25T14:00:00Z",
+      "league": "Premier League",
+      "home": "Crystal Palace",
+      "away": "Newcastle",
       "p": [
-        0.3504,
-        0.2625,
-        0.3871
+        0.3433,
+        0.2684,
+        0.3883
       ],
       "fair_odds": [
-        2.85,
-        3.81,
+        2.91,
+        3.73,
         2.58
       ],
       "odds": [
-        3.34,
-        3.95,
-        2.1
+        2.75,
+        3.75,
+        2.38
       ],
-      "reference_source": "PSC",
+      "reference_source": "Betfred (UK)",
       "featured": false,
-      "isDemo": false,
+      "low_confidence": false,
       "homeForm": [
-        "L",
-        "W",
-        "D",
-        "W",
-        "W"
-      ],
-      "awayForm": [
-        "W",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "stats": {
-        "goalsPerGame": [
-          1.5,
-          2.5
-        ],
-        "shots": [
-          12,
-          19
-        ],
-        "possession": [
-          47,
-          55
-        ]
-      },
-      "ourTake": "Balanced fixture (Athletic Club 35%, Draw 26%, Barcelona 39%) based on multi-season Poisson ratings."
-    },
-    {
-      "id": "girona-atl-ti-2025-05-25",
-      "date": "2025-05-25T20:00:00Z",
-      "league": "La Liga",
-      "home": "Girona",
-      "away": "Atl\u00e9tico Madrid",
-      "p": [
-        0.3352,
-        0.2681,
-        0.3967
-      ],
-      "fair_odds": [
-        2.98,
-        3.73,
-        2.52
-      ],
-      "odds": [
-        3.33,
-        3.57,
-        2.23
-      ],
-      "reference_source": "PSC",
-      "featured": false,
-      "isDemo": false,
-      "homeForm": [
-        "L",
-        "D",
         "W",
         "L",
-        "W"
-      ],
-      "awayForm": [
-        "L",
-        "W",
         "D",
         "W",
         "L"
       ],
+      "awayForm": [
+        "D",
+        "W",
+        "D",
+        "L",
+        "L"
+      ],
       "stats": {
         "goalsPerGame": [
-          0.9,
-          1.7
+          1.1,
+          1.2
         ],
         "shots": [
-          11,
-          11
+          12,
+          13
         ],
         "possession": [
-          52,
-          50
+          48,
+          51
         ]
       },
-      "ourTake": "Balanced fixture (Girona 34%, Draw 27%, Atl\u00e9tico Madrid 40%) based on multi-season Poisson ratings."
+      "ourTake": "Balanced fixture (Crystal Palace 34%, Draw 27%, Newcastle 39%) based on multi-season Poisson ratings."
     },
     {
-      "id": "villar-sevill-2025-05-25",
-      "date": "2025-05-25T18:30:00Z",
-      "league": "La Liga",
-      "home": "Villarreal",
-      "away": "Sevilla",
+      "id": "560615",
+      "date": "2026-10-25T14:00:00Z",
+      "league": "Premier League",
+      "home": "Man Utd",
+      "away": "Bournemouth",
       "p": [
-        0.5451,
-        0.2369,
-        0.218
+        0.4894,
+        0.2534,
+        0.2572
       ],
       "fair_odds": [
-        1.83,
-        4.22,
-        4.59
+        2.04,
+        3.95,
+        3.89
       ],
       "odds": [
-        1.78,
-        4.08,
-        4.45
+        1.83,
+        4.0,
+        3.75
       ],
-      "reference_source": "PSC",
+      "reference_source": "Betfred (UK)",
       "featured": false,
-      "isDemo": false,
+      "low_confidence": false,
       "homeForm": [
+        "D",
         "L",
-        "W",
-        "W",
-        "W",
-        "W"
+        "D",
+        "D",
+        "D"
       ],
       "awayForm": [
         "D",
-        "L",
         "D",
+        "L",
         "L",
         "W"
       ],
       "stats": {
         "goalsPerGame": [
-          1.7,
-          1.1
+          1.9,
+          1.5
         ],
         "shots": [
-          14,
-          12
+          15,
+          14
         ],
         "possession": [
-          54,
-          49
+          50,
+          50
         ]
       },
-      "ourTake": "Model projects Villarreal at 55% (1.7 goals/game vs Sevilla's 1.1). Market reference price closely reflects the home projection."
+      "ourTake": "Model projects Man Utd at 49% (1.9 goals/game vs Bournemouth's 1.5). Market reference price closely reflects the home projection."
     }
   ],
-  "recent_comparisons": [
-    {
-      "id": "chelse-man-ut-2025-05-16",
-      "date": "2025-05-16T15:00:00Z",
-      "league": "Premier League",
-      "home": "Chelsea",
-      "away": "Man Utd",
-      "p": [
-        0.4984,
-        0.2544,
-        0.2472
-      ],
-      "odds": [
-        1.56,
-        4.7,
-        5.75
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "1 - 0",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.6963,
-      "brier": 0.3774
-    },
-    {
-      "id": "aston--totten-2025-05-16",
-      "date": "2025-05-16T15:00:00Z",
-      "league": "Premier League",
-      "home": "Aston Villa",
-      "away": "Tottenham",
-      "p": [
-        0.4498,
-        0.2382,
-        0.312
-      ],
-      "odds": [
-        1.26,
-        7.0,
-        11.0
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "2 - 0",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.799,
-      "brier": 0.4568
-    },
-    {
-      "id": "rayo-v-real-b-2025-05-15",
-      "date": "2025-05-15T15:00:00Z",
-      "league": "La Liga",
-      "home": "Rayo Vallecano",
-      "away": "Real Betis",
-      "p": [
-        0.336,
-        0.2998,
-        0.3642
-      ],
-      "odds": [
-        3.29,
-        3.37,
-        2.34
-      ],
-      "predicted_outcome": "Away",
-      "actual_score": "2 - 2",
-      "actual_outcome": "Draw",
-      "correct": false,
-      "book_favourite": "Away",
-      "book_correct": false,
-      "log_loss": 1.2047,
-      "brier": 0.7358
-    },
-    {
-      "id": "osasun-atl-ti-2025-05-15",
-      "date": "2025-05-15T15:00:00Z",
-      "league": "La Liga",
-      "home": "Osasuna",
-      "away": "Atl\u00e9tico Madrid",
-      "p": [
-        0.2787,
-        0.2703,
-        0.451
-      ],
-      "odds": [
-        3.63,
-        3.43,
-        2.17
-      ],
-      "predicted_outcome": "Away",
-      "actual_score": "2 - 0",
-      "actual_outcome": "Home",
-      "correct": false,
-      "book_favourite": "Away",
-      "book_correct": false,
-      "log_loss": 1.2775,
-      "brier": 0.7966
-    },
-    {
-      "id": "getafe-athlet-2025-05-15",
-      "date": "2025-05-15T15:00:00Z",
-      "league": "La Liga",
-      "home": "Getafe",
-      "away": "Athletic Club",
-      "p": [
-        0.2877,
-        0.3152,
-        0.3971
-      ],
-      "odds": [
-        3.34,
-        2.53,
-        3.0
-      ],
-      "predicted_outcome": "Away",
-      "actual_score": "0 - 2",
-      "actual_outcome": "Away",
-      "correct": true,
-      "book_favourite": "Draw",
-      "book_correct": false,
-      "log_loss": 0.9235,
-      "brier": 0.5456
-    },
-    {
-      "id": "espany-barcel-2025-05-15",
-      "date": "2025-05-15T15:00:00Z",
-      "league": "La Liga",
-      "home": "Espanyol",
-      "away": "Barcelona",
-      "p": [
-        0.2386,
-        0.2338,
-        0.5276
-      ],
-      "odds": [
-        7.85,
-        5.85,
-        1.36
-      ],
-      "predicted_outcome": "Away",
-      "actual_score": "0 - 2",
-      "actual_outcome": "Away",
-      "correct": true,
-      "book_favourite": "Away",
-      "book_correct": true,
-      "log_loss": 0.6394,
-      "brier": 0.3348
-    },
-    {
-      "id": "villar-legan--2025-05-14",
-      "date": "2025-05-14T15:00:00Z",
-      "league": "La Liga",
-      "home": "Villarreal",
-      "away": "Legan\u00e9s",
-      "p": [
-        0.5547,
-        0.2324,
-        0.2129
-      ],
-      "odds": [
-        1.31,
-        5.93,
-        9.99
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "3 - 0",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.5893,
-      "brier": 0.2976
-    },
-    {
-      "id": "real-m-mallor-2025-05-14",
-      "date": "2025-05-14T15:00:00Z",
-      "league": "La Liga",
-      "home": "Real Madrid",
-      "away": "Mallorca",
-      "p": [
-        0.6454,
-        0.2216,
-        0.133
-      ],
-      "odds": [
-        1.43,
-        4.97,
-        7.11
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "2 - 1",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.4379,
-      "brier": 0.1925
-    },
-    {
-      "id": "alav-s-valenc-2025-05-14",
-      "date": "2025-05-14T15:00:00Z",
-      "league": "La Liga",
-      "home": "Alav\u00e9s",
-      "away": "Valencia",
-      "p": [
-        0.399,
-        0.3005,
-        0.3005
-      ],
-      "odds": [
-        2.37,
-        2.86,
-        4.01
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "1 - 0",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.9188,
-      "brier": 0.5418
-    },
-    {
-      "id": "vallad-girona-2025-05-13",
-      "date": "2025-05-13T15:00:00Z",
-      "league": "La Liga",
-      "home": "Valladolid",
-      "away": "Girona",
-      "p": [
-        0.2671,
-        0.241,
-        0.4919
-      ],
-      "odds": [
-        5.05,
-        3.99,
-        1.72
-      ],
-      "predicted_outcome": "Away",
-      "actual_score": "0 - 1",
-      "actual_outcome": "Away",
-      "correct": true,
-      "book_favourite": "Away",
-      "book_correct": true,
-      "log_loss": 0.7095,
-      "brier": 0.3876
-    },
-    {
-      "id": "sevill-las-pa-2025-05-13",
-      "date": "2025-05-13T15:00:00Z",
-      "league": "La Liga",
-      "home": "Sevilla",
-      "away": "Las Palmas",
-      "p": [
-        0.4651,
-        0.2754,
-        0.2595
-      ],
-      "odds": [
-        1.72,
-        3.87,
-        5.25
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "1 - 0",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.7655,
-      "brier": 0.4293
-    },
-    {
-      "id": "real-s-celta-2025-05-13",
-      "date": "2025-05-13T15:00:00Z",
-      "league": "La Liga",
-      "home": "Real Sociedad",
-      "away": "Celta",
-      "p": [
-        0.4199,
-        0.2786,
-        0.3015
-      ],
-      "odds": [
-        2.29,
-        3.4,
-        3.36
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "0 - 1",
-      "actual_outcome": "Away",
-      "correct": false,
-      "book_favourite": "Home",
-      "book_correct": false,
-      "log_loss": 1.1989,
-      "brier": 0.7418
-    },
-    {
-      "id": "venezi-fioren-2025-05-12",
-      "date": "2025-05-12T15:00:00Z",
-      "league": "Serie A",
-      "home": "Venezia",
-      "away": "Fiorentina",
-      "p": [
-        0.2777,
-        0.2941,
-        0.4282
-      ],
-      "odds": [
-        2.72,
-        3.14,
-        2.88
-      ],
-      "predicted_outcome": "Away",
-      "actual_score": "2 - 1",
-      "actual_outcome": "Home",
-      "correct": false,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 1.2812,
-      "brier": 0.7916
-    },
-    {
-      "id": "atalan-roma-2025-05-12",
-      "date": "2025-05-12T15:00:00Z",
-      "league": "Serie A",
-      "home": "Atalanta",
-      "away": "Roma",
-      "p": [
-        0.4705,
-        0.2698,
-        0.2597
-      ],
-      "odds": [
-        2.07,
-        3.48,
-        3.86
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "2 - 1",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.754,
-      "brier": 0.4206
-    },
-    {
-      "id": "real-b-osasun-2025-05-11",
-      "date": "2025-05-11T15:00:00Z",
-      "league": "La Liga",
-      "home": "Real Betis",
-      "away": "Osasuna",
-      "p": [
-        0.5209,
-        0.2531,
-        0.226
-      ],
-      "odds": [
-        1.65,
-        4.01,
-        5.57
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "1 - 1",
-      "actual_outcome": "Draw",
-      "correct": false,
-      "book_favourite": "Home",
-      "book_correct": false,
-      "log_loss": 1.3739,
-      "brier": 0.8802
-    },
-    {
-      "id": "legan--espany-2025-05-11",
-      "date": "2025-05-11T15:00:00Z",
-      "league": "La Liga",
-      "home": "Legan\u00e9s",
-      "away": "Espanyol",
-      "p": [
-        0.388,
-        0.2889,
-        0.3231
-      ],
-      "odds": [
-        2.34,
-        3.24,
-        3.43
-      ],
-      "predicted_outcome": "Home",
-      "actual_score": "3 - 2",
-      "actual_outcome": "Home",
-      "correct": true,
-      "book_favourite": "Home",
-      "book_correct": true,
-      "log_loss": 0.9466,
-      "brier": 0.5623
-    }
-  ]
+  "recent_comparisons": []
 }

@@ -1,5 +1,5 @@
 {
-  "status": "error",
-  "timestamp": "2026-10-21T12:17:45Z",
-  "message": "API-Football request failed: <urlopen error [Errno 11001] getaddrinfo failed>"
+  "status": "ok",
+  "timestamp": "2026-10-21T12:23:02Z",
+  "message": "Published 6 verified upcoming predictions (6809 bytes)."
 }

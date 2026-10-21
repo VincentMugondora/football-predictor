@@ -28,5 +28,23 @@
       "Real Sociedad",
       "Hellas Verona"
     ]
+  },
+  {
+    "provider": "The Odds API",
+    "name": "Ipswich Town",
+    "suggestions": [
+      "Ipswich",
+      "Brighton",
+      "Aston Villa"
+    ]
+  },
+  {
+    "provider": "The Odds API",
+    "name": "Leeds United",
+    "suggestions": [
+      "Leeds",
+      "Sunderland",
+      "Man Utd"
+    ]
   }
 ]
