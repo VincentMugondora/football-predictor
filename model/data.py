@@ -185,14 +185,9 @@ def load_historical_matches(
     """Loads and combines all league/season CSVs into a single chronological DataFrame."""
     frames: list[pd.DataFrame] = []
     for league in leagues:
-        existing_for_league = [
-            raw_dir / f"{league}_{s}.csv"
-            for s in seasons
-            if (raw_dir / f"{league}_{s}.csv").exists()
-        ]
         for season in seasons:
             csv_path = raw_dir / f"{league}_{season}.csv"
-            if not csv_path.exists() and download_missing and len(existing_for_league) == 0:
+            if not csv_path.exists() and download_missing:
                 try:
                     download_season_csv(league, season, raw_dir=raw_dir)
                 except Exception as exc:

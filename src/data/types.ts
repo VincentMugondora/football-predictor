@@ -50,9 +50,9 @@ export interface MatchResultComparison {
 export interface BacktestSummary {
   verdict: string;
   log_loss_model: number;
-  log_loss_book: number;
+  log_loss_book: number | null;
   test_matches?: number;
-  gap?: number;
+  gap?: number | null;
   verdict_code?: string;
   clv_mean?: number;
   recent_evaluated?: number;

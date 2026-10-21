@@ -135,7 +135,10 @@ export function PicksScreen() {
       return <DisclaimerFooter />;
     }
 
-    const backtestSubtitle = `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${payload.backtest.log_loss_book.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
+    const marketLoss = payload.backtest.log_loss_book;
+    const backtestSubtitle = marketLoss === null
+      ? `Model log-loss ${payload.backtest.log_loss_model.toFixed(3)} • Market reference unavailable • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`
+      : `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${marketLoss.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
 
     return (
       <View style={styles.footerBlock}>

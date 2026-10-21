@@ -47,11 +47,11 @@ def multiclass_brier_score(
 class BacktestReport:
     test_matches: int
     log_loss_model: float
-    log_loss_book: float
+    log_loss_book: float | None
     log_loss_baseline: float
     brier_model: float
-    brier_book: float
-    gap: float
+    brier_book: float | None
+    gap: float | None
     verdict: str  # "no_edge" | "level" | "ahead"
     verdict_message: str
     clv_mean: float
@@ -149,17 +149,17 @@ def run_walk_forward_backtest(
 
     test_matches = len(model_losses)
     ll_model = float(np.mean(model_losses))
-    ll_book = float(np.mean(book_losses)) if book_losses else float("nan")
+    ll_book = float(np.mean(book_losses)) if book_losses else None
     ll_base = float(np.mean(base_losses))
     br_model = float(np.mean(model_briers))
-    br_book = float(np.mean(book_briers)) if book_briers else float("nan")
-    gap = ll_model - ll_book if math.isfinite(ll_book) else float("nan")
+    br_book = float(np.mean(book_briers)) if book_briers else None
+    gap = ll_model - ll_book if ll_book is not None else None
 
     # Gate G1 & G2 verdict rule (Section 2 Rule 7 & Section 6)
-    if test_matches >= 1500 and math.isfinite(gap) and gap <= 0.0:
+    if test_matches >= 1500 and gap is not None and gap <= 0.0:
         verdict = "ahead"
         verdict_message = f"Model beats closing market log-loss over {test_matches:,} test matches"
-    elif test_matches >= 1500 and math.isfinite(gap) and gap <= 0.002:
+    elif test_matches >= 1500 and gap is not None and gap <= 0.002:
         verdict = "level"
         verdict_message = f"Model is level with market log-loss over {test_matches:,} test matches"
     else:
@@ -183,11 +183,11 @@ def run_walk_forward_backtest(
     report = BacktestReport(
         test_matches=test_matches,
         log_loss_model=round(ll_model, 4),
-        log_loss_book=round(ll_book, 4),
+        log_loss_book=round(ll_book, 4) if ll_book is not None else None,
         log_loss_baseline=round(ll_base, 4),
         brier_model=round(br_model, 4),
-        brier_book=round(br_book, 4),
-        gap=round(gap, 4),
+        brier_book=round(br_book, 4) if br_book is not None else None,
+        gap=round(gap, 4) if gap is not None else None,
         verdict=verdict,
         verdict_message=verdict_message,
         clv_mean=round(clv_mean, 4),

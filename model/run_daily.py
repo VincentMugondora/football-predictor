@@ -147,6 +147,11 @@ def build_picks_payload(
         p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
 
         if idx >= eval_start_idx:
+            raw_odds = (getattr(row, "OddsH", None), getattr(row, "OddsD", None), getattr(row, "OddsA", None))
+            if not all(pd.notna(value) and float(value) > 1 for value in raw_odds):
+                # Keep learning from verified scores, but do not fabricate market comparisons.
+                trained_model.observe_match(div, home, away, int(row.FTHG), int(row.FTAG))
+                continue
             # If this match was previously saved in pred_history before kickoff, use that exact stored prediction
             stored = pred_history.get(match_id)
             if stored and isinstance(stored.get("p"), list) and len(stored["p"]) == 3:
@@ -377,7 +382,7 @@ def run_daily_pipeline(
                                       reference_odds=odds_by_fixture,
                                       odds_credits_remaining=credits_remaining)
 
-        serialized = json.dumps(payload, indent=2)
+        serialized = json.dumps(payload, indent=2, allow_nan=False)
         byte_len = len(serialized.encode("utf-8"))
         if byte_len > config.MAX_PICKS_JSON_BYTES:
             raise ValueError(
