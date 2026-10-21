@@ -119,19 +119,16 @@ def test_walk_forward_backtest_and_picks_payload_schema() -> None:
     assert report.log_loss_model > 0
     assert report.log_loss_book > 0
 
-    payload = build_picks_payload(df, report, max_matches=6, max_comparisons=6)
+    payload = build_picks_payload(df, report, max_matches=6)
     serialized = json.dumps(payload)
     assert len(serialized.encode("utf-8")) < config.MAX_PICKS_JSON_BYTES
     assert payload["schema_version"] == "1.1"
     for match in payload["matches"]:
         assert math.isclose(sum(match["p"]), 1.0, abs_tol=1e-3)
         assert match["isDemo"] is False
-    assert len(payload["recent_comparisons"]) == 6
-    for comp in payload["recent_comparisons"]:
-        assert comp["predicted_outcome"] in ("Home", "Draw", "Away")
-        assert comp["actual_outcome"] in ("Home", "Draw", "Away")
-        assert isinstance(comp["correct"], bool)
-        assert "-" in comp["actual_score"]
+    assert payload["data_status"] == "no_fixtures"
+    assert payload["matches"] == []
+    assert payload["recent_comparisons"] == []
 
 
 def test_remove_bookmaker_margin() -> None:

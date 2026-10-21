@@ -1,4 +1,4 @@
-"""Daily model training, fixture prediction, post-match result comparison, and picks.json publisher."""
+"""Daily real-data training, fixture prediction, backtest, and picks publisher."""
 
 from __future__ import annotations
 
@@ -17,11 +17,8 @@ except ImportError:  # Keys may also be injected directly by the scheduler.
 from model import config
 from model.backtest import (
     BacktestReport,
-    multiclass_brier_score,
-    multiclass_log_loss,
     run_walk_forward_backtest,
 )
-from model.data import load_historical_matches
 from model.model import OnlinePoissonModel
 from model.providers.base import Fixture
 from model.providers.api_football import ApiFootballProvider
@@ -31,43 +28,6 @@ from model.providers.the_odds_api import TheOddsApiProvider
 
 SCHEMA_VERSION = "2.0"
 MODEL_VERSION = "poisson-dc-v2.0"
-OUTCOME_LABELS = ("Home", "Draw", "Away")
-
-
-def _ftr_to_outcome_label(ftr: str) -> str:
-    if ftr == "H":
-        return "Home"
-    if ftr == "D":
-        return "Draw"
-    return "Away"
-
-
-def _top_outcome_label(probs: tuple[float, float, float] | list[float]) -> str:
-    best_idx = int(max(range(3), key=lambda i: probs[i]))
-    return OUTCOME_LABELS[best_idx]
-
-
-def _load_predictions_history(history_path: Path) -> dict[str, dict[str, object]]:
-    if not history_path.exists():
-        return {}
-    try:
-        data = json.loads(history_path.read_text(encoding="utf-8"))
-        if isinstance(data, dict):
-            return data
-    except Exception:
-        pass
-    return {}
-
-
-def _save_predictions_history(
-    history: dict[str, dict[str, object]], history_path: Path
-) -> None:
-    history_path.parent.mkdir(parents=True, exist_ok=True)
-    # Keep most recent 400 predictions so history file stays compact
-    items = list(history.items())[-400:]
-    history_path.write_text(json.dumps(dict(items), indent=2), encoding="utf-8")
-
-
 def _build_our_take(
     home: str,
     away: str,
@@ -112,8 +72,6 @@ def build_picks_payload(
     df_hist: pd.DataFrame,
     report: BacktestReport,
     max_matches: int = 100,
-    max_comparisons: int = 16,
-    history_path: Path = config.PREDICTIONS_HISTORY_PATH,
     fixtures: list[Fixture] | None = None,
     reference_odds: dict[str, dict[str, object]] | None = None,
     odds_credits_remaining: int | None = None,
