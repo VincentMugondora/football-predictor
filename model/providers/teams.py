@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from difflib import get_close_matches
+from difflib import SequenceMatcher
 from pathlib import Path
 
 from model import config
@@ -16,7 +16,7 @@ def clean_team_name(name: str) -> str:
 
 
 def canonical_team(name: str, provider: str = "unknown") -> str:
-    """Apply reviewed aliases; otherwise preserve the cleaned name for later validation."""
+    """Apply known aliases; callers must validate cross-source identities against ratings."""
     cleaned = clean_team_name(name)
     mapping = config.TEAM_ALIASES
     if cleaned in mapping:
@@ -35,7 +35,11 @@ def record_unmatched_team_names(names: list[str], provider: str, known_names: se
             entries = []
     for name in sorted(set(names)):
         cleaned = clean_team_name(name)
-        suggestions = get_close_matches(cleaned, sorted(known_names), n=3, cutoff=0.35)
+        suggestions = sorted(
+            known_names,
+            key=lambda candidate: (SequenceMatcher(None, cleaned.casefold(), candidate.casefold()).ratio(), candidate.casefold()),
+            reverse=True,
+        )[:3]
         item = {"provider": provider, "name": cleaned, "suggestions": suggestions}
         entries = [entry for entry in entries if not (entry.get("provider") == provider and entry.get("name") == cleaned)]
         entries.append(item)

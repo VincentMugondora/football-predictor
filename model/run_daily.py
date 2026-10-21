@@ -77,7 +77,7 @@ def validate_fixtures_against_history(
         for raw, name in zip(original, normalized):
             if name in league_teams:
                 resolved.append(name)
-            elif raw in config.TEAM_ALIASES or name in config.TEAM_ALIASES.values():
+            elif raw in config.TEAM_ALIASES:
                 # Explicit aliases identify promoted/recently renamed teams even without match history.
                 resolved.append(name)
             else:
@@ -110,13 +110,13 @@ def validate_results_against_history(
         league_teams = history_by_league.get(str(row["Div"]), set())
         names = [clean_team_name(row["HomeTeam"]), clean_team_name(row["AwayTeam"])]
         canonical = [canonical_team(name, provider_name) for name in names]
-        if all(name in league_teams or raw in config.TEAM_ALIASES or name in config.TEAM_ALIASES.values()
+        if all(name in league_teams or raw in config.TEAM_ALIASES
                for raw, name in zip(names, canonical)):
             keep.append(index)
             normalized_rows[index] = (canonical[0], canonical[1])
         else:
             unmatched.extend(raw for raw, name in zip(names, canonical)
-                             if name not in league_teams and raw not in config.TEAM_ALIASES and name not in config.TEAM_ALIASES.values())
+                             if name not in league_teams and raw not in config.TEAM_ALIASES)
     if unmatched:
         record_unmatched_team_names(unmatched, provider_name, known_all)
         for name in sorted(set(unmatched)):

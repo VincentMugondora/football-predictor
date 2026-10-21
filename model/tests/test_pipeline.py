@@ -46,6 +46,7 @@ def test_unknown_fixture_names_are_collected_skipped_and_suggested(tmp_path: Pat
     assert accepted == []
     review = json.loads((tmp_path / "team_names_review.json").read_text(encoding="utf-8"))
     assert {entry["name"] for entry in review} == {"Arsenal United", "Unknown FC"}
+    assert all(entry["suggestions"] for entry in review)
     arsenal_entry = next(entry for entry in review if entry["name"] == "Arsenal United")
     assert "Arsenal" in arsenal_entry["suggestions"]
 
