@@ -39,7 +39,7 @@ OddsPapi is a fallback candidate only. Public claims of 250 requests/month and P
 
 ## Decision
 
-The integration uses football-data.org as the fixtures/results provider and The Odds API as an optional reference-price provider. Neither has passed account-specific verification because credentials and network access were unavailable. Football-Data.co.uk downloads are disabled by default; enable only after resolving the source's stated training-use restrictions. Odds are optional, so no invented price is emitted when the source is unavailable.
+The integration uses football-data.org as the primary fixtures/results provider, API-Football as a configured fallback, and The Odds API as an optional reference-price provider. None has passed account-specific verification because credentials and network access were unavailable. Football-Data.co.uk downloads are disabled by default; enable only after resolving the source's stated training-use restrictions. Odds are optional, so no invented price is emitted when the source is unavailable.
 
 ## Sources
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -25,6 +24,7 @@ from model.backtest import (
 from model.data import load_historical_matches
 from model.model import OnlinePoissonModel
 from model.providers.base import Fixture
+from model.providers.api_football import ApiFootballProvider
 from model.providers.football_data_csv import FootballDataCsvProvider
 from model.providers.football_data_org import FootballDataOrgProvider
 from model.providers.the_odds_api import TheOddsApiProvider
@@ -118,6 +118,7 @@ def build_picks_payload(
     reference_odds: dict[str, dict[str, object]] | None = None,
     odds_credits_remaining: int | None = None,
     odds_credits_used: int = 0,
+    sources_used: list[str] | None = None,
 ) -> dict[str, object]:
     """
     1. Walks chronologically through historical matches, predicting each match strictly BEFORE
@@ -215,7 +216,7 @@ def build_picks_payload(
         "generated_at": now_utc,
         "model_version": MODEL_VERSION,
         "data_status": "ok" if matches_out else "no_fixtures",
-        "sources_used": ["football-data.org v4", "football-data.co.uk CSV cache"],
+        "sources_used": sources_used or ["football-data.org v4", "football-data.co.uk CSV cache"],
         "odds_credits_remaining": odds_credits_remaining,
         "odds_credits_used": odds_credits_used,
         "backtest": {
@@ -261,10 +262,25 @@ def run_daily_pipeline(
         if load_dotenv is not None:
             load_dotenv(config.REPO_ROOT / ".env", override=False)
         df_hist = FootballDataCsvProvider().load()
-        provider = FootballDataOrgProvider()
+        try:
+            provider: FootballDataOrgProvider | ApiFootballProvider = FootballDataOrgProvider()
+            fixtures_source = "football-data.org v4"
+        except RuntimeError:
+            if not os.getenv("API_FOOTBALL_KEY"):
+                raise
+            provider = ApiFootballProvider()
+            fixtures_source = "API-Football"
         now = datetime.now(timezone.utc)
         max_history = pd.to_datetime(df_hist["Date"], utc=True).max().to_pydatetime() if not df_hist.empty else now - timedelta(days=3650)
-        recent_results = provider.get_finished(max_history, now)
+        try:
+            recent_results = provider.get_finished(max_history, now)
+        except Exception:
+            if isinstance(provider, FootballDataOrgProvider) and os.getenv("API_FOOTBALL_KEY"):
+                provider = ApiFootballProvider()
+                fixtures_source = "API-Football"
+                recent_results = provider.get_finished(max_history, now)
+            else:
+                raise
         if not recent_results.empty:
             recent_results["Date"] = pd.to_datetime(recent_results["Date"], utc=True).dt.tz_localize(None)
             for col in ("OddsH", "OddsD", "OddsA", "HS", "AS"):
@@ -274,7 +290,15 @@ def run_daily_pipeline(
             df_hist = df_hist.drop_duplicates(subset=["Div", "Date", "HomeTeam", "AwayTeam"], keep="last")
             df_hist = df_hist.sort_values(["Date", "Div", "HomeTeam", "AwayTeam"]).reset_index(drop=True)
         report, _ = run_walk_forward_backtest(df_hist)
-        fixtures = provider.get_fixtures(now, now + timedelta(days=7))
+        try:
+            fixtures = provider.get_fixtures(now, now + timedelta(days=7))
+        except Exception:
+            if isinstance(provider, FootballDataOrgProvider) and os.getenv("API_FOOTBALL_KEY"):
+                provider = ApiFootballProvider()
+                fixtures_source = "API-Football"
+                fixtures = provider.get_fixtures(now, now + timedelta(days=7))
+            else:
+                raise
         odds_by_fixture: dict[str, dict[str, object]] = {}
         credits_remaining = None
         credits_used = 0
@@ -295,7 +319,8 @@ def run_daily_pipeline(
         payload = build_picks_payload(df_hist, report, fixtures=fixtures,
                                       reference_odds=odds_by_fixture,
                                       odds_credits_remaining=credits_remaining,
-                                      odds_credits_used=credits_used)
+                                      odds_credits_used=credits_used,
+                                      sources_used=[fixtures_source, "football-data.co.uk CSV cache"])
 
         serialized = json.dumps(payload, indent=2, allow_nan=False)
         byte_len = len(serialized.encode("utf-8"))
