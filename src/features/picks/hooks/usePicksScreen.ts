@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { picksRepository } from '@/data/picksRepository';
+import { PicksLoadError, picksRepository } from '@/data/picksRepository';
 import { useAppStore } from '@/data/store';
 import { MatchPick, OutcomeKey, PicksPayload } from '@/data/types';
 import {
@@ -22,6 +22,11 @@ export interface MatchListItem {
   id: string;
   match: MatchPick;
   dayHeader?: string;
+}
+
+function getPicksErrorMessage(error: unknown): string {
+  if (error instanceof PicksLoadError) return error.message;
+  return 'The picks could not be loaded because of an unexpected app error. Try again.';
 }
 
 export function usePicksScreen() {
@@ -50,11 +55,9 @@ export function usePicksScreen() {
           setIsLoading(false);
         }
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (!isCancelled) {
-          setErrorMessage(
-            'Could not load match predictions. Check your local data cache.'
-          );
+          setErrorMessage(getPicksErrorMessage(error));
           setIsLoading(false);
         }
       });
@@ -70,8 +73,8 @@ export function usePicksScreen() {
     try {
       const data = await picksRepository.getPicks();
       setPayload(data);
-    } catch {
-      setErrorMessage('Could not load match predictions. Check your local data cache.');
+    } catch (error) {
+      setErrorMessage(getPicksErrorMessage(error));
     } finally {
       setIsLoading(false);
     }

@@ -5,6 +5,47 @@ import { MatchPick, PicksPayload, PicksRepository } from '@/data/types';
 const CACHE_KEY = 'football-predictor-live-picks-v1';
 const PICKS_URL = process.env.EXPO_PUBLIC_PICKS_URL;
 const REQUEST_TIMEOUT_MS = 12_000;
+const MAX_PICKS_BYTES = 50 * 1024;
+
+export type PicksLoadErrorKind =
+  | 'url_not_configured'
+  | 'network_unreachable'
+  | 'timeout'
+  | 'http_status'
+  | 'invalid_json'
+  | 'schema_validation_failed';
+
+export class PicksLoadError extends Error {
+  readonly name = 'PicksLoadError';
+
+  constructor(
+    readonly kind: PicksLoadErrorKind,
+    message: string,
+    readonly url: string | null,
+    readonly field?: string,
+    readonly status?: number
+  ) {
+    super(message);
+  }
+}
+
+type PicksStorage = Pick<typeof AsyncStorage, 'getItem' | 'setItem' | 'removeItem'>;
+
+interface RepositoryOptions {
+  url?: string;
+  request?: typeof fetch;
+  storage?: PicksStorage;
+  timeoutMs?: number;
+}
+
+function schemaFailure(field: string, url: string): never {
+  throw new PicksLoadError(
+    'schema_validation_failed',
+    `The picks data failed validation at “${field}”. Ask the publisher to check this field.`,
+    url,
+    field
+  );
+}
 
 function isFiniteTuple(value: unknown): value is [number, number, number] {
   return (
@@ -14,47 +55,73 @@ function isFiniteTuple(value: unknown): value is [number, number, number] {
   );
 }
 
-function validatePayload(value: unknown): PicksPayload {
-  if (!value || typeof value !== 'object') {
-    throw new Error('The live picks response is not an object.');
+function utf8ByteLength(value: string): number {
+  return encodeURIComponent(value).replace(/%[A-F\d]{2}/gi, 'U').length;
+}
+
+function validatePayload(value: unknown, url: string): PicksPayload {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new PicksLoadError(
+      'schema_validation_failed',
+      'The picks data failed validation at “root”. The response must be a JSON object.',
+      url,
+      'root'
+    );
   }
   const candidate = value as Partial<PicksPayload>;
-  if (
-    typeof candidate.generated_at !== 'string' ||
-    !Number.isFinite(Date.parse(candidate.generated_at)) ||
-    !Array.isArray(candidate.matches) ||
-    !candidate.backtest ||
-    typeof candidate.backtest.verdict !== 'string'
-  ) {
-    throw new Error('The live picks response is missing required fields.');
+  const generatedAt = candidate.generated_at;
+  if (typeof generatedAt !== 'string' || !Number.isFinite(Date.parse(generatedAt))) {
+    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “generated_at” field.', url, 'generated_at');
   }
-  for (const match of candidate.matches) {
+  if (!Array.isArray(candidate.matches)) {
+    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “matches” field.', url, 'matches');
+  }
+  if (!candidate.backtest || typeof candidate.backtest !== 'object') {
+    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “backtest” field.', url, 'backtest');
+  }
+  if (typeof candidate.backtest.verdict !== 'string') {
+    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “backtest.verdict” field.', url, 'backtest.verdict');
+  }
+
+  candidate.matches.forEach((match, index) => {
+    const prefix = `matches[${index}]`;
+    if (!match || typeof match !== 'object') schemaFailure(`${prefix}`, url);
+    if (typeof match.id !== 'string' || !match.id) schemaFailure(`${prefix}.id`, url);
+    if (typeof match.date !== 'string' || !Number.isFinite(Date.parse(match.date))) schemaFailure(`${prefix}.date`, url);
+    if (typeof match.league !== 'string') schemaFailure(`${prefix}.league`, url);
+    if (typeof match.home !== 'string') schemaFailure(`${prefix}.home`, url);
+    if (typeof match.away !== 'string') schemaFailure(`${prefix}.away`, url);
+    if (match.low_confidence !== undefined && typeof match.low_confidence !== 'boolean') {
+      schemaFailure(`${prefix}.low_confidence`, url);
+    }
     if (
-      !match ||
-      typeof match.id !== 'string' ||
-      !match.id ||
-      typeof match.date !== 'string' ||
-      !Number.isFinite(Date.parse(match.date)) ||
-      typeof match.league !== 'string' ||
-      typeof match.home !== 'string' ||
-      typeof match.away !== 'string' ||
-      (match.low_confidence !== undefined && typeof match.low_confidence !== 'boolean') ||
       !isFiniteTuple(match.p) ||
       !match.p.every((probability) => probability >= 0 && probability <= 1) ||
-      Math.abs(match.p.reduce((sum, probability) => sum + probability, 0) - 1) > 0.002 ||
-      (match.odds !== null && !isFiniteTuple(match.odds))
+      Math.abs(match.p.reduce((sum, probability) => sum + probability, 0) - 1) > 0.002
     ) {
-      throw new Error('The live picks response contains an invalid match.');
+      schemaFailure(`${prefix}.p`, url);
     }
-    if (Date.parse(match.date) <= Date.parse(candidate.generated_at)) {
-      throw new Error('The live picks response contains a fixture that kicked off before publication.');
+    if (match.odds !== null && !isFiniteTuple(match.odds)) schemaFailure(`${prefix}.odds`, url);
+    if (Date.parse(match.date) <= Date.parse(generatedAt)) {
+      schemaFailure(`${prefix}.date`, url);
     }
-  }
+  });
   return candidate as PicksPayload;
 }
 
-class LivePicksRepository implements PicksRepository {
+export class LivePicksRepository implements PicksRepository {
   private cached: PicksPayload | null = null;
+  private readonly url: string | undefined;
+  private readonly request: typeof fetch;
+  private readonly storage: PicksStorage;
+  private readonly timeoutMs: number;
+
+  constructor(options: RepositoryOptions = {}) {
+    this.url = options.url ?? PICKS_URL;
+    this.request = options.request ?? fetch;
+    this.storage = options.storage ?? AsyncStorage;
+    this.timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
+  }
 
   getCachedPicks(): PicksPayload {
     return (
@@ -74,34 +141,76 @@ class LivePicksRepository implements PicksRepository {
   }
 
   async getPicks(): Promise<PicksPayload> {
-    const cached = await AsyncStorage.getItem(CACHE_KEY);
-    if (cached) {
-      try {
-        this.cached = validatePayload(JSON.parse(cached));
-      } catch {
-        await AsyncStorage.removeItem(CACHE_KEY);
-      }
-    }
-
-    if (!PICKS_URL) {
-      if (this.cached) return this.cached;
-      throw new Error('Set EXPO_PUBLIC_PICKS_URL to the published picks.json URL.');
-    }
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const response = await fetch(PICKS_URL, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Picks server returned HTTP ${response.status}.`);
-      const payload = validatePayload(await response.json());
+      const cached = await this.storage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          this.cached = validatePayload(JSON.parse(cached), this.url ?? '');
+        } catch {
+          await this.storage.removeItem(CACHE_KEY).catch(() => undefined);
+          this.cached = null;
+        }
+      }
+    } catch {
+      // A storage failure should not prevent trying the live endpoint.
+    }
+
+    if (!this.url?.trim()) {
+      if (this.cached) return this.cached;
+      const error = new PicksLoadError(
+        'url_not_configured',
+        'The picks URL is not configured. Set EXPO_PUBLIC_PICKS_URL and rebuild the app.',
+        null
+      );
+      console.error('[picks] URL not configured; expected EXPO_PUBLIC_PICKS_URL.');
+      throw error;
+    }
+
+    const requestedUrl = this.url;
+    console.info(`[picks] Requesting exact URL: ${requestedUrl}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      let response: Response;
+      try {
+        response = await this.request(requestedUrl, { signal: controller.signal });
+      } catch (cause) {
+        if ((cause as { name?: string })?.name === 'AbortError') {
+          throw new PicksLoadError('timeout', 'The picks server took too long to respond. Try again when your connection is better.', requestedUrl);
+        }
+        throw new PicksLoadError('network_unreachable', 'The picks server could not be reached. Check your internet connection and try again.', requestedUrl);
+      }
+      if (!response.ok) {
+        throw new PicksLoadError(
+          'http_status',
+          `The picks server returned HTTP ${response.status}. Try again later or contact the publisher.`,
+          requestedUrl,
+          undefined,
+          response.status
+        );
+      }
+
+      let body: unknown;
+      try {
+        body = await response.json();
+      } catch {
+        throw new PicksLoadError('invalid_json', 'The picks server returned invalid JSON. Contact the publisher.', requestedUrl);
+      }
+      const payload = validatePayload(body, requestedUrl);
       const serialized = JSON.stringify(payload);
-      if (serialized.length > 50 * 1024) throw new Error('Picks response exceeds 50 KB.');
+      if (utf8ByteLength(serialized) > MAX_PICKS_BYTES) {
+        throw new PicksLoadError('schema_validation_failed', 'The picks data failed validation at “payload_size” (over 50 KB).', requestedUrl, 'payload_size');
+      }
       this.cached = payload;
-      await AsyncStorage.setItem(CACHE_KEY, serialized);
+      await this.storage.setItem(CACHE_KEY, serialized).catch(() => undefined);
       return payload;
     } catch (error) {
+      const typedError = error instanceof PicksLoadError
+        ? error
+        : new PicksLoadError('network_unreachable', 'The picks server could not be reached. Check your internet connection and try again.', requestedUrl);
+      console.error('[picks] Request failed:', { url: requestedUrl, kind: typedError.kind, message: typedError.message });
       if (this.cached) return this.cached;
-      throw error;
+      throw typedError;
     } finally {
       clearTimeout(timeout);
     }

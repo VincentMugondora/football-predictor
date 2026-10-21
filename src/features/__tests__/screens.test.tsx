@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
 
 import { useAppStore } from '@/data/store';
+import { PicksLoadError, picksRepository } from '@/data/picksRepository';
 import { BetLogScreen } from '@/features/betLog/screens/BetLogScreen';
 import { FavouritesScreen } from '@/features/picks/screens/FavouritesScreen';
 import { MatchDetailScreen } from '@/features/picks/screens/MatchDetailScreen';
@@ -48,6 +49,10 @@ describe('Tab Screen Render Tests', () => {
     useAppStore.getState().resetStoreToDefaults();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('renders PicksScreen with backtest verdict banner, featured match, and compliance footer', async () => {
     await render(<PicksScreen />);
 
@@ -58,6 +63,17 @@ describe('Tab Screen Render Tests', () => {
     expect(
       screen.getByText('Estimates, not advice. Only bet money you can afford to lose.')
     ).toBeTruthy();
+  });
+
+  it('shows the repository’s specific plain-language error on the Picks screen', async () => {
+    const message = 'The picks server returned HTTP 503. Try again later or contact the publisher.';
+    jest.spyOn(picksRepository, 'getPicks').mockRejectedValueOnce(
+      new PicksLoadError('http_status', message, 'https://example.test/picks.json', undefined, 503)
+    );
+
+    await render(<PicksScreen />);
+
+    expect(await screen.findByText(message)).toBeTruthy();
   });
 
   it('renders PredictionsScreen with backtest verdict banner and real match probability bars', async () => {
