@@ -1,6 +1,7 @@
 """Configuration for the MatchSense football model and daily pipeline."""
 
 from pathlib import Path
+import os
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MODEL_DIR = REPO_ROOT / "model"
@@ -92,3 +93,40 @@ TEAM_NAME_MAP: dict[str, str] = {
     "FC Koln": "Köln",
     "Mainz": "Mainz 05",
 }
+
+# Provider names resolve only through this explicit alias table. Expand it after
+# reviewing model/data/team_names_review.json; do not add fuzzy fallbacks.
+TEAM_ALIASES = dict(TEAM_NAME_MAP)
+TEAM_ALIASES.update({
+    "Manchester United FC": "Man Utd", "Man Utd": "Man Utd",
+    "Manchester City FC": "Man City", "Man City": "Man City",
+    "Tottenham Hotspur FC": "Tottenham", "Tottenham": "Tottenham",
+    "Wolverhampton Wanderers FC": "Wolves", "Wolves": "Wolves",
+    "Brighton & Hove Albion FC": "Brighton", "Brighton": "Brighton",
+    "Newcastle United FC": "Newcastle", "Newcastle": "Newcastle",
+    "West Ham United FC": "West Ham", "West Ham": "West Ham",
+    "Arsenal FC": "Arsenal", "Arsenal": "Arsenal", "Liverpool FC": "Liverpool", "Liverpool": "Liverpool",
+    "Chelsea FC": "Chelsea", "Chelsea": "Chelsea", "Everton FC": "Everton", "Everton": "Everton",
+    "Aston Villa FC": "Aston Villa", "Aston Villa": "Aston Villa",
+    "Nottingham Forest FC": "Nottingham Forest", "Nottingham Forest": "Nottingham Forest",
+    "Fulham FC": "Fulham", "Fulham": "Fulham", "Brentford FC": "Brentford", "Brentford": "Brentford",
+    "Crystal Palace FC": "Crystal Palace", "Crystal Palace": "Crystal Palace",
+    "AFC Bournemouth": "Bournemouth", "Bournemouth": "Bournemouth",
+    "Leicester City FC": "Leicester", "Leicester": "Leicester", "Ipswich Town FC": "Ipswich", "Ipswich": "Ipswich",
+    "Southampton FC": "Southampton", "Southampton": "Southampton", "Leeds United FC": "Leeds", "Leeds": "Leeds",
+    "Burnley FC": "Burnley", "Burnley": "Burnley", "Sunderland AFC": "Sunderland", "Sunderland": "Sunderland",
+    "Real Madrid CF": "Real Madrid", "Real Madrid": "Real Madrid", "FC Barcelona": "Barcelona", "Barcelona": "Barcelona",
+    "Atlético de Madrid": "Atlético Madrid", "Atlético Madrid": "Atlético Madrid",
+    "Real Sociedad de Fútbol": "Real Sociedad", "Real Sociedad": "Real Sociedad",
+    "Real Betis Balompié": "Real Betis", "Real Betis": "Real Betis",
+    "FC Bayern München": "Bayern Munich", "Bayern Munich": "Bayern Munich",
+    "Borussia Dortmund": "Dortmund", "Dortmund": "Dortmund", "Bayer 04 Leverkusen": "Bayer Leverkusen",
+    "Bayer Leverkusen": "Bayer Leverkusen", "Eintracht Frankfurt": "Eintracht Frankfurt",
+    "RB Leipzig": "RB Leipzig", "VfB Stuttgart": "Stuttgart", "VfL Wolfsburg": "Wolfsburg", "SC Freiburg": "Freiburg",
+    "FC Internazionale Milano": "Inter", "Inter": "Inter", "AC Milan": "Milan", "Milan": "Milan",
+    "Juventus FC": "Juventus", "Juventus": "Juventus", "AS Roma": "Roma", "Roma": "Roma",
+    "SSC Napoli": "Napoli", "Napoli": "Napoli", "Atalanta BC": "Atalanta", "Atalanta": "Atalanta",
+    "AFC Ajax": "Ajax", "Ajax": "Ajax", "PSV": "PSV", "Feyenoord": "Feyenoord",
+})
+
+ALLOW_FOOTBALL_DATA_DOWNLOADS = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"
