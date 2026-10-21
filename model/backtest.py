@@ -100,11 +100,13 @@ def run_walk_forward_backtest(
         fthg = int(row.FTHG)
         ftag = int(row.FTAG)
         ftr = str(row.FTR)
-        odds_tuple = (float(row.OddsH), float(row.OddsD), float(row.OddsA))
+        raw_odds = (getattr(row, "OddsH", np.nan), getattr(row, "OddsD", np.nan), getattr(row, "OddsA", np.nan))
+        has_odds = all(pd.notna(value) and float(value) > 1.0 for value in raw_odds)
+        odds_tuple = tuple(float(value) for value in raw_odds) if has_odds else None
 
         # 1. Predict BEFORE observing result
         p_model = model.predict_proba(league, home, away)
-        p_book = remove_bookmaker_margin(odds_tuple[0], odds_tuple[1], odds_tuple[2])
+        p_book = remove_bookmaker_margin(*odds_tuple) if odds_tuple else None
 
         counts = league_counts.get(league, [45, 27, 28])
         c_sum = float(sum(counts))
@@ -112,14 +114,16 @@ def run_walk_forward_backtest(
 
         if idx >= test_start_idx:
             model_losses.append(multiclass_log_loss(p_model, ftr))
-            book_losses.append(multiclass_log_loss(p_book, ftr))
+            if p_book is not None:
+                book_losses.append(multiclass_log_loss(p_book, ftr))
             base_losses.append(multiclass_log_loss(p_base, ftr))
             model_briers.append(multiclass_brier_score(p_model, ftr))
-            book_briers.append(multiclass_brier_score(p_book, ftr))
+            if p_book is not None:
+                book_briers.append(multiclass_brier_score(p_book, ftr))
 
             # Evaluate candidate flat-stake bets above edge_threshold
             outcomes = ("H", "D", "A")
-            for out_i in range(3):
+            for out_i in range(3) if odds_tuple else ():
                 edge = p_model[out_i] * odds_tuple[out_i] - 1.0
                 if edge >= edge_threshold:
                     clv = p_book[out_i] * odds_tuple[out_i] - 1.0
@@ -145,17 +149,17 @@ def run_walk_forward_backtest(
 
     test_matches = len(model_losses)
     ll_model = float(np.mean(model_losses))
-    ll_book = float(np.mean(book_losses))
+    ll_book = float(np.mean(book_losses)) if book_losses else float("nan")
     ll_base = float(np.mean(base_losses))
     br_model = float(np.mean(model_briers))
-    br_book = float(np.mean(book_briers))
-    gap = ll_model - ll_book
+    br_book = float(np.mean(book_briers)) if book_briers else float("nan")
+    gap = ll_model - ll_book if math.isfinite(ll_book) else float("nan")
 
     # Gate G1 & G2 verdict rule (Section 2 Rule 7 & Section 6)
-    if test_matches >= 1500 and gap <= 0.0:
+    if test_matches >= 1500 and math.isfinite(gap) and gap <= 0.0:
         verdict = "ahead"
         verdict_message = f"Model beats closing market log-loss over {test_matches:,} test matches"
-    elif test_matches >= 1500 and gap <= 0.002:
+    elif test_matches >= 1500 and math.isfinite(gap) and gap <= 0.002:
         verdict = "level"
         verdict_message = f"Model is level with market log-loss over {test_matches:,} test matches"
     else:

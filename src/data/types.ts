@@ -17,7 +17,7 @@ export interface MatchPick {
   home: string;
   away: string;
   p: OutcomeTuple; // Model probabilities [H, D, A] in [0, 1]
-  odds: OutcomeTuple; // Bookmaker decimal odds [H, D, A]
+  odds: OutcomeTuple | null; // Optional validated reference odds [H, D, A]
   featured?: boolean;
   isDemo?: boolean;
   homeForm?: FormResult[];
@@ -64,6 +64,9 @@ export interface PicksPayload {
   schema_version?: string;
   model_version?: string;
   generated_at: string;
+  data_status?: 'ok' | 'no_fixtures';
+  sources_used?: string[];
+  odds_credits_remaining?: number | null;
   backtest: BacktestSummary;
   matches: MatchPick[];
   recent_comparisons?: MatchResultComparison[];

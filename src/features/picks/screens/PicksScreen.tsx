@@ -211,12 +211,17 @@ export function PicksScreen() {
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <EmptyState
-            title="No matches found"
-            message="No fixtures match your current filter or search."
-            actionLabel="Show All Matches"
+            title={payload?.data_status === 'no_fixtures' ? 'No upcoming fixtures' : 'No matches found'}
+            message={payload?.data_status === 'no_fixtures'
+              ? 'No verified fixtures are available in the next seven days. Check again when the data source updates.'
+              : 'No fixtures match your current filter or search.'}
+            actionLabel={payload?.data_status === 'no_fixtures' ? 'Refresh' : 'Show All Matches'}
             onAction={() => {
-              setSelectedLeague('All');
-              setSearchQuery('');
+              if (payload?.data_status === 'no_fixtures') void reload();
+              else {
+                setSelectedLeague('All');
+                setSearchQuery('');
+              }
             }}
           />
         }

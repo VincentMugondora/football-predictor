@@ -22,7 +22,7 @@ export function OutcomeEdgeRow({
 }: OutcomeEdgeRowProps) {
   const theme = useAppTheme();
   const [customOddsInput, setCustomOddsInput] = useState<string>(
-    analysis.odds.toFixed(2)
+    analysis.odds > 1 ? analysis.odds.toFixed(2) : ''
   );
 
   const parsedCustomOdds = Number(customOddsInput);
@@ -79,7 +79,7 @@ export function OutcomeEdgeRow({
             />
           </View>
           <Text style={styles.metaDot}>•</Text>
-          <Text style={styles.metaText}>BE {breakEvenPct}%</Text>
+            <Text style={styles.metaText}>{activeOdds > 1 ? `BE ${breakEvenPct}%` : 'Enter odds for BE'}</Text>
           <Text style={styles.metaDot}>•</Text>
           <Text style={styles.edgeBadgeText}>
             Edge {edgeText} {isValuePick ? '▲ VALUE' : ''}

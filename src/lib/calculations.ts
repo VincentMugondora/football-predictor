@@ -198,13 +198,13 @@ export interface OutcomeAnalysis {
  */
 export function analyzeMatchOutcomes(
   p: [number, number, number],
-  odds: [number, number, number],
+  odds: [number, number, number] | null,
   edgeThreshold: number
 ): [OutcomeAnalysis, OutcomeAnalysis, OutcomeAnalysis] {
   const keys: [OutcomeKey, OutcomeKey, OutcomeKey] = ['Home', 'Draw', 'Away'];
   const mapped = keys.map((outcome, idx): OutcomeAnalysis => {
     const modelProb = p[idx] ?? 0;
-    const decimalOdds = odds[idx] ?? 0;
+    const decimalOdds = odds?.[idx] ?? 0;
     const breakEvenProb = calculateBreakEvenProbability(decimalOdds);
     const edge = calculateProbabilityEdge(modelProb, decimalOdds);
     const expectedValue = calculateExpectedValue(modelProb, decimalOdds);

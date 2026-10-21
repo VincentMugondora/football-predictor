@@ -1,9 +1,5 @@
-import realPicksData from '@/data/realPicks.json';
-import { BetRecord, PicksPayload } from '@/data/types';
-
-export const REAL_PICKS_PAYLOAD: PicksPayload = realPicksData as unknown as PicksPayload;
-
-// Kept as an alias so existing repository imports remain compatible
-export const MOCK_PICKS_PAYLOAD: PicksPayload = REAL_PICKS_PAYLOAD;
+// This module contains no fixture or odds data. The name is retained for the
+// existing persisted bet store until its imports are renamed.
+import { BetRecord } from '@/data/types';
 
 export const INITIAL_SAMPLE_BETS: BetRecord[] = [];

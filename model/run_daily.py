@@ -10,6 +10,11 @@ from pathlib import Path
 
 import pandas as pd
 
+try:
+    from dotenv import load_dotenv
+except ImportError:  # Keys may also be injected directly by the scheduler.
+    load_dotenv = None
+
 from model import config
 from model.backtest import (
     BacktestReport,
@@ -342,9 +347,35 @@ def run_daily_pipeline(
     - On any failure, leaves the previous picks.json untouched and writes status.json
     """
     try:
-        df_hist = load_historical_matches()
+        if load_dotenv is not None:
+            load_dotenv(config.REPO_ROOT / ".env", override=False)
+        df_hist = FootballDataCsvProvider().load()
+        provider = FootballDataOrgProvider()
+        now = datetime.now(timezone.utc)
+        max_history = pd.to_datetime(df_hist["Date"], utc=True).max().to_pydatetime() if not df_hist.empty else now - timedelta(days=3650)
+        recent_results = provider.get_finished(max_history, now)
+        if not recent_results.empty:
+            recent_results["Date"] = pd.to_datetime(recent_results["Date"], utc=True).dt.tz_localize(None)
+            for col in ("OddsH", "OddsD", "OddsA", "HS", "AS"):
+                recent_results[col] = float("nan")
+            recent_results["OddsSource"] = ""
+            df_hist = pd.concat([df_hist, recent_results], ignore_index=True)
+            df_hist = df_hist.drop_duplicates(subset=["Div", "Date", "HomeTeam", "AwayTeam"], keep="last")
+            df_hist = df_hist.sort_values(["Date", "Div", "HomeTeam", "AwayTeam"]).reset_index(drop=True)
         report, _ = run_walk_forward_backtest(df_hist)
-        payload = build_picks_payload(df_hist, report)
+        fixtures = provider.get_fixtures(now, now + timedelta(days=7))
+        odds_by_fixture: dict[str, dict[str, object]] = {}
+        credits_remaining = None
+        if os.getenv("THE_ODDS_API_KEY"):
+            odds_provider = TheOddsApiProvider(sport_by_competition={
+                "PL": "soccer_epl", "ELC": "soccer_efl_champ", "BL1": "soccer_germany_bundesliga",
+                "SA": "soccer_italy_serie_a", "PD": "soccer_spain_la_liga",
+            })
+            odds_by_fixture = odds_provider.get_h2h_odds(fixtures)
+            credits_remaining = odds_provider.credits_remaining
+        payload = build_picks_payload(df_hist, report, fixtures=fixtures,
+                                      reference_odds=odds_by_fixture,
+                                      odds_credits_remaining=credits_remaining)
 
         serialized = json.dumps(payload, indent=2)
         byte_len = len(serialized.encode("utf-8"))
@@ -354,11 +385,15 @@ def run_daily_pipeline(
             )
 
         picks_path.parent.mkdir(parents=True, exist_ok=True)
-        picks_path.write_text(serialized, encoding="utf-8")
+        tmp_path = picks_path.with_suffix(picks_path.suffix + ".tmp")
+        tmp_path.write_text(serialized, encoding="utf-8")
+        tmp_path.replace(picks_path)
 
         if app_picks_path is not None:
             app_picks_path.parent.mkdir(parents=True, exist_ok=True)
-            app_picks_path.write_text(serialized, encoding="utf-8")
+            app_tmp_path = app_picks_path.with_suffix(app_picks_path.suffix + ".tmp")
+            app_tmp_path.write_text(serialized, encoding="utf-8")
+            app_tmp_path.replace(app_picks_path)
 
         write_status_file(
             "ok",
@@ -376,7 +411,7 @@ if __name__ == "__main__":
     bt = result["backtest"]
     matches = result["matches"]
     comparisons = result["recent_comparisons"]
-    print(f"Successfully generated {config.PICKS_JSON_PATH} and {config.APP_REAL_PICKS_PATH}")
+    print(f"Successfully generated {config.PICKS_JSON_PATH}")
     print(f"Upcoming predictions : {len(matches)}")
     print(f"Post-match results   : {len(comparisons)} compared (Model Hit Rate: {bt['recent_hit_rate_model'] * 100:.1f}% vs Market Fav: {bt['recent_hit_rate_book'] * 100:.1f}%)")
     print(f"Backtest verdict     : {bt['verdict']} (Model {bt['log_loss_model']} vs Book {bt['log_loss_book']})")

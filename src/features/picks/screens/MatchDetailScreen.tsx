@@ -9,7 +9,6 @@ import { EmptyState } from '@/components/EmptyState';
 import { FormBadge } from '@/components/FormBadge';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { TeamCrest } from '@/components/TeamCrest';
-import { MOCK_PICKS_PAYLOAD } from '@/data/mockPicks';
 import { picksRepository } from '@/data/picksRepository';
 import { useAppStore } from '@/data/store';
 import { OutcomeKey } from '@/data/types';
@@ -52,7 +51,7 @@ export function MatchDetailScreen() {
   const matchTitle = `${match.home} vs ${match.away}`;
   const outcomes = analyzeMatchOutcomes(match.p, match.odds, edgeThreshold);
   const updatedLabel =
-    match.updatedAtLabel ?? formatUpdatedRelative(MOCK_PICKS_PAYLOAD.generated_at);
+    match.updatedAtLabel ?? 'Live data';
 
   const homePct = Math.round(match.p[0] * 100);
   const drawPct = Math.round(match.p[1] * 100);
