@@ -21,7 +21,7 @@ from model.providers.teams import canonical_team
 
 class ApiFootballProvider(FixtureProvider):
     BASE_URL = "https://v3.football.api-sports.io"
-    LEAGUES = {"E0": 39, "E1": 40, "D1": 78, "I1": 135, "SP1": 140}
+    LEAGUES = {"E0": 39, "D1": 78, "I1": 135, "SP1": 140}
 
     def __init__(self, api_key: str | None = None, cache_dir: Path | None = None) -> None:
         self.api_key = api_key if api_key is not None else os.getenv("API_FOOTBALL_KEY", "")

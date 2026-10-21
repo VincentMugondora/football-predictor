@@ -16,7 +16,8 @@ BACKTEST_REPORT_PATH = SITE_DIR / "backtest_report.json"
 MAX_PICKS_JSON_BYTES = 50 * 1024
 
 # Seasons to download from football-data.co.uk (6 full seasons)
-SEASONS: tuple[str, ...] = ("2021", "2122", "2223", "2324", "2425", "2526")
+SEASONS: tuple[str, ...] = ("1920", "2021", "2122", "2223", "2324", "2425", "2526")
+MIN_HISTORY_SEASONS_PER_LEAGUE = 5
 
 # Leagues configured for football-data.co.uk CSV ingestion
 ACTIVE_LEAGUES: tuple[str, ...] = ("E0", "SP1", "I1", "D1")

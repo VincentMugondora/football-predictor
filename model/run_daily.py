@@ -79,12 +79,8 @@ def build_picks_payload(
     sources_used: list[str] | None = None,
 ) -> dict[str, object]:
     """
-    1. Walks chronologically through historical matches, predicting each match strictly BEFORE
-       observing its real result.
-    2. Reconciles completed matches against stored pre-match predictions to produce
-       `recent_comparisons` (Predicted Outcome & Probabilities vs. Real Scoreline & Result).
-    3. Generates upcoming match predictions and stores them in `predictions_history.json`
-       so when those matches finish, their real results are automatically compared next day.
+    1. Walks chronologically through verified historical matches, predicting before each result.
+    2. Emits predictions only for real provider fixtures with IDs and UTC kickoff times.
     """
     fixtures = sorted(fixtures or [], key=lambda item: item.kickoff)[:max_matches]
     reference_odds = reference_odds or {}
@@ -262,7 +258,7 @@ def run_daily_pipeline(
         credits_used = 0
         if os.getenv("THE_ODDS_API_KEY"):
             odds_provider = TheOddsApiProvider(sport_by_competition={
-                "PL": "soccer_epl", "ELC": "soccer_efl_champ", "BL1": "soccer_germany_bundesliga",
+                "PL": "soccer_epl", "BL1": "soccer_germany_bundesliga",
                 "SA": "soccer_italy_serie_a", "PD": "soccer_spain_la_liga",
             })
             try:

@@ -184,8 +184,11 @@ def load_historical_matches(
 ) -> pd.DataFrame:
     """Loads and combines all league/season CSVs into a single chronological DataFrame."""
     frames: list[pd.DataFrame] = []
-    for league in leagues:
-        for season in seasons:
+    league_list = tuple(leagues)
+    season_list = tuple(seasons)
+    loaded_seasons: dict[str, set[str]] = {league: set() for league in league_list}
+    for league in league_list:
+        for season in season_list:
             csv_path = raw_dir / f"{league}_{season}.csv"
             if not csv_path.exists() and download_missing:
                 try:
@@ -196,10 +199,28 @@ def load_historical_matches(
                         flush=True,
                     )
             if csv_path.exists():
-                frames.append(load_csv_file(csv_path))
+                frame = load_csv_file(csv_path)
+                if not frame.empty:
+                    frames.append(frame)
+                    loaded_seasons[league].add(str(season))
 
     if not frames:
         raise RuntimeError("No historical match files found or downloaded.")
+
+    insufficient = {
+        league: sorted(seasons_found)
+        for league, seasons_found in loaded_seasons.items()
+        if len(seasons_found) < config.MIN_HISTORY_SEASONS_PER_LEAGUE
+    }
+    if insufficient:
+        detail = "; ".join(
+            f"{league}: {len(found)} season(s) {found}"
+            for league, found in insufficient.items()
+        )
+        raise RuntimeError(
+            f"At least {config.MIN_HISTORY_SEASONS_PER_LEAGUE} historical seasons are required per league; {detail}. "
+            "Add the missing CSVs to model/data/raw after confirming their data-use terms."
+        )
 
     combined = pd.concat(frames, ignore_index=True)
     combined = (

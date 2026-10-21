@@ -22,7 +22,7 @@ from model.providers.teams import canonical_team
 
 class FootballDataOrgProvider(FixtureProvider):
     BASE_URL = "https://api.football-data.org/v4"
-    COMPETITIONS = {"E0": "PL", "E1": "ELC", "D1": "BL1", "I1": "SA", "SP1": "PD"}
+    COMPETITIONS = {"E0": "PL", "D1": "BL1", "I1": "SA", "SP1": "PD"}
 
     def __init__(self, token: str | None = None, cache_dir: Path | None = None) -> None:
         self.token = token if token is not None else os.getenv("FOOTBALL_DATA_TOKEN", "")
