@@ -10,5 +10,23 @@
   {
     "provider": "football-data.co.uk",
     "name": "Huesca"
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Coventry City FC",
+    "suggestions": [
+      "Man City",
+      "Eintracht Frankfurt",
+      "Valencia"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Hull City AFC",
+    "suggestions": [
+      "Man City",
+      "Real Sociedad",
+      "Hellas Verona"
+    ]
   }
 ]
