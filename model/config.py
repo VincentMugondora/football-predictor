@@ -17,7 +17,7 @@ MAX_PICKS_JSON_BYTES = 50 * 1024
 
 # Seasons to download from football-data.co.uk (6 full seasons)
 SEASONS: tuple[str, ...] = ("1920", "2021", "2122", "2223", "2324", "2425", "2526")
-MIN_HISTORY_SEASONS_PER_LEAGUE = 5
+MIN_HISTORY_SEASONS_PER_LEAGUE = int(os.getenv("MIN_HISTORY_SEASONS_PER_LEAGUE", "5"))
 
 # Leagues configured for football-data.co.uk CSV ingestion
 ACTIVE_LEAGUES: tuple[str, ...] = ("E0", "SP1", "I1", "D1")
@@ -127,6 +127,50 @@ TEAM_ALIASES.update({
     "Juventus FC": "Juventus", "Juventus": "Juventus", "AS Roma": "Roma", "Roma": "Roma",
     "SSC Napoli": "Napoli", "Napoli": "Napoli", "Atalanta BC": "Atalanta", "Atalanta": "Atalanta",
     "AFC Ajax": "Ajax", "Ajax": "Ajax", "PSV": "PSV", "Feyenoord": "Feyenoord",
+    # Exact names from the locally cached football-data.co.uk seasons and
+    # corresponding official football-data.org club names.
+    "Watford": "Watford", "Watford FC": "Watford",
+    "Norwich": "Norwich", "Norwich City FC": "Norwich",
+    "West Brom": "West Brom", "West Bromwich Albion FC": "West Brom",
+    "Luton": "Luton", "Luton Town FC": "Luton",
+    "Augsburg": "Augsburg", "FC Augsburg": "Augsburg",
+    "Bochum": "Bochum", "VfL Bochum": "Bochum", "VfL Bochum 1848": "Bochum",
+    "Heidenheim": "Heidenheim", "1. FC Heidenheim 1846": "Heidenheim",
+    "Hoffenheim": "Hoffenheim", "TSG Hoffenheim": "Hoffenheim",
+    "Holstein Kiel": "Holstein Kiel", "FC St. Pauli": "St Pauli", "St Pauli": "St Pauli",
+    "1. FC Union Berlin": "Union Berlin", "Union Berlin": "Union Berlin",
+    "SV Werder Bremen": "Werder Bremen", "Werder Bremen": "Werder Bremen",
+    "Bologna": "Bologna", "Bologna FC 1909": "Bologna",
+    "Cagliari": "Cagliari", "Cagliari Calcio": "Cagliari",
+    "Como": "Como", "Como 1907": "Como",
+    "Empoli": "Empoli", "Empoli FC": "Empoli",
+    "Fiorentina": "Fiorentina", "ACF Fiorentina": "Fiorentina",
+    "Frosinone": "Frosinone", "Frosinone Calcio": "Frosinone",
+    "Genoa": "Genoa", "Genoa CFC": "Genoa",
+    "Lazio": "Lazio", "SS Lazio": "Lazio",
+    "Lecce": "Lecce", "US Lecce": "Lecce",
+    "Monza": "Monza", "AC Monza": "Monza",
+    "Salernitana": "Salernitana", "US Salernitana 1919": "Salernitana",
+    "Sassuolo": "Sassuolo", "US Sassuolo Calcio": "Sassuolo",
+    "Torino": "Torino", "Torino FC": "Torino",
+    "Udinese": "Udinese", "Udinese Calcio": "Udinese",
+    "Parma": "Parma", "Parma Calcio 1913": "Parma",
+    "Venezia": "Venezia", "Venezia FC": "Venezia",
+    "Almeria": "Almería", "UD Almería": "Almería",
+    "Cadiz": "Cádiz", "Cádiz CF": "Cádiz",
+    "Celta": "Celta", "RC Celta de Vigo": "Celta",
+    "Getafe": "Getafe", "Getafe CF": "Getafe",
+    "Girona": "Girona", "Girona FC": "Girona",
+    "Granada": "Granada", "Granada CF": "Granada",
+    "Las Palmas": "Las Palmas", "UD Las Palmas": "Las Palmas",
+    "Mallorca": "Mallorca", "RCD Mallorca": "Mallorca",
+    "Osasuna": "Osasuna", "CA Osasuna": "Osasuna",
+    "Sevilla": "Sevilla", "Sevilla FC": "Sevilla",
+    "Valencia": "Valencia", "Valencia CF": "Valencia",
+    "Villarreal": "Villarreal", "Villarreal CF": "Villarreal",
+    "Valladolid": "Valladolid", "Real Valladolid CF": "Valladolid",
+    "Levante": "Levante", "Levante UD": "Levante",
+    "Eibar": "Eibar", "SD Eibar": "Eibar",
 })
 
 ALLOW_FOOTBALL_DATA_DOWNLOADS = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"

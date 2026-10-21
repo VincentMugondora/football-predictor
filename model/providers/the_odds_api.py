@@ -10,7 +10,9 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
+from model import config
 from model.providers.base import Fixture, OddsProvider
+from model.providers.teams import canonical_team, record_unmatched_team_names
 
 
 class TheOddsApiProvider(OddsProvider):
@@ -23,16 +25,21 @@ class TheOddsApiProvider(OddsProvider):
         self.sport_by_competition = sport_by_competition or {}
         self.credits_remaining: int | None = None
         self.credits_used: int = 0
+        self.unmatched_fixture_ids: set[str] = set()
         self.cache_dir = Path(__file__).resolve().parents[1] / "data" / "provider_cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def get_h2h_odds(self, fixtures: list[Fixture], min_credits_remaining: int = 10) -> dict[str, dict[str, object]]:
         results: dict[str, dict[str, object]] = {}
+        self.unmatched_fixture_ids.clear()
+        unmatched_names: set[str] = set()
+        known_names: set[str] = set()
         by_sport: dict[str, list[Fixture]] = {}
         for fixture in fixtures:
             sport = self.sport_by_competition.get(fixture.competition)
             if sport:
                 by_sport.setdefault(sport, []).append(fixture)
+                known_names.update((fixture.home, fixture.away))
         for sport, sport_fixtures in by_sport.items():
             cache_path = self.cache_dir / f"odds_{sport}_{datetime.now(timezone.utc).date().isoformat()}.json"
             if (
@@ -68,11 +75,26 @@ class TheOddsApiProvider(OddsProvider):
             for item in payload:
                 if not isinstance(item, dict):
                     continue
-                match = next((f for f in sport_fixtures if
-                              f.home.casefold() == str(item.get("home_team", "")).casefold() and
-                              f.away.casefold() == str(item.get("away_team", "")).casefold() and
-                              abs((datetime.fromisoformat(str(item.get("commence_time", "")).replace("Z", "+00:00")) - f.kickoff).total_seconds()) < 21600), None)
+                odds_home = canonical_team(str(item.get("home_team", "")), "The Odds API")
+                odds_away = canonical_team(str(item.get("away_team", "")), "The Odds API")
+                try:
+                    commence = datetime.fromisoformat(str(item.get("commence_time", "")).replace("Z", "+00:00"))
+                except ValueError:
+                    continue
+                nearby = [f for f in sport_fixtures if abs((commence - f.kickoff).total_seconds()) < 21600]
+                match = next((f for f in nearby if f.home.casefold() == odds_home.casefold() and
+                              f.away.casefold() == odds_away.casefold()), None)
                 if not match:
+                    for candidate in nearby:
+                        fixture_teams = {candidate.home.casefold(), candidate.away.casefold()}
+                        matched_one_side = odds_home.casefold() in fixture_teams or odds_away.casefold() in fixture_teams
+                        unknown = [name for name, canonical in ((str(item.get("home_team", "")), odds_home),
+                                    (str(item.get("away_team", "")), odds_away))
+                                   if canonical.casefold() not in fixture_teams and
+                                   name not in config.TEAM_ALIASES and canonical not in config.TEAM_ALIASES.values()]
+                        if matched_one_side and unknown:
+                            self.unmatched_fixture_ids.add(candidate.id)
+                            unmatched_names.update(unknown)
                     continue
                 bookmaker_rows = item.get("bookmakers", [])
                 books = [book for book in bookmaker_rows if isinstance(book, dict)]
@@ -82,8 +104,15 @@ class TheOddsApiProvider(OddsProvider):
                 market = next((m for m in chosen.get("markets", []) if isinstance(m, dict) and m.get("key") == "h2h"), None)
                 if not market:
                     continue
-                prices = {str(o.get("name", "")): o.get("price") for o in market.get("outcomes", []) if isinstance(o, dict)}
-                values = (prices.get(match.home), prices.get("Draw"), prices.get(match.away))
+                prices = {canonical_team(str(o.get("name", "")), "The Odds API"): o.get("price")
+                          for o in market.get("outcomes", []) if isinstance(o, dict) and str(o.get("name", "")).casefold() != "draw"}
+                draw_price = next((o.get("price") for o in market.get("outcomes", [])
+                                   if isinstance(o, dict) and str(o.get("name", "")).casefold() == "draw"), None)
+                values = (prices.get(match.home), draw_price, prices.get(match.away))
                 if all(isinstance(v, (int, float)) and v > 1 for v in values):
                     results[match.id] = {"odds": [float(v) for v in values], "source": str(chosen.get("title", "The Odds API"))}
+        if unmatched_names:
+            record_unmatched_team_names(sorted(unmatched_names), "The Odds API", known_names)
+            for name in sorted(unmatched_names):
+                print(f"WARNING: Skipping odds-linked fixture(s); The Odds API team {name!r} is unmatched.", flush=True)
         return results

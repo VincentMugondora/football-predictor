@@ -81,7 +81,11 @@ export function usePicksScreen() {
     if (!payload) {
       return null;
     }
-    return payload.matches.find((m) => m.featured) ?? payload.matches[0] ?? null;
+    return (
+      payload.matches.find((m) => m.featured && !m.low_confidence) ??
+      payload.matches.find((m) => !m.low_confidence) ??
+      null
+    );
   }, [payload]);
 
   const listItems = useMemo((): MatchListItem[] => {

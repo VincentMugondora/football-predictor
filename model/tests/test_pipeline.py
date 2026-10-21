@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import pytest
@@ -13,11 +14,16 @@ from model import config
 from model.backtest import remove_bookmaker_margin, run_walk_forward_backtest
 from model.data import (
     clean_and_normalise_dataframe,
+    load_historical_matches,
     normalise_team_name,
     resolve_odds_columns,
 )
 from model.model import OnlinePoissonModel
-from model.run_daily import build_picks_payload, run_daily_pipeline
+from model.run_daily import build_picks_payload, run_daily_pipeline, validate_fixtures_against_history
+from model.providers.base import Fixture
+from model.providers.the_odds_api import TheOddsApiProvider
+from model.providers.teams import canonical_team
+from model.providers import teams as team_provider
 
 
 def test_team_name_normalisation() -> None:
@@ -25,6 +31,63 @@ def test_team_name_normalisation() -> None:
     assert normalise_team_name("Spurs") == "Tottenham"
     assert normalise_team_name("Nott'm Forest") == "Nottingham Forest"
     assert normalise_team_name("Arsenal") == "Arsenal"
+    assert normalise_team_name("Huesca") == "Huesca"
+    assert normalise_team_name("Man United") == "Man Utd"
+
+
+def test_unknown_fixture_names_are_collected_skipped_and_suggested(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(team_provider, "REVIEW_PATH", tmp_path / "team_names_review.json")
+    history = pd.DataFrame({"Div": ["E0"], "HomeTeam": ["Arsenal"], "AwayTeam": ["Chelsea"]})
+    kickoff = datetime.now(timezone.utc) + timedelta(days=2)
+    fixtures = [Fixture("x1", "PL", kickoff, "Arsenal United", "Unknown FC")]
+
+    accepted = validate_fixtures_against_history(fixtures, history, "football-data.org")
+
+    assert accepted == []
+    review = json.loads((tmp_path / "team_names_review.json").read_text(encoding="utf-8"))
+    assert {entry["name"] for entry in review} == {"Arsenal United", "Unknown FC"}
+    arsenal_entry = next(entry for entry in review if entry["name"] == "Arsenal United")
+    assert "Arsenal" in arsenal_entry["suggestions"]
+
+
+def test_promoted_explicit_alias_is_low_confidence_and_never_featured() -> None:
+    rows = []
+    teams = ["Arsenal", "Liverpool", "Chelsea", "Tottenham", "Everton", "Aston Villa"]
+    for i in range(20):
+        home, away = teams[i % len(teams)], teams[(i + 1) % len(teams)]
+        rows.append({"Div": "E0", "Date": pd.Timestamp("2024-01-01") + pd.Timedelta(days=i),
+                     "HomeTeam": home, "AwayTeam": away, "FTHG": 1, "FTAG": 0, "FTR": "H",
+                     "OddsH": 2.0, "OddsD": 3.2, "OddsA": 4.0, "OddsSource": "PSC", "HS": 10.0, "AS": 8.0})
+    history = pd.DataFrame(rows)
+    report, _ = run_walk_forward_backtest(history, test_fraction=0.4)
+    fixture = Fixture("promoted", "PL", datetime.now(timezone.utc) + timedelta(days=3),
+                      "Sunderland AFC", "Arsenal FC")
+
+    payload = build_picks_payload(history, report, fixtures=[fixture])
+
+    pick = payload["matches"][0]
+    assert pick["home"] == "Sunderland"
+    assert pick["low_confidence"] is True
+    assert pick["featured"] is False
+    assert "not a strong pick" in pick["ourTake"]
+
+
+def test_odds_api_unmatched_team_marks_fixture_for_skipping(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(team_provider, "REVIEW_PATH", tmp_path / "team_names_review.json")
+    provider = TheOddsApiProvider(api_key="test-key", sport_by_competition={"PL": "soccer_epl"})
+    provider.cache_dir = tmp_path
+    kickoff = datetime.now(timezone.utc) + timedelta(days=1)
+    fixture = Fixture("odds-x", "PL", kickoff, "Arsenal", "Chelsea")
+    cache_path = tmp_path / f"odds_soccer_epl_{datetime.now(timezone.utc).date().isoformat()}.json"
+    cache_path.write_text(json.dumps({"payload": [{
+        "home_team": "Arsenal", "away_team": "Mystery FC", "commence_time": kickoff.isoformat(),
+        "bookmakers": [],
+    }], "credits_remaining": 500}), encoding="utf-8")
+
+    assert provider.get_h2h_odds([fixture]) == {}
+    assert provider.unmatched_fixture_ids == {"odds-x"}
+    review = json.loads((tmp_path / "team_names_review.json").read_text(encoding="utf-8"))
+    assert any(item["provider"] == "The Odds API" and item["name"] == "Mystery FC" for item in review)
 
 
 def test_day_first_date_parsing_and_missing_row_filtering() -> None:
@@ -119,13 +182,17 @@ def test_walk_forward_backtest_and_picks_payload_schema() -> None:
     assert report.log_loss_model > 0
     assert report.log_loss_book > 0
 
-    payload = build_picks_payload(df, report, max_matches=6)
+    payload = build_picks_payload(
+        df, report, max_matches=6,
+        leagues_skipped={"SP1": "requires 5 historical seasons; found 2: 2324, 2425"},
+    )
     serialized = json.dumps(payload)
     assert len(serialized.encode("utf-8")) < config.MAX_PICKS_JSON_BYTES
     assert payload["schema_version"] == "2.0"
     for match in payload["matches"]:
         assert math.isclose(sum(match["p"]), 1.0, abs_tol=1e-3)
     assert payload["data_status"] == "no_fixtures"
+    assert payload["leagues_skipped"]["SP1"].startswith("requires 5 historical seasons")
     assert payload["matches"] == []
     assert payload["recent_comparisons"] == []
 
@@ -133,3 +200,49 @@ def test_walk_forward_backtest_and_picks_payload_schema() -> None:
 def test_remove_bookmaker_margin() -> None:
     p_fair = remove_bookmaker_margin(2.0, 3.5, 4.0)
     assert math.isclose(sum(p_fair), 1.0, rel_tol=1e-9)
+
+
+def _history_frame(league: str, season: str) -> pd.DataFrame:
+    return pd.DataFrame({
+        "Div": [league], "Date": [pd.Timestamp(f"20{season[:2]}-08-01")],
+        "HomeTeam": ["Arsenal"], "AwayTeam": ["Chelsea"],
+        "FTHG": [1], "FTAG": [0], "FTR": ["H"],
+    })
+
+
+def test_history_loader_skips_underfilled_leagues_and_keeps_eligible(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    seasons = ("1920", "2021", "2122", "2223", "2324")
+    monkeypatch.setattr(config, "MIN_HISTORY_SEASONS_PER_LEAGUE", 5)
+    for league, available in {"E0": seasons, "SP1": seasons[:2]}.items():
+        for season in available:
+            (tmp_path / f"{league}_{season}.csv").write_text("cached", encoding="utf-8")
+    monkeypatch.setattr(
+        "model.data.load_csv_file",
+        lambda path: _history_frame(path.stem.split("_")[0], path.stem.split("_")[1]),
+    )
+
+    history = load_historical_matches(
+        leagues=("E0", "SP1"), seasons=seasons, raw_dir=tmp_path, download_missing=False,
+    )
+
+    assert set(history["Div"]) == {"E0"}
+    assert history.attrs["leagues_eligible"] == ["E0"]
+    assert history.attrs["leagues_skipped"] == {
+        "SP1": "requires 5 historical seasons; found 2: 1920, 2021"
+    }
+
+
+def test_history_loader_fails_clearly_when_no_league_meets_minimum(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(config, "MIN_HISTORY_SEASONS_PER_LEAGUE", 5)
+    for league in ("SP1", "I1", "D1"):
+        (tmp_path / f"{league}_2425.csv").write_text("cached", encoding="utf-8")
+    monkeypatch.setattr(
+        "model.data.load_csv_file",
+        lambda path: _history_frame(path.stem.split("_")[0], path.stem.split("_")[1]),
+    )
+
+    with pytest.raises(RuntimeError, match="No league meets the minimum of 5 historical seasons") as exc:
+        load_historical_matches(
+            leagues=("SP1", "I1", "D1"), seasons=("2425",), raw_dir=tmp_path, download_missing=False,
+        )
+    assert "SP1" in str(exc.value) and "I1" in str(exc.value) and "D1" in str(exc.value)

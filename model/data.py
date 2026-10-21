@@ -11,14 +11,14 @@ import numpy as np
 import pandas as pd
 
 from model import config
-from model.providers.teams import canonical_team
+from model.providers.teams import canonical_team, clean_team_name
 
 USER_AGENT = "MatchSenseDataPipeline/1.0 (Offline-First Statistical Model)"
 
 
 def normalise_team_name(name: str) -> str:
     """Normalises club names using config.TEAM_NAME_MAP."""
-    cleaned = str(name).strip()
+    cleaned = clean_team_name(name)
     return canonical_team(cleaned, "football-data.co.uk")
 
 
@@ -182,7 +182,7 @@ def load_historical_matches(
     raw_dir: Path = config.RAW_DATA_DIR,
     download_missing: bool = True,
 ) -> pd.DataFrame:
-    """Loads and combines all league/season CSVs into a single chronological DataFrame."""
+    """Loads eligible league histories; underfilled leagues are skipped with reasons."""
     frames: list[pd.DataFrame] = []
     league_list = tuple(leagues)
     season_list = tuple(seasons)
@@ -204,30 +204,35 @@ def load_historical_matches(
                     frames.append(frame)
                     loaded_seasons[league].add(str(season))
 
-    if not frames:
-        raise RuntimeError("No historical match files found or downloaded.")
-
+    minimum = config.MIN_HISTORY_SEASONS_PER_LEAGUE
     insufficient = {
         league: sorted(seasons_found)
         for league, seasons_found in loaded_seasons.items()
-        if len(seasons_found) < config.MIN_HISTORY_SEASONS_PER_LEAGUE
+        if len(seasons_found) < minimum
     }
-    if insufficient:
-        detail = "; ".join(
-            f"{league}: {len(found)} season(s) {found}"
-            for league, found in insufficient.items()
-        )
+    eligible = set(league_list) - set(insufficient)
+    skipped = {
+        league: (f"requires {minimum} historical seasons; found {len(found)}: "
+                 f"{', '.join(found) if found else 'none'}")
+        for league, found in insufficient.items()
+    }
+    for league, reason in skipped.items():
+        print(f"WARNING: Skipping league {league}: {reason}.", flush=True)
+    if not eligible:
+        detail = "; ".join(f"{league}: {reason}" for league, reason in skipped.items())
         raise RuntimeError(
-            f"At least {config.MIN_HISTORY_SEASONS_PER_LEAGUE} historical seasons are required per league; {detail}. "
-            "Add the missing CSVs to model/data/raw after confirming their data-use terms."
+            f"No league meets the minimum of {minimum} historical seasons. {detail}"
         )
 
-    combined = pd.concat(frames, ignore_index=True)
+    eligible_frames = [frame for frame in frames if frame["Div"].iloc[0] in eligible]
+    combined = pd.concat(eligible_frames, ignore_index=True)
     combined = (
         combined.drop_duplicates(subset=["Div", "Date", "HomeTeam", "AwayTeam"])
         .sort_values(["Date", "Div", "HomeTeam", "AwayTeam"])
         .reset_index(drop=True)
     )
+    combined.attrs["leagues_skipped"] = skipped
+    combined.attrs["leagues_eligible"] = sorted(eligible)
     return combined
 
 

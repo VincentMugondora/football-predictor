@@ -38,6 +38,7 @@ function validatePayload(value: unknown): PicksPayload {
       typeof match.league !== 'string' ||
       typeof match.home !== 'string' ||
       typeof match.away !== 'string' ||
+      (match.low_confidence !== undefined && typeof match.low_confidence !== 'boolean') ||
       !isFiniteTuple(match.p) ||
       !match.p.every((probability) => probability >= 0 && probability <= 1) ||
       Math.abs(match.p.reduce((sum, probability) => sum + probability, 0) - 1) > 0.002 ||

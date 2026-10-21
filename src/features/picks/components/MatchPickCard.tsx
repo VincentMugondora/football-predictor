@@ -86,6 +86,10 @@ function MatchPickCardComponent({
         </TouchableOpacity>
       </View>
 
+      {match.low_confidence ? (
+        <Text style={styles.lowConfidenceText}>LOW CONFIDENCE · limited team history</Text>
+      ) : null}
+
       {showOddsBreakdown ? (
         <View style={styles.outcomesList}>
           {outcomes.map((item) => (
@@ -121,6 +125,12 @@ function createStyles(theme: AppTheme) {
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: theme.spacing.sm,
+    },
+    lowConfidenceText: {
+      color: theme.colors.textSecondary,
+      fontSize: 11,
+      fontWeight: '700',
+      letterSpacing: 0.4,
     },
     teamsTouchArea: {
       flex: 1,

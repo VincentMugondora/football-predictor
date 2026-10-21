@@ -19,6 +19,7 @@ export interface MatchPick {
   p: OutcomeTuple; // Model probabilities [H, D, A] in [0, 1]
   odds: OutcomeTuple | null; // Optional validated reference odds [H, D, A]
   featured?: boolean;
+  low_confidence?: boolean;
   homeForm?: FormResult[];
   awayForm?: FormResult[];
   stats?: MatchKeyStats;
@@ -66,6 +67,7 @@ export interface PicksPayload {
   generated_at: string;
   data_status?: 'ok' | 'no_fixtures';
   sources_used?: string[];
+  leagues_skipped?: Record<string, string>;
   odds_credits_remaining?: number | null;
   backtest: BacktestSummary;
   matches: MatchPick[];
