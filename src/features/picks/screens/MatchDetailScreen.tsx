@@ -18,6 +18,8 @@ import { analyzeMatchOutcomes } from '@/lib/calculations';
 import { formatShortDayAndTime } from '@/lib/dateUtils';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
+const GOAL_TIME_WINDOWS = ['0-15', '16-30', '31-45+', '46-60', '61-75', '76-90+'] as const;
+
 export function MatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useAppTheme();
@@ -49,13 +51,17 @@ export function MatchDetailScreen() {
   }
 
   const matchTitle = `${match.home} vs ${match.away}`;
+  const minuteWindows = match.timing?.windows ?? null;
   const outcomes = analyzeMatchOutcomes(match.p, match.odds, edgeThreshold);
   const updatedLabel =
     match.updatedAtLabel ?? 'Live data';
 
-  const homePct = Math.round(match.p[0] * 100);
-  const drawPct = Math.round(match.p[1] * 100);
-  const awayPct = Math.max(0, 100 - homePct - drawPct);
+  const winnerProbabilities = match.winner?.p ?? match.p;
+  const winnerPickLabel = match.winner?.pick === 'too close to call'
+    ? 'Too close to call'
+    : match.winner?.pick === 'home' ? `${match.home} most likely`
+      : match.winner?.pick === 'away' ? `${match.away} most likely`
+        : match.winner?.pick === 'draw' ? 'Draw most likely' : null;
 
   const handleLogOutcome = (outcome: OutcomeKey, odds: number) => {
     setDraftBet({
@@ -118,12 +124,12 @@ export function MatchDetailScreen() {
           <View style={styles.probColumnsRow}>
             <View style={styles.probCol}>
               <Text style={styles.probColTitle}>Home</Text>
-              <Text style={styles.probColHeroPct}>{homePct}%</Text>
+              <Text style={styles.probColHeroPct}>{Math.round(winnerProbabilities[0] * 100)}%</Text>
               <View style={styles.probIndividualTrack}>
                 <View
                   style={[
                     styles.probIndividualFillPrimary,
-                    { width: `${Math.min(100, Math.max(8, homePct))}%` },
+                    { width: `${Math.min(100, Math.max(0, winnerProbabilities[0] * 100))}%` },
                   ]}
                 />
               </View>
@@ -131,12 +137,12 @@ export function MatchDetailScreen() {
 
             <View style={styles.probCol}>
               <Text style={styles.probColTitle}>Draw</Text>
-              <Text style={styles.probColHeroPct}>{drawPct}%</Text>
+              <Text style={styles.probColHeroPct}>{Math.round(winnerProbabilities[1] * 100)}%</Text>
               <View style={styles.probIndividualTrack}>
                 <View
                   style={[
                     styles.probIndividualFillSecondary,
-                    { width: `${Math.min(100, Math.max(8, drawPct))}%` },
+                    { width: `${Math.min(100, Math.max(0, winnerProbabilities[1] * 100))}%` },
                   ]}
                 />
               </View>
@@ -144,17 +150,23 @@ export function MatchDetailScreen() {
 
             <View style={styles.probCol}>
               <Text style={styles.probColTitle}>Away</Text>
-              <Text style={styles.probColHeroPct}>{awayPct}%</Text>
+              <Text style={styles.probColHeroPct}>{Math.round(winnerProbabilities[2] * 100)}%</Text>
               <View style={styles.probIndividualTrack}>
                 <View
                   style={[
                     styles.probIndividualFillSecondary,
-                    { width: `${Math.min(100, Math.max(8, awayPct))}%` },
+                    { width: `${Math.min(100, Math.max(0, winnerProbabilities[2] * 100))}%` },
                   ]}
                 />
               </View>
             </View>
           </View>
+
+          {match.winner ? (
+            <Text style={styles.explanationText}>
+              {`Model pick: ${winnerPickLabel} · ${match.winner.confidence} confidence. These are chances for home win, draw, and away win; they are not guarantees.`}
+            </Text>
+          ) : null}
 
           <View style={styles.probFooterRow}>
             <Text style={styles.updatedMeta}>
@@ -195,6 +207,80 @@ export function MatchDetailScreen() {
           ) : null}
         </View>
 
+        {match.goals ? (
+          <View style={[styles.sectionCard, theme.shadows.card]}>
+            <Text style={styles.sectionHeaderCaps}>GOALS AND SCORELINES</Text>
+            <Text style={styles.expectedGoalsText}>
+              {`${match.home} ${match.goals.exp_home.toFixed(2)} expected · ${match.away} ${match.goals.exp_away.toFixed(2)} expected · ${match.goals.exp_total.toFixed(2)} total`}
+            </Text>
+            <Text style={styles.explanationText}>
+              Expected goals are model averages across many similar matches, not a promised final score.
+            </Text>
+
+            <Text style={styles.rowTitle}>Chance of total match goals</Text>
+            <Text style={styles.explanationText}>Each value is the chance the match ends with exactly that many goals.</Text>
+            <Text style={styles.probabilityText}>
+              {match.goals.p_total.map((value, index) => `${index === 4 ? '4+' : index}: ${Math.round(value * 100)}%`).join('  ·  ')}
+            </Text>
+
+            <Text style={styles.rowTitle}>Over goal lines</Text>
+            <Text style={styles.explanationText}>Chance that combined goals finish above each line.</Text>
+            {(['0.5', '1.5', '2.5', '3.5'] as const).map((line) => (
+              <ProbabilityRow key={line} label={`Over ${line}`} value={match.goals!.over[line]} styles={styles} />
+            ))}
+            <ProbabilityRow label="Both teams to score" value={match.goals.btts} styles={styles} />
+            <Text style={styles.explanationText}>Chance both clubs score at least once.</Text>
+            <ProbabilityRow label={`${match.home} clean sheet`} value={match.goals.clean_sheet[0]} styles={styles} />
+            <ProbabilityRow label={`${match.away} clean sheet`} value={match.goals.clean_sheet[1]} styles={styles} />
+            <Text style={styles.explanationText}>A clean sheet means that team concedes no goals.</Text>
+
+            <Text style={styles.rowTitle}>Three most likely scorelines</Text>
+            {match.goals.top_scores.map((item) => (
+              <Text key={item.score} style={styles.probabilityText}>
+                {`${item.score} · ${Math.round(item.probability * 100)}% chance`}
+              </Text>
+            ))}
+            <Text style={styles.explanationText}>Exact scores remain uncertain even when they rank highest.</Text>
+          </View>
+        ) : null}
+
+        {match.timing ? (
+          <View style={[styles.sectionCard, theme.shadows.card]}>
+            <Text style={styles.sectionHeaderCaps}>GOAL TIMING</Text>
+            {minuteWindows ? (
+              <>
+                <Text style={styles.rowTitle}>15-minute windows</Text>
+                <Text style={styles.explanationText}>Each bar is the chance that team scores at least once during that window. Expected goals are the average goals projected in that interval.</Text>
+                {GOAL_TIME_WINDOWS.map((window) => (
+                  <View key={window} style={styles.probabilitiesList}>
+                    <Text style={styles.rowTitle}>{window} minutes</Text>
+                    <Text style={styles.probabilityText}>{`${match.home}: ${minuteWindows.home[window].expected_goals.toFixed(2)} expected goals`}</Text>
+                    <ProbabilityRow label={`${match.home}: scores in ${window}`} value={minuteWindows.home[window].p_at_least_one} styles={styles} />
+                    <Text style={styles.probabilityText}>{`${match.away}: ${minuteWindows.away[window].expected_goals.toFixed(2)} expected goals`}</Text>
+                    <ProbabilityRow label={`${match.away}: scores in ${window}`} value={minuteWindows.away[window].p_at_least_one} styles={styles} />
+                  </View>
+                ))}
+                <ProbabilityRow label="First goal before minute 30" value={minuteWindows.p_first_goal_before_30} styles={styles} />
+                {!minuteWindows.team_specific_signal ? (
+                  <Text style={styles.timingNote}>league average, no team-specific signal yet</Text>
+                ) : null}
+              </>
+            ) : match.timing.halves ? (
+              <>
+                <Text style={styles.rowTitle}>Expected goals by half</Text>
+                <Text style={styles.probabilityText}>{`${match.home}: first half ${match.timing.halves.home.first.toFixed(2)}, second half ${match.timing.halves.home.second.toFixed(2)}`}</Text>
+                <Text style={styles.probabilityText}>{`${match.away}: first half ${match.timing.halves.away.first.toFixed(2)}, second half ${match.timing.halves.away.second.toFixed(2)}`}</Text>
+                <Text style={styles.explanationText}>These split each team’s expected goals using historical halftime scores.</Text>
+                <ProbabilityRow label="At least one first-half goal" value={match.timing.halves.p_first_half_goal} styles={styles} />
+                <Text style={styles.explanationText}>Chance either team scores before halftime.</Text>
+              </>
+            ) : (
+              <Text style={styles.explanationText}>No validated halftime scores are available for this league, so timing is not estimated.</Text>
+            )}
+            <Text style={styles.timingNote}>{match.timing.note}</Text>
+          </View>
+        ) : null}
+
         {/* Card 4: KEY STATS (PER GAME) */}
         {match.stats ? (
           <View style={[styles.sectionCard, theme.shadows.card]}>
@@ -232,6 +318,9 @@ export function MatchDetailScreen() {
         ) : null}
 
         <DisclaimerFooter />
+        <Text style={styles.explanationText}>
+          Statistical estimates, not certainties. Exact scores and goal minutes are hard to predict.
+        </Text>
       </ScrollView>
     </ScreenContainer>
   );
@@ -410,5 +499,78 @@ function createStyles(theme: AppTheme) {
       fontSize: theme.typography.sizes.bodyStrong,
       lineHeight: theme.typography.lineHeights.bodyStrong,
     },
+    expectedGoalsText: {
+      color: theme.colors.textPrimary,
+      fontSize: theme.typography.sizes.bodyStrong,
+      lineHeight: theme.typography.lineHeights.bodyStrong,
+      fontWeight: theme.typography.weights.semibold,
+    },
+    rowTitle: {
+      color: theme.colors.textPrimary,
+      fontSize: theme.typography.sizes.bodyStrong,
+      fontWeight: theme.typography.weights.semibold,
+      marginTop: theme.spacing.xs,
+    },
+    probabilityText: {
+      color: theme.colors.textPrimary,
+      fontSize: theme.typography.sizes.body,
+      lineHeight: theme.typography.lineHeights.body,
+    },
+    explanationText: {
+      color: theme.colors.textSecondary,
+      fontSize: theme.typography.sizes.caption,
+      lineHeight: theme.typography.lineHeights.caption,
+    },
+    timingNote: {
+      color: theme.colors.textPrimary,
+      backgroundColor: theme.colors.surfaceElevated,
+      fontSize: theme.typography.sizes.caption,
+      lineHeight: theme.typography.lineHeights.caption,
+      padding: theme.spacing.sm,
+      borderRadius: theme.radii.card,
+    },
+    probabilityRow: {
+      gap: theme.spacing.xs,
+    },
+    probabilityRowHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    probabilityTrack: {
+      width: '100%',
+      height: theme.layout.progressBarHeight,
+      borderRadius: theme.radii.pill,
+      backgroundColor: theme.colors.neutralBarTrack,
+      overflow: 'hidden',
+    },
+    probabilityFill: {
+      height: '100%',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.radii.pill,
+    },
   });
+}
+
+function ProbabilityRow({
+  label,
+  value,
+  styles,
+}: {
+  label: string;
+  value: number;
+  styles: ReturnType<typeof createStyles>;
+}) {
+  const percent = Math.round(value * 100);
+  return (
+    <View style={styles.probabilityRow} accessibilityLabel={`${label}: ${percent} percent`}>
+      <View style={styles.probabilityRowHeader}>
+        <Text style={styles.probabilityText}>{label}</Text>
+        <Text style={styles.probabilityText}>{percent}%</Text>
+      </View>
+      <View style={styles.probabilityTrack}>
+        <View style={[styles.probabilityFill, { width: `${Math.max(0, Math.min(100, percent))}%` }]} />
+      </View>
+    </View>
+  );
 }

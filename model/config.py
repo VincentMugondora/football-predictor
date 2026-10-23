@@ -174,3 +174,40 @@ TEAM_ALIASES.update({
 })
 
 ALLOW_FOOTBALL_DATA_DOWNLOADS = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"
+
+
+def timing_backfill_settings() -> dict[str, object]:
+    """Read opt-in timing settings after .env has been loaded by run_daily."""
+    def integer(name: str, default: int, minimum: int = 1) -> int:
+        try:
+            value = int(os.getenv(name, str(default)))
+        except ValueError as exc:
+            raise ValueError(f"{name} must be an integer.") from exc
+        if value < minimum:
+            raise ValueError(f"{name} must be at least {minimum}.")
+        return value
+
+    enabled = os.getenv("TIMING_BACKFILL_ENABLED", "false").strip().lower()
+    if enabled not in {"true", "false"}:
+        raise ValueError("TIMING_BACKFILL_ENABLED must be true or false.")
+    league = os.getenv("TIMING_BACKFILL_LEAGUE", "E0").strip().upper()
+    if league not in TIMING_BACKFILL_LEAGUES:
+        raise ValueError("TIMING_BACKFILL_LEAGUE must be one of E0, D1, I1, SP1.")
+    start_season = integer("TIMING_BACKFILL_START_SEASON", 2024)
+    min_season = integer("TIMING_BACKFILL_MIN_SEASON", 2022)
+    if min_season > start_season:
+        raise ValueError("TIMING_BACKFILL_MIN_SEASON cannot exceed TIMING_BACKFILL_START_SEASON.")
+    return {
+        "enabled": enabled == "true",
+        "league": league,
+        "reserve": integer("TIMING_BACKFILL_RESERVE", 40, minimum=0),
+        "max_requests": integer("TIMING_BACKFILL_MAX_REQUESTS_PER_RUN", 30),
+        "min_goals_per_league": integer("TIMING_MIN_GOALS_PER_LEAGUE", 3000),
+        "min_team_goals": integer("TIMING_MIN_TEAM_GOALS", 120),
+        "start_season": start_season,
+        "min_season": min_season,
+    }
+
+
+# Keep config independent of the provider module (which imports config).
+TIMING_BACKFILL_LEAGUES = ("E0", "D1", "I1", "SP1")

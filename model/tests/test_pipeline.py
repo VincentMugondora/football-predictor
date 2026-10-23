@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -16,9 +17,12 @@ from model.data import (
     clean_and_normalise_dataframe,
     load_historical_matches,
     normalise_team_name,
+    resolve_closing_odds_columns,
     resolve_odds_columns,
 )
 from model.model import OnlinePoissonModel
+from model.timing import HalfTimeGoalTimingModel
+from model.timing_windows import MinuteWindowTimingModel
 from model.run_daily import build_picks_payload, run_daily_pipeline, validate_fixtures_against_history
 from model.providers.base import Fixture
 from model.providers.the_odds_api import TheOddsApiProvider
@@ -135,6 +139,20 @@ def test_odds_source_priority_fallback() -> None:
     assert math.isclose(float(oh.iloc[2]), 2.40)
 
 
+def test_closing_odds_resolver_does_not_fall_back_to_opening_prices() -> None:
+    raw = pd.DataFrame({
+        "PSCH": [2.10, None], "PSCD": [3.40, None], "PSCA": [3.60, None],
+        "B365CH": [2.20, 2.30], "B365CD": [3.30, 3.20], "B365CA": [3.40, 3.10],
+        "B365H": [1.50, 1.60], "B365D": [4.00, 4.20], "B365A": [6.00, 5.50],
+    })
+    home, draw, away, source = resolve_closing_odds_columns(raw)
+
+    assert list(source) == ["Pinnacle closing", "Bet365 closing"]
+    assert list(home) == [2.10, 2.30]
+    assert list(draw) == [3.40, 3.20]
+    assert list(away) == [3.60, 3.10]
+
+
 def test_online_poisson_probabilities_sum_to_one_and_no_lookahead() -> None:
     model = OnlinePoissonModel()
     p_before = model.predict_proba("E0", "Arsenal", "Liverpool")
@@ -150,6 +168,91 @@ def test_online_poisson_probabilities_sum_to_one_and_no_lookahead() -> None:
     p_after = model.predict_proba("E0", "Arsenal", "Liverpool")
     assert math.isclose(sum(p_after), 1.0, rel_tol=1e-9)
     assert p_after[0] > p_before[0]
+
+
+def test_score_grid_derives_consistent_goal_and_winner_markets() -> None:
+    model = OnlinePoissonModel(rho=-0.06)
+    prediction = model.predict_markets("E0", "Arsenal", "Chelsea")
+    grid = prediction["grid"]
+    goals = prediction["goals"]
+    p_home, p_draw, p_away = prediction["p"]
+
+    assert math.isclose(float(grid.sum()), 1.0, abs_tol=1e-12)
+    assert math.isclose(p_home + p_draw + p_away, 1.0, abs_tol=1e-12)
+    assert math.isclose(float(goals["p_total"].sum()), 1.0, abs_tol=1e-12)
+    assert math.isclose(goals["exp_home"], float((grid * np.arange(grid.shape[0])[:, None]).sum()))
+    assert math.isclose(goals["exp_away"], float((grid * np.arange(grid.shape[1])[None, :]).sum()))
+    assert goals["over"]["0.5"] >= goals["over"]["1.5"] >= goals["over"]["2.5"] >= goals["over"]["3.5"]
+    assert math.isclose(goals["over"]["2.5"], float(goals["p_total"][3:].sum()), abs_tol=1e-12)
+    assert math.isclose(goals["btts"], float(grid[1:, 1:].sum()), abs_tol=1e-12)
+    assert len(goals["top_scores"]) == 3
+    assert all(0.0 <= item["probability"] <= 1.0 for item in goals["top_scores"])
+
+
+def test_halftime_model_shrinks_small_samples_and_waits_for_observation() -> None:
+    timing = HalfTimeGoalTimingModel()
+    assert timing.predict("E0", "Arsenal", "Chelsea", 2.0, 1.0) is None
+
+    timing.observe("E0", "Arsenal", "Chelsea", 2, 0, 2, 0)
+    result = timing.predict("E0", "Arsenal", "Chelsea", 2.0, 1.0)
+
+    assert result is not None
+    # One match must shrink heavily toward the 45% prior rather than use the raw 100% share.
+    assert result["team_specific_signal"] is False
+    assert result["home"]["first"] == pytest.approx(1.0)
+    assert result["home"]["second"] == pytest.approx(1.0)
+    assert result["away"]["first"] == pytest.approx(0.5)
+    assert result["away"]["second"] == pytest.approx(0.5)
+    assert 0.0 <= result["p_first_half_goal"] <= 1.0
+
+
+def test_halftime_walk_forward_never_observes_the_current_result_before_prediction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rows = []
+    for index in range(12):
+        rows.append({
+            "Div": "E0", "Date": pd.Timestamp("2025-01-01") + pd.Timedelta(days=index),
+            "HomeTeam": "Arsenal", "AwayTeam": "Chelsea", "FTHG": 2, "FTAG": 1,
+            "HTHG": 1, "HTAG": 0, "FTR": "H",
+            "OddsH": 2.0, "OddsD": 3.2, "OddsA": 4.0,
+        })
+    observed_matches = 0
+    original_predict = HalfTimeGoalTimingModel.predict
+    original_observe = HalfTimeGoalTimingModel.observe
+
+    def check_before_predict(self, league, home, away, expected_home, expected_away):
+        assert self.league_goals[league][1] == observed_matches * 3
+        return original_predict(self, league, home, away, expected_home, expected_away)
+
+    def count_after_observe(self, *args, **kwargs):
+        nonlocal observed_matches
+        original_observe(self, *args, **kwargs)
+        observed_matches += 1
+
+    monkeypatch.setattr(HalfTimeGoalTimingModel, "predict", check_before_predict)
+    monkeypatch.setattr(HalfTimeGoalTimingModel, "observe", count_after_observe)
+    report, _ = run_walk_forward_backtest(pd.DataFrame(rows), test_fraction=0.5)
+
+    assert report.timing_metrics["log_loss_model"] is not None
+    assert observed_matches == len(rows)
+
+
+def test_halftime_csv_values_are_validated_and_preserved() -> None:
+    raw = pd.DataFrame({
+        "Div": ["E0", "E0"], "Date": ["01/08/2024", "02/08/2024"],
+        "HomeTeam": ["Arsenal", "Chelsea"], "AwayTeam": ["Chelsea", "Arsenal"],
+        "FTHG": [2, 1], "FTAG": [0, 1], "FTR": ["H", "D"],
+        "B365H": [2.0, 2.5], "B365D": [3.0, 3.0], "B365A": [4.0, 3.0],
+        "HTHG": [1, 3], "HTAG": [0, 0],
+    })
+
+    cleaned = clean_and_normalise_dataframe(raw)
+
+    assert cleaned.iloc[0]["HTHG"] == 1
+    assert cleaned.iloc[0]["HTAG"] == 0
+    assert pd.isna(cleaned.iloc[1]["HTHG"])
+    assert pd.isna(cleaned.iloc[1]["HTAG"])
 
 
 def test_walk_forward_backtest_and_picks_payload_schema() -> None:
@@ -196,6 +299,83 @@ def test_walk_forward_backtest_and_picks_payload_schema() -> None:
     assert payload["leagues_skipped"]["SP1"].startswith("requires 5 historical seasons")
     assert payload["matches"] == []
     assert payload["recent_comparisons"] == []
+
+
+def test_v2_match_payload_has_consistent_goals_winner_timing_and_size() -> None:
+    rows = []
+    teams = ["Arsenal", "Liverpool", "Chelsea", "Tottenham"]
+    for i in range(24):
+        home, away = teams[i % len(teams)], teams[(i + 1) % len(teams)]
+        rows.append({
+            "Div": "E0", "Date": pd.Timestamp("2025-01-01") + pd.Timedelta(days=i),
+            "HomeTeam": home, "AwayTeam": away,
+            "FTHG": 2, "FTAG": 1, "FTR": "H", "HTHG": 1, "HTAG": 0,
+            "OddsH": 2.0, "OddsD": 3.2, "OddsA": 4.0,
+            "OddsOver25": 1.9, "OddsUnder25": 1.9,
+            "OddsCloseH": 2.1, "OddsCloseD": 3.4, "OddsCloseA": 3.6,
+        })
+    history = pd.DataFrame(rows)
+    report, _ = run_walk_forward_backtest(history, test_fraction=0.4)
+    fixture = Fixture(
+        "recorded-fixture", "PL", datetime.now(timezone.utc) + timedelta(days=2),
+        "Arsenal", "Chelsea",
+    )
+
+    payload = build_picks_payload(history, report, fixtures=[fixture])
+    match = payload["matches"][0]
+    encoded = json.dumps(payload, allow_nan=False).encode("utf-8")
+
+    assert payload["schema_version"] == "2.0"
+    assert match["goals"]["exp_total"] == pytest.approx(match["goals"]["exp_home"] + match["goals"]["exp_away"], abs=0.002)
+    assert sum(match["goals"]["p_total"]) == pytest.approx(1.0, abs=0.01)
+    assert sum(match["winner"]["p"]) == pytest.approx(1.0, abs=0.002)
+    assert match["timing"]["level"] == "half"
+    assert match["timing"]["windows"] is None
+    assert "league average, no team-specific signal yet" in match["timing"]["note"]
+    assert len(match["goals"]["top_scores"]) == 3
+    assert payload["backtest"]["winner"]["closing_market_matches"] == report.test_matches
+    assert payload["backtest"]["winner"]["log_loss_closing_market"] is not None
+    assert len(encoded) < config.MAX_PICKS_JSON_BYTES
+
+
+def test_minute_window_payload_is_league_only_below_training_threshold() -> None:
+    teams = ["Arsenal", "Liverpool", "Chelsea", "Tottenham"]
+    rows = []
+    for i in range(24):
+        home, away = teams[i % len(teams)], teams[(i + 1) % len(teams)]
+        rows.append({
+            "Div": "E0", "Date": pd.Timestamp("2025-01-01") + pd.Timedelta(days=i),
+            "HomeTeam": home, "AwayTeam": away,
+            "FTHG": 2, "FTAG": 1, "FTR": "H", "HTHG": 1, "HTAG": 0,
+            "OddsH": 2.0, "OddsD": 3.2, "OddsA": 3.6,
+        })
+    history = pd.DataFrame(rows)
+    report, _ = run_walk_forward_backtest(history, test_fraction=0.4)
+    fixture = Fixture(
+        "recorded-minute-fixture", "PL", datetime.now(timezone.utc) + timedelta(days=2),
+        "Arsenal", "Chelsea",
+    )
+    events = [
+        {"minute": 8, "extra_time": None, "team": "Arsenal", "type": "goal"},
+        {"minute": 44, "extra_time": None, "team": "Chelsea", "type": "penalty"},
+    ]
+    minute_model = MinuteWindowTimingModel(events, min_league_goals=3, min_team_goals=1)
+
+    payload = build_picks_payload(
+        history, report, fixtures=[fixture], minute_timing_model=minute_model,
+        minute_timing_league="E0",
+    )
+    timing = payload["matches"][0]["timing"]
+
+    assert timing["level"] == "minute"
+    assert timing["windows"]["team_specific_signal"] is False
+    assert timing["windows"]["league_goal_sample"] == 2
+    assert "league average, no team-specific signal yet" in timing["note"]
+    assert "exact-minute prediction" in timing["note"]
+    assert sum(row["expected_goals"] for row in timing["windows"]["home"].values()) == pytest.approx(
+        payload["matches"][0]["goals"]["exp_home"], abs=0.002
+    )
+    assert len(json.dumps(payload, allow_nan=False).encode("utf-8")) < config.MAX_PICKS_JSON_BYTES
 
 
 def test_remove_bookmaker_margin() -> None:

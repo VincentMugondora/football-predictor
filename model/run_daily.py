@@ -27,9 +27,13 @@ from model.providers.football_data_csv import FootballDataCsvProvider
 from model.providers.football_data_org import FootballDataOrgProvider
 from model.providers.the_odds_api import TheOddsApiProvider
 from model.providers.teams import canonical_team, clean_team_name, record_unmatched_team_names
+from model.timing import HalfTimeGoalTimingModel
+from model.timing_windows import MinuteWindowTimingModel, load_cached_goal_events
+from model.timing_backfill import run_timing_backfill
 
 SCHEMA_VERSION = "2.0"
 MODEL_VERSION = "poisson-dc-v2.0"
+LAST_API_FOOTBALL_REMAINING: int | None = None
 COMPETITION_TO_LEAGUE = {"PL": "E0", "BL1": "D1", "SA": "I1", "PD": "SP1",
                          "E0": "E0", "D1": "D1", "I1": "I1", "SP1": "SP1"}
 
@@ -179,6 +183,8 @@ def build_picks_payload(
     odds_credits_used: int = 0,
     sources_used: list[str] | None = None,
     leagues_skipped: dict[str, str] | None = None,
+    minute_timing_model: MinuteWindowTimingModel | None = None,
+    minute_timing_league: str | None = None,
 ) -> dict[str, object]:
     """
     1. Walks chronologically through verified historical matches, predicting before each result.
@@ -191,6 +197,7 @@ def build_picks_payload(
 
     # Train chronologically, predicting each real historical result before observing it.
     trained_model = OnlinePoissonModel()
+    timing_model = HalfTimeGoalTimingModel()
 
     for row in train_df.itertuples(index=False):
         div = str(row.Div)
@@ -200,6 +207,10 @@ def build_picks_payload(
         hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
         as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
         trained_model.observe_match(div, home, away, int(row.FTHG), int(row.FTAG), hs, as_)
+        timing_model.observe(
+            div, home, away, row.FTHG, row.FTAG,
+            getattr(row, "HTHG", float("nan")), getattr(row, "HTAG", float("nan")),
+        )
 
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     matches_out: list[dict[str, object]] = []
@@ -231,7 +242,96 @@ def build_picks_payload(
         kickoff_iso = fixture.kickoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         match_id = fixture.id
 
-        p_h, p_d, p_a = trained_model.predict_proba(div, home, away)
+        market_prediction = trained_model.predict_markets(div, home, away)
+        p_h, p_d, p_a = market_prediction["p"]
+        goals_raw = market_prediction["goals"]
+        grid = market_prediction["grid"]
+        winner_probs = [p_h, p_d, p_a]
+        ordered_outcomes = sorted(enumerate(winner_probs), key=lambda item: item[1], reverse=True)
+        winner_index, winning_probability = ordered_outcomes[0]
+        winning_gap = winning_probability - ordered_outcomes[1][1]
+        winner_names = ("home", "draw", "away")
+        winner_pick = "too close to call" if winning_gap < 0.05 else winner_names[winner_index]
+        low_confidence = home not in historical_teams or away not in historical_teams
+        confidence = (
+            "low" if low_confidence or winning_gap < 0.05 else
+            "high" if winning_gap >= 0.15 and winning_probability >= 0.60 else
+            "medium" if winning_gap >= 0.08 and winning_probability >= 0.45 else
+            "low"
+        )
+        goals_payload = {
+            "exp_home": round(float(goals_raw["exp_home"]), 3),
+            "exp_away": round(float(goals_raw["exp_away"]), 3),
+            "exp_total": round(float(goals_raw["exp_total"]), 3),
+            "p_total": [round(float(value), 3) for value in goals_raw["p_total"]],
+            "over": {line: round(float(value), 3) for line, value in goals_raw["over"].items()},
+            "btts": round(float(goals_raw["btts"]), 3),
+            "clean_sheet": [round(float(value), 3) for value in goals_raw["clean_sheet"]],
+            "top_scores": [
+                {"score": item["score"], "probability": round(float(item["probability"]), 3)}
+                for item in goals_raw["top_scores"]
+            ],
+        }
+        timing_raw = timing_model.predict(
+            div, home, away, float(goals_raw["exp_home"]), float(goals_raw["exp_away"])
+        )
+        if timing_raw is None:
+            timing_payload = {
+                "level": "none", "halves": None, "windows": None,
+                "note": "No validated halftime scores are available; no timing estimate is shown.",
+            }
+        else:
+            team_signal = bool(timing_raw["team_specific_signal"])
+            timing_payload = {
+                "level": "half",
+                "halves": {
+                    "home": {key: round(float(value), 3) for key, value in timing_raw["home"].items()},
+                    "away": {key: round(float(value), 3) for key, value in timing_raw["away"].items()},
+                    "p_first_half_goal": round(float(timing_raw["p_first_half_goal"]), 3),
+                    "league_first_share": round(float(timing_raw["league_first_share"]), 3),
+                    "team_specific_signal": team_signal,
+                },
+                "windows": None,
+                "note": (
+                    "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+                    if team_signal else
+                    "league average, no team-specific signal yet; no exact-minute prediction."
+                ),
+            }
+        if minute_timing_model is not None and minute_timing_league == div:
+            windows_raw = minute_timing_model.predict(
+                home, away, float(goals_raw["exp_home"]), float(goals_raw["exp_away"])
+            )
+            if windows_raw is not None:
+                windows = {
+                    "home": {
+                        label: {key: round(float(value), 3) for key, value in row.items()}
+                        for label, row in windows_raw["home"].items()
+                    },
+                    "away": {
+                        label: {key: round(float(value), 3) for key, value in row.items()}
+                        for label, row in windows_raw["away"].items()
+                    },
+                    "p_first_goal_before_30": round(float(windows_raw["p_first_goal_before_30"]), 3),
+                    "team_specific_signal": bool(windows_raw["team_specific_signal"]),
+                    "league_goal_sample": int(windows_raw["league_goal_sample"]),
+                }
+                timing_payload = {
+                    **timing_payload,
+                    "level": "minute",
+                    "windows": windows,
+                    "note": (
+                        "league average, no team-specific signal yet. "
+                        "Own goals are assigned to the beneficiary after score reconciliation; "
+                        "scored penalties count, missed and shootout penalties do not. Extra-time "
+                        "goals are cached but excluded from 90-minute windows. No exact-minute prediction."
+                        if not windows["team_specific_signal"] else
+                        "Team windows pass the configured league and team sample thresholds. Own goals "
+                        "are assigned to the beneficiary after score reconciliation; scored penalties "
+                        "count, missed and shootout penalties do not. Extra-time goals are cached but "
+                        "excluded from 90-minute windows. No exact-minute prediction."
+                    ),
+                }
         p_tuple = [round(p_h, 4), round(p_d, 4), round(1.0 - round(p_h, 4) - round(p_d, 4), 4)]
         fair_odds = [
             round(1.0 / max(0.01, p_tuple[0]), 2),
@@ -244,7 +344,6 @@ def build_picks_payload(
 
         home_summary = trained_model.get_team_summary(home)
         away_summary = trained_model.get_team_summary(away)
-        low_confidence = home not in historical_teams or away not in historical_teams
 
         match_entry: dict[str, object] = {
             "id": match_id,
@@ -258,6 +357,13 @@ def build_picks_payload(
             "reference_source": ref_source,
             "featured": i == featured_idx and not low_confidence,
             "low_confidence": low_confidence,
+            "goals": goals_payload,
+            "winner": {
+                "pick": winner_pick,
+                "p": [round(float(value), 3) for value in winner_probs],
+                "confidence": confidence,
+            },
+            "timing": timing_payload,
             "homeForm": home_summary["form"],
             "awayForm": away_summary["form"],
             "stats": {
@@ -304,8 +410,16 @@ def build_picks_payload(
             "verdict_code": report.verdict,
             "verdict": report.verdict_message,
             "clv_mean": report.clv_mean,
+            "winner": report.winner_metrics,
+            "goals": report.goals_metrics,
+            "timing": report.timing_metrics,
         },
         "matches": matches_out,
+        "model_notes": {
+            "goals": "Score markets are derived from one normalized Dixon-Coles Poisson grid.",
+            "winner": "Confidence reflects the gap between the two most likely outcomes; close outcomes are not called.",
+            "timing": "Halves use validated halftime scores with league shrinkage; optional 15-minute windows stay league-wide until the 3,000-goal threshold and never predict an exact minute.",
+        },
         "recent_comparisons": [],
     }
     return payload
@@ -363,7 +477,10 @@ def run_daily_pipeline(
             recent_results["Date"] = pd.to_datetime(recent_results["Date"], utc=True).dt.tz_localize(None)
             recent_results = recent_results[recent_results["Div"].isin(eligible_leagues)]
             recent_results = validate_results_against_history(recent_results, df_hist, fixtures_source)
-            for col in ("OddsH", "OddsD", "OddsA", "HS", "AS"):
+            for col in (
+                "OddsH", "OddsD", "OddsA", "OddsCloseH", "OddsCloseD", "OddsCloseA",
+                "OddsOver25", "OddsUnder25", "HS", "AS",
+            ):
                 recent_results[col] = float("nan")
             recent_results["OddsSource"] = ""
             df_hist = pd.concat([df_hist, recent_results], ignore_index=True)
@@ -381,6 +498,14 @@ def run_daily_pipeline(
                 raise
         fixtures = [f for f in fixtures if COMPETITION_TO_LEAGUE.get(f.competition) in eligible_leagues]
         fixtures = validate_fixtures_against_history(fixtures, df_hist, fixtures_source)
+        timing_settings = config.timing_backfill_settings()
+        timing_league = str(timing_settings["league"])
+        minute_events = load_cached_goal_events(timing_league)
+        minute_timing_model = MinuteWindowTimingModel(
+            minute_events,
+            min_league_goals=int(timing_settings["min_goals_per_league"]),
+            min_team_goals=int(timing_settings["min_team_goals"]),
+        ) if minute_events else None
         odds_by_fixture: dict[str, dict[str, object]] = {}
         credits_remaining = None
         credits_used = 0
@@ -402,14 +527,24 @@ def run_daily_pipeline(
             except Exception as odds_error:
                 # Odds are auxiliary; preserve verified fixtures and predictions if quota or odds service fails.
                 print(f"Reference odds unavailable: {odds_error}", flush=True)
+        global LAST_API_FOOTBALL_REMAINING
+        LAST_API_FOOTBALL_REMAINING = (
+            provider.requests_remaining if isinstance(provider, ApiFootballProvider) else None
+        )
+        sources = [fixtures_source, "football-data.co.uk CSV cache"]
+        if minute_events:
+            sources.append("API-Football cached goal events")
         payload = build_picks_payload(df_hist, report, fixtures=fixtures,
                                       reference_odds=odds_by_fixture,
                                       odds_credits_remaining=credits_remaining,
                                       odds_credits_used=credits_used,
-                                      sources_used=[fixtures_source, "football-data.co.uk CSV cache"],
-                                      leagues_skipped=leagues_skipped)
+                                      sources_used=sources,
+                                      leagues_skipped=leagues_skipped,
+                                      minute_timing_model=minute_timing_model,
+                                      minute_timing_league=timing_league)
 
-        serialized = json.dumps(payload, indent=2, allow_nan=False)
+        # Compact UTF-8 JSON keeps downloads economical on mobile data.
+        serialized = json.dumps(payload, separators=(",", ":"), allow_nan=False)
         byte_len = len(serialized.encode("utf-8"))
         if byte_len > config.MAX_PICKS_JSON_BYTES:
             raise ValueError(
@@ -445,3 +580,11 @@ if __name__ == "__main__":
     print(f"Successfully generated {config.PICKS_JSON_PATH}")
     print(f"Upcoming predictions : {len(matches)}")
     print(f"Backtest verdict     : {bt['verdict']} (Model {bt['log_loss_model']} vs Book {bt['log_loss_book']})")
+    print(f"Winner verdict       : {bt['winner']['verdict']}")
+    print(f"Goals verdict        : {bt['goals']['verdict']}")
+    print(f"Timing verdict       : {bt['timing']['verdict']}")
+    try:
+        run_timing_backfill(initial_requests_remaining=LAST_API_FOOTBALL_REMAINING)
+    except Exception as timing_error:
+        # Optional backfill must never invalidate the already-published daily picks.
+        print(f"Minute timing backfill unavailable: {timing_error}", flush=True)

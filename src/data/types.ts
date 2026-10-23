@@ -10,6 +10,48 @@ export interface MatchKeyStats {
   possession: [number, number];
 }
 
+export interface GoalPrediction {
+  exp_home: number;
+  exp_away: number;
+  exp_total: number;
+  p_total: [number, number, number, number, number]; // 0, 1, 2, 3, 4+
+  over: { '0.5': number; '1.5': number; '2.5': number; '3.5': number };
+  btts: number;
+  clean_sheet: [number, number]; // home team, away team
+  top_scores: { score: string; probability: number }[];
+}
+
+export interface WinnerPrediction {
+  pick: 'home' | 'draw' | 'away' | 'too close to call';
+  p: OutcomeTuple;
+  confidence: 'low' | 'medium' | 'high';
+}
+
+export interface HalfTimingPrediction {
+  home: { first: number; second: number };
+  away: { first: number; second: number };
+  p_first_half_goal: number;
+  league_first_share: number;
+  team_specific_signal: boolean;
+}
+
+export type GoalTimeWindow = '0-15' | '16-30' | '31-45+' | '46-60' | '61-75' | '76-90+';
+
+export interface MinuteWindowPrediction {
+  home: Record<GoalTimeWindow, { expected_goals: number; p_at_least_one: number }>;
+  away: Record<GoalTimeWindow, { expected_goals: number; p_at_least_one: number }>;
+  p_first_goal_before_30: number;
+  team_specific_signal: boolean;
+  league_goal_sample: number;
+}
+
+export interface MatchTimingPrediction {
+  level: 'minute' | 'half' | 'none';
+  halves: HalfTimingPrediction | null;
+  windows: MinuteWindowPrediction | null;
+  note: string;
+}
+
 export interface MatchPick {
   id: string;
   date: string; // ISO 8601 timestamp
@@ -27,6 +69,9 @@ export interface MatchPick {
   updatedAtLabel?: string;
   reference_source?: string;
   fair_odds?: OutcomeTuple;
+  goals?: GoalPrediction;
+  winner?: WinnerPrediction;
+  timing?: MatchTimingPrediction;
 }
 
 export interface MatchResultComparison {
@@ -59,6 +104,9 @@ export interface BacktestSummary {
   recent_evaluated?: number;
   recent_hit_rate_model?: number;
   recent_hit_rate_book?: number;
+  winner?: Record<string, unknown>;
+  goals?: Record<string, unknown>;
+  timing?: Record<string, unknown>;
 }
 
 export interface PicksPayload {
@@ -72,6 +120,7 @@ export interface PicksPayload {
   backtest: BacktestSummary;
   matches: MatchPick[];
   recent_comparisons?: MatchResultComparison[];
+  model_notes?: Record<string, string>;
 }
 
 export type BetResult = 'Pending' | 'Win' | 'Loss' | 'Void';
@@ -104,6 +153,6 @@ export interface UserSettings {
 }
 
 export interface PicksRepository {
-  getCachedPicks(): PicksPayload;
+  getCachedPicks(): PicksPayload | null;
   getPicks(): Promise<PicksPayload>;
 }

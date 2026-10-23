@@ -97,6 +97,57 @@ def resolve_odds_columns(df: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Ser
     return odds_h, odds_d, odds_a, source
 
 
+def resolve_closing_odds_columns(df: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+    """Resolve explicitly closing 1X2 prices; never substitute opening prices."""
+    n = len(df)
+    odds_h = pd.Series(np.nan, index=df.index, dtype=float)
+    odds_d = pd.Series(np.nan, index=df.index, dtype=float)
+    odds_a = pd.Series(np.nan, index=df.index, dtype=float)
+    source = pd.Series("", index=df.index, dtype=object)
+    priorities = (
+        ("Pinnacle closing", "PSCH", "PSCD", "PSCA"),
+        ("Bet365 closing", "B365CH", "B365CD", "B365CA"),
+        ("Average closing", "AvgCH", "AvgCD", "AvgCA"),
+        ("Maximum closing", "MaxCH", "MaxCD", "MaxCA"),
+    )
+    for name, col_h, col_d, col_a in priorities:
+        if not all(column in df.columns for column in (col_h, col_d, col_a)):
+            continue
+        candidate_h = pd.to_numeric(df[col_h], errors="coerce")
+        candidate_d = pd.to_numeric(df[col_d], errors="coerce")
+        candidate_a = pd.to_numeric(df[col_a], errors="coerce")
+        valid = (
+            odds_h.isna() & candidate_h.gt(1.0) & candidate_d.gt(1.0) & candidate_a.gt(1.0)
+        )
+        odds_h = odds_h.where(~valid, candidate_h)
+        odds_d = odds_d.where(~valid, candidate_d)
+        odds_a = odds_a.where(~valid, candidate_a)
+        source = source.where(~valid, name)
+    return odds_h, odds_d, odds_a, source
+
+
+def resolve_over_under_odds(df: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
+    """Resolve real over/under 2.5 odds, preferring closing average prices."""
+    over = pd.Series(np.nan, index=df.index, dtype=float)
+    under = pd.Series(np.nan, index=df.index, dtype=float)
+    source = pd.Series("", index=df.index, dtype=object)
+    priorities = (
+        ("AvgC", "AvgC>2.5", "AvgC<2.5"), ("MaxC", "MaxC>2.5", "MaxC<2.5"),
+        ("B365C", "B365C>2.5", "B365C<2.5"), ("Avg", "Avg>2.5", "Avg<2.5"),
+        ("Max", "Max>2.5", "Max<2.5"), ("B365", "B365>2.5", "B365<2.5"),
+    )
+    for name, over_col, under_col in priorities:
+        if over_col not in df or under_col not in df:
+            continue
+        candidate_over = pd.to_numeric(df[over_col], errors="coerce")
+        candidate_under = pd.to_numeric(df[under_col], errors="coerce")
+        valid = over.isna() & candidate_over.gt(1.0) & candidate_under.gt(1.0)
+        over = over.where(~valid, candidate_over)
+        under = under.where(~valid, candidate_under)
+        source = source.where(~valid, name)
+    return over, under, source
+
+
 def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """Validates schema, parses day-first dates, filters missing results/odds, and normalises names."""
     missing_cols = [c for c in config.REQUIRED_MATCH_COLUMNS if c not in df.columns]
@@ -114,11 +165,24 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     work["FTAG"] = pd.to_numeric(work["FTAG"], errors="coerce")
     work["FTR"] = work["FTR"].astype(str).str.strip()
 
+    # Half-time scores are optional across historical CSV seasons.
+    for column in ("HTHG", "HTAG"):
+        work[column] = pd.to_numeric(work[column], errors="coerce") if column in work else np.nan
+
     odds_h, odds_d, odds_a, odds_src = resolve_odds_columns(work)
+    closing_h, closing_d, closing_a, closing_src = resolve_closing_odds_columns(work)
+    over25, under25, ou_src = resolve_over_under_odds(work)
     work["OddsH"] = odds_h
     work["OddsD"] = odds_d
     work["OddsA"] = odds_a
     work["OddsSource"] = odds_src
+    work["OddsCloseH"] = closing_h
+    work["OddsCloseD"] = closing_d
+    work["OddsCloseA"] = closing_a
+    work["OddsCloseSource"] = closing_src
+    work["OddsOver25"] = over25
+    work["OddsUnder25"] = under25
+    work["OddsOverUnderSource"] = ou_src
 
     # Optional match stats columns (shots) if present in CSV
     if "HS" in work.columns and "AS" in work.columns:
@@ -141,6 +205,19 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     )
     work = work.loc[valid_rows].copy()
 
+    valid_ht = (
+        work["HTHG"].notna()
+        & work["HTAG"].notna()
+        & (work["HTHG"] >= 0)
+        & (work["HTAG"] >= 0)
+        & (work["HTHG"] <= work["FTHG"])
+        & (work["HTAG"] <= work["FTAG"])
+        & (work["HTHG"] % 1 == 0)
+        & (work["HTAG"] % 1 == 0)
+    )
+    work.loc[~valid_ht, ["HTHG", "HTAG"]] = np.nan
+    work.loc[valid_ht, ["HTHG", "HTAG"]] = work.loc[valid_ht, ["HTHG", "HTAG"]].astype(int)
+
     work["Div"] = work["Div"].astype(str).str.strip()
     work["HomeTeam"] = work["HomeTeam"].map(normalise_team_name)
     work["AwayTeam"] = work["AwayTeam"].map(normalise_team_name)
@@ -157,10 +234,19 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         "FTHG",
         "FTAG",
         "FTR",
+        "HTHG",
+        "HTAG",
+        "OddsOver25",
+        "OddsUnder25",
+        "OddsOverUnderSource",
         "OddsH",
         "OddsD",
         "OddsA",
         "OddsSource",
+        "OddsCloseH",
+        "OddsCloseD",
+        "OddsCloseA",
+        "OddsCloseSource",
         "HS",
         "AS",
     ]

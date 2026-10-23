@@ -81,6 +81,11 @@ class OnlinePoissonModel:
         Computes (p_home, p_draw, p_away) strictly from historical parameters.
         Applies Dixon-Coles low-score correlation adjustment on (0,0), (1,0), (0,1), (1,1).
         """
+        grid = self.predict_score_grid(league, home, away)
+        return self.outcome_probabilities(grid)
+
+    def predict_score_grid(self, league: str, home: str, away: str) -> np.ndarray:
+        """Return the normalized home-score x away-score grid, including Dixon-Coles."""
         lam_h, lam_a = self.expected_goals(league, home, away)
         p_h_goals = self._poisson_pmf(lam_h)
         p_a_goals = self._poisson_pmf(lam_a)
@@ -96,9 +101,13 @@ class OnlinePoissonModel:
 
         total = float(np.sum(grid))
         if total <= 0.0:
-            return (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0)
+            raise ValueError("Score grid has no probability mass")
         grid /= total
+        return grid
 
+    @staticmethod
+    def outcome_probabilities(grid: np.ndarray) -> tuple[float, float, float]:
+        """Derive home/draw/away probabilities from a normalized score grid."""
         p_draw = float(np.trace(grid))
         p_home = float(np.sum(np.tril(grid, k=-1)))
         p_away = float(np.sum(np.triu(grid, k=1)))
@@ -106,6 +115,43 @@ class OnlinePoissonModel:
         # Ensure exact sum to 1.0
         norm = p_home + p_draw + p_away
         return (p_home / norm, p_draw / norm, p_away / norm)
+
+    def predict_markets(self, league: str, home: str, away: str) -> dict[str, object]:
+        """Derive every score and 1X2 market from one Dixon-Coles-adjusted grid."""
+        grid = self.predict_score_grid(league, home, away)
+        p_home, p_draw, p_away = self.outcome_probabilities(grid)
+        home_goals = np.arange(grid.shape[0], dtype=float)
+        away_goals = np.arange(grid.shape[1], dtype=float)
+        exp_home = float(np.sum(grid * home_goals[:, None]))
+        exp_away = float(np.sum(grid * away_goals[None, :]))
+        total_probs = np.zeros(5, dtype=float)
+        for h in range(grid.shape[0]):
+            for a in range(grid.shape[1]):
+                total_probs[min(h + a, 4)] += grid[h, a]
+        top_indices = np.argsort(grid, axis=None, kind="stable")[-3:][::-1]
+        top_scores = []
+        for flat_index in top_indices:
+            h, a = np.unravel_index(int(flat_index), grid.shape)
+            top_scores.append({"score": f"{h}-{a}", "probability": float(grid[h, a])})
+        return {
+            "p": (p_home, p_draw, p_away),
+            "grid": grid,
+            "goals": {
+                "exp_home": exp_home,
+                "exp_away": exp_away,
+                "exp_total": exp_home + exp_away,
+                "p_total": total_probs,
+                "over": {
+                    "0.5": float(total_probs[1:].sum()),
+                    "1.5": float(total_probs[2:].sum()),
+                    "2.5": float(total_probs[3:].sum()),
+                    "3.5": float(total_probs[4]),
+                },
+                "btts": float(grid[1:, 1:].sum()),
+                "clean_sheet": [float(grid[:, 0].sum()), float(grid[0, :].sum())],
+                "top_scores": top_scores,
+            },
+        }
 
     def observe_match(
         self,

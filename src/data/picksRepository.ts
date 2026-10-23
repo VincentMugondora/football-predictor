@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { MatchPick, PicksPayload, PicksRepository } from '@/data/types';
+import { GoalTimeWindow, MatchPick, MinuteWindowPrediction, PicksPayload, PicksRepository } from '@/data/types';
 
 const CACHE_KEY = 'football-predictor-live-picks-v1';
 const PICKS_URL = process.env.EXPO_PUBLIC_PICKS_URL;
@@ -55,6 +55,10 @@ function isFiniteTuple(value: unknown): value is [number, number, number] {
   );
 }
 
+function isProbability(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
 function utf8ByteLength(value: string): number {
   return encodeURIComponent(value).replace(/%[A-F\d]{2}/gi, 'U').length;
 }
@@ -105,6 +109,71 @@ function validatePayload(value: unknown, url: string): PicksPayload {
     if (Date.parse(match.date) <= Date.parse(generatedAt)) {
       schemaFailure(`${prefix}.date`, url);
     }
+    if (match.goals !== undefined) {
+      const goals = match.goals;
+      if (!goals || typeof goals !== 'object') schemaFailure(`${prefix}.goals`, url);
+      if (![goals.exp_home, goals.exp_away, goals.exp_total].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0)) {
+        schemaFailure(`${prefix}.goals.expected`, url);
+      }
+      if (!Array.isArray(goals.p_total) || goals.p_total.length !== 5 || !goals.p_total.every(isProbability) || Math.abs(goals.p_total.reduce((sum, item) => sum + item, 0) - 1) > 0.01) {
+        schemaFailure(`${prefix}.goals.p_total`, url);
+      }
+      if (!goals.over || !['0.5', '1.5', '2.5', '3.5'].every((line) => isProbability(goals.over[line as keyof typeof goals.over]))) {
+        schemaFailure(`${prefix}.goals.over`, url);
+      }
+      const overs = ['0.5', '1.5', '2.5', '3.5'].map((line) => goals.over[line as keyof typeof goals.over]);
+      if (overs.some((value, index) => index > 0 && value > overs[index - 1])) schemaFailure(`${prefix}.goals.over`, url);
+      if (!isProbability(goals.btts)) schemaFailure(`${prefix}.goals.btts`, url);
+      if (!Array.isArray(goals.clean_sheet) || goals.clean_sheet.length !== 2 || !goals.clean_sheet.every(isProbability)) {
+        schemaFailure(`${prefix}.goals.clean_sheet`, url);
+      }
+      if (!Array.isArray(goals.top_scores) || goals.top_scores.length !== 3 || goals.top_scores.some((score) => !score || typeof score.score !== 'string' || !isProbability(score.probability))) {
+        schemaFailure(`${prefix}.goals.top_scores`, url);
+      }
+    }
+    if (match.winner !== undefined) {
+      if (!match.winner || !['home', 'draw', 'away', 'too close to call'].includes(match.winner.pick)) {
+        schemaFailure(`${prefix}.winner.pick`, url);
+      }
+      if (!isFiniteTuple(match.winner.p) || !match.winner.p.every(isProbability) || Math.abs(match.winner.p.reduce((sum, p) => sum + p, 0) - 1) > 0.01) {
+        schemaFailure(`${prefix}.winner.p`, url);
+      }
+      if (!['low', 'medium', 'high'].includes(match.winner.confidence)) schemaFailure(`${prefix}.winner.confidence`, url);
+    }
+    if (match.timing !== undefined) {
+      const timing = match.timing;
+      if (!timing || !['minute', 'half', 'none'].includes(timing.level)) schemaFailure(`${prefix}.timing.level`, url);
+      if (timing.halves !== null) {
+        const halves = timing.halves;
+        if (!halves || !['home', 'away'].every((side) => {
+          const half = halves[side as 'home' | 'away'];
+          return half && [half.first, half.second].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0);
+        }) || !isProbability(halves.p_first_half_goal) || !isProbability(halves.league_first_share) || typeof halves.team_specific_signal !== 'boolean') {
+          schemaFailure(`${prefix}.timing.halves`, url);
+        }
+      }
+      if (timing.windows !== null) {
+        const windows = timing.windows;
+        const labels: GoalTimeWindow[] = ['0-15', '16-30', '31-45+', '46-60', '61-75', '76-90+'];
+        const validSide = (side: MinuteWindowPrediction['home']) => side && labels.every((label) => {
+          const window = side[label];
+          return window
+            && typeof window.expected_goals === 'number'
+            && Number.isFinite(window.expected_goals)
+            && window.expected_goals >= 0
+            && isProbability(window.p_at_least_one);
+        });
+        if (!windows || !validSide(windows.home) || !validSide(windows.away)
+          || !isProbability(windows.p_first_goal_before_30)
+          || typeof windows.team_specific_signal !== 'boolean'
+          || !Number.isInteger(windows.league_goal_sample) || windows.league_goal_sample < 0) {
+          schemaFailure(`${prefix}.timing.windows`, url);
+        }
+      }
+      if (timing.level === 'minute' && timing.windows === null) schemaFailure(`${prefix}.timing.windows`, url);
+      if (timing.level !== 'minute' && timing.windows !== null) schemaFailure(`${prefix}.timing.windows`, url);
+      if (typeof timing.note !== 'string') schemaFailure(`${prefix}.timing.note`, url);
+    }
   });
   return candidate as PicksPayload;
 }
@@ -123,21 +192,8 @@ export class LivePicksRepository implements PicksRepository {
     this.timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
   }
 
-  getCachedPicks(): PicksPayload {
-    return (
-      this.cached ?? {
-        schema_version: '2.0',
-        generated_at: new Date(0).toISOString(),
-        data_status: 'no_fixtures',
-        backtest: {
-          verdict: 'No proven edge: treat these as estimates.',
-          log_loss_model: 0,
-          log_loss_book: 0,
-          verdict_code: 'no_edge',
-        },
-        matches: [],
-      }
-    );
+  getCachedPicks(): PicksPayload | null {
+    return this.cached;
   }
 
   async getPicks(): Promise<PicksPayload> {

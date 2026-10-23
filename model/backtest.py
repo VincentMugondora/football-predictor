@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 import numpy as np
 import pandas as pd
 
 from model import config
 from model.model import OnlinePoissonModel
+from model.timing import HalfTimeGoalTimingModel
 
 
 def remove_bookmaker_margin(
@@ -43,6 +44,39 @@ def multiclass_brier_score(
     return float(sum((probs[i] - y[i]) ** 2 for i in range(3)))
 
 
+def ranked_probability_score(probs: tuple[float, float, float], actual_ftr: str) -> float:
+    """Three-outcome ranked score in the documented H/D/A category order."""
+    actual_index = {"H": 0, "D": 1, "A": 2}[actual_ftr]
+    cumulative = np.cumsum(probs)[:-1]
+    observed = np.cumsum([1.0 if i == actual_index else 0.0 for i in range(3)])[:-1]
+    return float(np.mean((cumulative - observed) ** 2))
+
+
+def poisson_log_loss(actual: int, expected: float) -> float:
+    """Negative Poisson log likelihood for an observed goal count."""
+    rate = max(float(expected), 1e-9)
+    return rate - actual * math.log(rate) + math.lgamma(actual + 1)
+
+
+def binary_log_loss(probability: float, observed: bool) -> float:
+    p = min(1.0 - 1e-12, max(1e-12, float(probability)))
+    return -math.log(p if observed else 1.0 - p)
+
+
+def calibration_table(probabilities: list[float], outcomes: list[bool]) -> list[dict[str, float | int]]:
+    bins = []
+    for lower in np.linspace(0.0, 0.8, 5):
+        upper = lower + 0.2
+        indexes = [i for i, p in enumerate(probabilities) if lower <= p < upper or (upper >= 1.0 and p <= 1.0)]
+        if indexes:
+            bins.append({
+                "predicted": round(float(np.mean([probabilities[i] for i in indexes])), 3),
+                "actual": round(float(np.mean([outcomes[i] for i in indexes])), 3),
+                "count": len(indexes),
+            })
+    return bins
+
+
 @dataclass
 class BacktestReport:
     test_matches: int
@@ -59,6 +93,9 @@ class BacktestReport:
     roi_at_3pct_edge: float
     roi_ci_low: float
     roi_ci_high: float
+    winner_metrics: dict[str, object] = field(default_factory=dict)
+    goals_metrics: dict[str, object] = field(default_factory=dict)
+    timing_metrics: dict[str, object] = field(default_factory=dict)
 
 
 def run_walk_forward_backtest(
@@ -77,6 +114,7 @@ def run_walk_forward_backtest(
 
     test_start_idx = int(round(n_total * (1.0 - test_fraction)))
     model = OnlinePoissonModel()
+    timing_model = HalfTimeGoalTimingModel()
 
     # Track historical league outcome counts for the naive league-average baseline
     league_counts: dict[str, list[int]] = {}
@@ -86,6 +124,28 @@ def run_walk_forward_backtest(
     base_losses: list[float] = []
     model_briers: list[float] = []
     book_briers: list[float] = []
+    base_briers: list[float] = []
+    closing_losses: list[float] = []
+    closing_briers: list[float] = []
+    closing_rps: list[float] = []
+    correct_closing: list[bool] = []
+    model_rps: list[float] = []
+    book_rps: list[float] = []
+    base_rps: list[float] = []
+    correct_model: list[bool] = []
+    correct_book: list[bool] = []
+    correct_base: list[bool] = []
+    home_goal_losses: list[float] = []
+    away_goal_losses: list[float] = []
+    over25_probabilities: list[float] = []
+    over25_outcomes: list[bool] = []
+    btts_probabilities: list[float] = []
+    btts_outcomes: list[bool] = []
+    over25_market_losses: list[float] = []
+    over25_model_losses: list[float] = []
+    timing_losses: list[float] = []
+    timing_baseline_losses: list[float] = []
+    league_timing_shares: dict[str, list[float]] = {}
     bet_profits: list[float] = []
     bet_clvs: list[float] = []
 
@@ -104,9 +164,18 @@ def run_walk_forward_backtest(
         raw_odds = (getattr(row, "OddsH", np.nan), getattr(row, "OddsD", np.nan), getattr(row, "OddsA", np.nan))
         has_odds = all(pd.notna(value) and float(value) > 1.0 for value in raw_odds)
         odds_tuple = tuple(float(value) for value in raw_odds) if has_odds else None
+        raw_closing_odds = (
+            getattr(row, "OddsCloseH", np.nan),
+            getattr(row, "OddsCloseD", np.nan),
+            getattr(row, "OddsCloseA", np.nan),
+        )
+        has_closing_odds = all(pd.notna(value) and float(value) > 1.0 for value in raw_closing_odds)
+        closing_odds_tuple = tuple(float(value) for value in raw_closing_odds) if has_closing_odds else None
 
         # 1. Predict BEFORE observing result
-        p_model = model.predict_proba(league, home, away)
+        market_prediction = model.predict_markets(league, home, away)
+        p_model = market_prediction["p"]
+        goals_prediction = market_prediction["goals"]
         p_book = remove_bookmaker_margin(*odds_tuple) if odds_tuple else None
 
         counts = league_counts.get(league, [45, 27, 28])
@@ -119,8 +188,68 @@ def run_walk_forward_backtest(
                 book_losses.append(multiclass_log_loss(p_book, ftr))
             base_losses.append(multiclass_log_loss(p_base, ftr))
             model_briers.append(multiclass_brier_score(p_model, ftr))
+            base_briers.append(multiclass_brier_score(p_base, ftr))
+            model_rps.append(ranked_probability_score(p_model, ftr))
+            base_rps.append(ranked_probability_score(p_base, ftr))
+            model_choice = ("H", "D", "A")[int(np.argmax(p_model))]
+            base_choice = ("H", "D", "A")[int(np.argmax(p_base))]
+            correct_model.append(model_choice == ftr)
+            correct_base.append(base_choice == ftr)
             if p_book is not None:
                 book_briers.append(multiclass_brier_score(p_book, ftr))
+                book_rps.append(ranked_probability_score(p_book, ftr))
+                book_choice = ("H", "D", "A")[int(np.argmax(p_book))]
+                correct_book.append(book_choice == ftr)
+            if closing_odds_tuple is not None:
+                p_closing = remove_bookmaker_margin(*closing_odds_tuple)
+                closing_losses.append(multiclass_log_loss(p_closing, ftr))
+                closing_briers.append(multiclass_brier_score(p_closing, ftr))
+                closing_rps.append(ranked_probability_score(p_closing, ftr))
+                closing_choice = ("H", "D", "A")[int(np.argmax(p_closing))]
+                correct_closing.append(closing_choice == ftr)
+
+            home_expected = float(goals_prediction["exp_home"])
+            away_expected = float(goals_prediction["exp_away"])
+            over25_probability = float(goals_prediction["over"]["2.5"])
+            btts_probability = float(goals_prediction["btts"])
+            over25_observed = fthg + ftag > 2
+            btts_observed = fthg > 0 and ftag > 0
+            home_goal_losses.append(poisson_log_loss(fthg, home_expected))
+            away_goal_losses.append(poisson_log_loss(ftag, away_expected))
+            over25_probabilities.append(over25_probability)
+            over25_outcomes.append(over25_observed)
+            btts_probabilities.append(btts_probability)
+            btts_outcomes.append(btts_observed)
+            over25_model_losses.append(binary_log_loss(over25_probability, over25_observed))
+            over_price = getattr(row, "OddsOver25", np.nan)
+            under_price = getattr(row, "OddsUnder25", np.nan)
+            if pd.notna(over_price) and pd.notna(under_price) and float(over_price) > 1 and float(under_price) > 1:
+                raw_over, raw_under = 1 / float(over_price), 1 / float(under_price)
+                fair_over = raw_over / (raw_over + raw_under)
+                over25_market_losses.append(binary_log_loss(fair_over, over25_observed))
+
+            timing_estimate = timing_model.predict(league, home, away, home_expected, away_expected)
+            league_share = timing_model.league_share(league)
+            timing_baseline_share = league_share if league_share is not None else timing_model.DEFAULT_LEAGUE_SHARE
+            if timing_model.valid_halftime(fthg, ftag, getattr(row, "HTHG", np.nan), getattr(row, "HTAG", np.nan)):
+                ht_home, ht_away = int(row.HTHG), int(row.HTAG)
+                if timing_estimate is None:
+                    timing_estimate = {
+                        "home": {"first": home_expected * timing_baseline_share, "second": home_expected * (1 - timing_baseline_share)},
+                        "away": {"first": away_expected * timing_baseline_share, "second": away_expected * (1 - timing_baseline_share)},
+                    }
+                timing_losses.extend([
+                    poisson_log_loss(ht_home, float(timing_estimate["home"]["first"])),
+                    poisson_log_loss(fthg - ht_home, float(timing_estimate["home"]["second"])),
+                    poisson_log_loss(ht_away, float(timing_estimate["away"]["first"])),
+                    poisson_log_loss(ftag - ht_away, float(timing_estimate["away"]["second"])),
+                ])
+                timing_baseline_losses.extend([
+                    poisson_log_loss(ht_home, home_expected * timing_baseline_share),
+                    poisson_log_loss(fthg - ht_home, home_expected * (1 - timing_baseline_share)),
+                    poisson_log_loss(ht_away, away_expected * timing_baseline_share),
+                    poisson_log_loss(ftag - ht_away, away_expected * (1 - timing_baseline_share)),
+                ])
 
             # Evaluate candidate flat-stake bets above edge_threshold
             outcomes = ("H", "D", "A")
@@ -136,6 +265,10 @@ def run_walk_forward_backtest(
         hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
         as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
         model.observe_match(league, home, away, fthg, ftag, hs, as_)
+        timing_model.observe(
+            league, home, away, fthg, ftag,
+            getattr(row, "HTHG", np.nan), getattr(row, "HTAG", np.nan),
+        )
 
         if league not in league_counts:
             league_counts[league] = [0, 0, 0]
@@ -196,6 +329,54 @@ def run_walk_forward_backtest(
         roi_at_3pct_edge=round(roi_mean, 4),
         roi_ci_low=round(roi_ci_low, 4),
         roi_ci_high=round(roi_ci_high, 4),
+        winner_metrics={
+            "log_loss_model": round(ll_model, 4),
+            "log_loss_closing_market": round(float(np.mean(closing_losses)), 4) if closing_losses else None,
+            "log_loss_league_average": round(ll_base, 4),
+            "brier_model": round(br_model, 4),
+            "brier_closing_market": round(float(np.mean(closing_briers)), 4) if closing_briers else None,
+            "brier_league_average": round(float(np.mean(base_briers)), 4) if base_briers else None,
+            "rps_model": round(float(np.mean(model_rps)), 4) if model_rps else None,
+            "rps_closing_market": round(float(np.mean(closing_rps)), 4) if closing_rps else None,
+            "rps_league_average": round(float(np.mean(base_rps)), 4) if base_rps else None,
+            "top_pick_accuracy_model": round(float(np.mean(correct_model)), 4) if correct_model else None,
+            "top_pick_accuracy_closing_market": round(float(np.mean(correct_closing)), 4) if correct_closing else None,
+            "closing_market_matches": len(closing_losses),
+            "top_pick_accuracy_league_average": round(float(np.mean(correct_base)), 4) if correct_base else None,
+            "verdict": (
+                "Model beats both closing-market and league-average log loss."
+                if closing_losses and ll_model < float(np.mean(closing_losses)) and ll_model < ll_base else
+                "No proven winner edge: compare model, closing-market, and league-average metrics."
+            ),
+        },
+        goals_metrics={
+            "poisson_log_loss_home": round(float(np.mean(home_goal_losses)), 4) if home_goal_losses else None,
+            "poisson_log_loss_away": round(float(np.mean(away_goal_losses)), 4) if away_goal_losses else None,
+            "over_2_5_calibration": calibration_table(over25_probabilities, over25_outcomes),
+            "btts_calibration": calibration_table(btts_probabilities, btts_outcomes),
+            "over_2_5_log_loss_model": round(float(np.mean(over25_model_losses)), 4) if over25_model_losses else None,
+            "over_2_5_log_loss_closing_market": round(float(np.mean(over25_market_losses)), 4) if over25_market_losses else None,
+            "verdict": (
+                "Model over 2.5 log loss beats the available closing over/under benchmark."
+                if over25_market_losses and np.mean(over25_model_losses) < np.mean(over25_market_losses) else
+                "No proven goals edge against closing over/under odds; calibration is shown for review."
+                if over25_market_losses else
+                "Closing over/under odds were unavailable; goals calibration and Poisson log loss are shown."
+            ),
+        },
+        timing_metrics={
+            "log_loss_model": round(float(np.mean(timing_losses)), 4) if timing_losses else None,
+            "log_loss_league_average": round(float(np.mean(timing_baseline_losses)), 4) if timing_baseline_losses else None,
+            "league_first_half_share": {
+                league: round((counts[0] / counts[1]), 3)
+                for league, counts in timing_model.league_goals.items() if counts[1] > 0
+            },
+            "verdict": (
+                "Team-specific half timing beats the league-average baseline."
+                if timing_losses and np.mean(timing_losses) < np.mean(timing_baseline_losses) else
+                "No team-specific signal found; use the league-wide half-time pattern."
+            ),
+        },
     )
     return report, model
 

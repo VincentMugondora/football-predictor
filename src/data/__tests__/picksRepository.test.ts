@@ -42,6 +42,38 @@ afterEach(() => {
 });
 
 describe('LivePicksRepository diagnostics', () => {
+  it('accepts schema v2 minute windows with league-average status', async () => {
+    const windows = Object.fromEntries(['0-15', '16-30', '31-45+', '46-60', '61-75', '76-90+'].map((label) => [label, {
+      expected_goals: 0.1,
+      p_at_least_one: 0.095,
+    }]));
+    const payload = {
+      generated_at: new Date(Date.now() - 60_000).toISOString(),
+      matches: [{
+        id: 'fixture-minute', date: new Date(Date.now() + 60_000).toISOString(), league: 'Premier League',
+        home: 'Arsenal', away: 'Chelsea', p: [0.5, 0.25, 0.25], odds: null,
+        timing: {
+          level: 'minute', halves: null,
+          windows: {
+            home: windows, away: windows, p_first_goal_before_30: 0.4,
+            team_specific_signal: false, league_goal_sample: 12,
+          },
+          note: 'league average, no team-specific signal yet.',
+        },
+      }],
+      backtest: { verdict: 'No proven edge', log_loss_model: 0.9, log_loss_book: null },
+    };
+    const repository = new LivePicksRepository({
+      url: TEST_URL,
+      request: makeRequest(async () => response(payload)),
+      storage: makeStorage(),
+    });
+
+    await expect(repository.getPicks()).resolves.toMatchObject({
+      matches: [{ timing: { level: 'minute', windows: { team_specific_signal: false, league_goal_sample: 12 } } }],
+    });
+  });
+
   it('reports URL not configured', async () => {
     const repository = new LivePicksRepository({ url: '', request: makeRequest(), storage: makeStorage() });
     await expect(repository.getPicks()).rejects.toMatchObject({

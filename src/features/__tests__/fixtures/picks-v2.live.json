@@ -1,0 +1,813 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-10-23T13:13:15Z",
+  "model_version": "poisson-dc-v2.0",
+  "data_status": "ok",
+  "sources_used": [
+    "football-data.org v4",
+    "football-data.co.uk CSV cache"
+  ],
+  "leagues_skipped": {
+    "SP1": "requires 5 historical seasons; found 4: 1920, 2021, 2324, 2425",
+    "I1": "requires 5 historical seasons; found 2: 2324, 2425",
+    "D1": "requires 5 historical seasons; found 1: 2425"
+  },
+  "odds_credits_remaining": 498,
+  "odds_credits_used": 0,
+  "backtest": {
+    "test_matches": 1091,
+    "bookmaker_test_matches": 1024,
+    "log_loss_model": 0.9955,
+    "log_loss_book": 0.9696,
+    "gap": 0.0259,
+    "verdict_code": "no_edge",
+    "verdict": "No proven edge: treat these as estimates.",
+    "clv_mean": -0.0327,
+    "winner": {
+      "log_loss_model": 0.9955,
+      "log_loss_closing_market": 0.969,
+      "log_loss_league_average": 1.0777,
+      "brier_model": 0.5947,
+      "brier_closing_market": 0.5767,
+      "brier_league_average": 0.6525,
+      "rps_model": 0.2035,
+      "rps_closing_market": 0.1955,
+      "rps_league_average": 0.2315,
+      "top_pick_accuracy_model": 0.5151,
+      "top_pick_accuracy_closing_market": 0.5439,
+      "closing_market_matches": 1024,
+      "top_pick_accuracy_league_average": 0.4253,
+      "verdict": "No proven winner edge: compare model, closing-market, and league-average metrics."
+    },
+    "goals": {
+      "poisson_log_loss_home": 1.5416,
+      "poisson_log_loss_away": 1.4463,
+      "over_2_5_calibration": [
+        {
+          "predicted": 0.379,
+          "actual": 0.542,
+          "count": 24
+        },
+        {
+          "predicted": 0.527,
+          "actual": 0.559,
+          "count": 657
+        },
+        {
+          "predicted": 0.661,
+          "actual": 0.62,
+          "count": 408
+        },
+        {
+          "predicted": 0.574,
+          "actual": 0.581,
+          "count": 1091
+        }
+      ],
+      "btts_calibration": [
+        {
+          "predicted": 0.544,
+          "actual": 0.567,
+          "count": 723
+        },
+        {
+          "predicted": 0.641,
+          "actual": 0.609,
+          "count": 368
+        },
+        {
+          "predicted": 0.576,
+          "actual": 0.581,
+          "count": 1091
+        }
+      ],
+      "over_2_5_log_loss_model": 0.6792,
+      "over_2_5_log_loss_closing_market": 0.6715,
+      "verdict": "No proven goals edge against closing over/under odds; calibration is shown for review."
+    },
+    "timing": {
+      "log_loss_model": 1.1147,
+      "log_loss_league_average": 1.1137,
+      "league_first_half_share": {
+        "E0": 0.45
+      },
+      "verdict": "No team-specific signal found; use the league-wide half-time pattern."
+    }
+  },
+  "matches": [
+    {
+      "id": "560614",
+      "date": "2026-10-24T11:30:00Z",
+      "league": "Premier League",
+      "home": "Aston Villa",
+      "away": "Man City",
+      "p": [
+        0.2464,
+        0.2473,
+        0.5063
+      ],
+      "fair_odds": [
+        4.06,
+        4.04,
+        1.98
+      ],
+      "odds": [
+        4.6,
+        4.1,
+        1.64
+      ],
+      "reference_source": "LeoVegas",
+      "featured": true,
+      "low_confidence": false,
+      "goals": {
+        "exp_home": 1.173,
+        "exp_away": 1.767,
+        "exp_total": 2.94,
+        "p_total": [
+          0.059,
+          0.142,
+          0.235,
+          0.224,
+          0.339
+        ],
+        "over": {
+          "0.5": 0.941,
+          "1.5": 0.798,
+          "2.5": 0.563,
+          "3.5": 0.339
+        },
+        "btts": 0.579,
+        "clean_sheet": [
+          0.171,
+          0.309
+        ],
+        "top_scores": [
+          {
+            "score": "1-1",
+            "probability": 0.116
+          },
+          {
+            "score": "1-2",
+            "probability": 0.097
+          },
+          {
+            "score": "0-1",
+            "probability": 0.087
+          }
+        ]
+      },
+      "winner": {
+        "pick": "away",
+        "p": [
+          0.246,
+          0.247,
+          0.506
+        ],
+        "confidence": "medium"
+      },
+      "timing": {
+        "level": "half",
+        "halves": {
+          "home": {
+            "first": 0.519,
+            "second": 0.654
+          },
+          "away": {
+            "first": 0.863,
+            "second": 0.904
+          },
+          "p_first_half_goal": 0.749,
+          "league_first_share": 0.45,
+          "team_specific_signal": true
+        },
+        "windows": null,
+        "note": "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+      },
+      "homeForm": [
+        "L",
+        "L",
+        "W",
+        "D",
+        "W"
+      ],
+      "awayForm": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.7,
+          2.4
+        ],
+        "shots": [
+          14,
+          18
+        ],
+        "possession": [
+          50,
+          51
+        ]
+      },
+      "ourTake": "Model projects Man City at 51% (2.4 goals/game vs Aston Villa's 1.7). Reference odds align closely with the away estimate."
+    },
+    {
+      "id": "560616",
+      "date": "2026-10-24T14:00:00Z",
+      "league": "Premier League",
+      "home": "Arsenal",
+      "away": "Everton",
+      "p": [
+        0.6095,
+        0.2533,
+        0.1372
+      ],
+      "fair_odds": [
+        1.64,
+        3.95,
+        7.29
+      ],
+      "odds": [
+        1.44,
+        4.33,
+        7.5
+      ],
+      "reference_source": "Betfred (UK)",
+      "featured": false,
+      "low_confidence": false,
+      "goals": {
+        "exp_home": 1.649,
+        "exp_away": 0.649,
+        "exp_total": 2.298,
+        "p_total": [
+          0.107,
+          0.218,
+          0.272,
+          0.203,
+          0.2
+        ],
+        "over": {
+          "0.5": 0.893,
+          "1.5": 0.675,
+          "2.5": 0.404,
+          "3.5": 0.2
+        },
+        "btts": 0.392,
+        "clean_sheet": [
+          0.523,
+          0.192
+        ],
+        "top_scores": [
+          {
+            "score": "1-0",
+            "probability": 0.159
+          },
+          {
+            "score": "2-0",
+            "probability": 0.137
+          },
+          {
+            "score": "1-1",
+            "probability": 0.114
+          }
+        ]
+      },
+      "winner": {
+        "pick": "home",
+        "p": [
+          0.61,
+          0.253,
+          0.137
+        ],
+        "confidence": "high"
+      },
+      "timing": {
+        "level": "half",
+        "halves": {
+          "home": {
+            "first": 0.781,
+            "second": 0.868
+          },
+          "away": {
+            "first": 0.315,
+            "second": 0.334
+          },
+          "p_first_half_goal": 0.666,
+          "league_first_share": 0.45,
+          "team_specific_signal": true
+        },
+        "windows": null,
+        "note": "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+      },
+      "homeForm": [
+        "W",
+        "W",
+        "L",
+        "W",
+        "W"
+      ],
+      "awayForm": [
+        "D",
+        "D",
+        "D",
+        "W",
+        "L"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.5,
+          1.3
+        ],
+        "shots": [
+          14,
+          12
+        ],
+        "possession": [
+          47,
+          45
+        ]
+      },
+      "ourTake": "Model projects Arsenal at 61% (1.5 goals/game vs Everton's 1.3). Market reference price closely reflects the home projection."
+    },
+    {
+      "id": "560617",
+      "date": "2026-10-24T16:30:00Z",
+      "league": "Premier League",
+      "home": "Chelsea",
+      "away": "Tottenham",
+      "p": [
+        0.5432,
+        0.2352,
+        0.2216
+      ],
+      "fair_odds": [
+        1.84,
+        4.25,
+        4.51
+      ],
+      "odds": [
+        1.7,
+        4.0,
+        4.1
+      ],
+      "reference_source": "LeoVegas",
+      "featured": false,
+      "low_confidence": false,
+      "goals": {
+        "exp_home": 1.904,
+        "exp_away": 1.151,
+        "exp_total": 3.056,
+        "p_total": [
+          0.053,
+          0.132,
+          0.226,
+          0.224,
+          0.365
+        ],
+        "over": {
+          "0.5": 0.947,
+          "1.5": 0.815,
+          "2.5": 0.589,
+          "3.5": 0.365
+        },
+        "btts": 0.588,
+        "clean_sheet": [
+          0.316,
+          0.149
+        ],
+        "top_scores": [
+          {
+            "score": "1-1",
+            "probability": 0.109
+          },
+          {
+            "score": "2-1",
+            "probability": 0.098
+          },
+          {
+            "score": "2-0",
+            "probability": 0.085
+          }
+        ]
+      },
+      "winner": {
+        "pick": "home",
+        "p": [
+          0.543,
+          0.235,
+          0.222
+        ],
+        "confidence": "medium"
+      },
+      "timing": {
+        "level": "half",
+        "halves": {
+          "home": {
+            "first": 0.865,
+            "second": 1.039
+          },
+          "away": {
+            "first": 0.52,
+            "second": 0.631
+          },
+          "p_first_half_goal": 0.75,
+          "league_first_share": 0.45,
+          "team_specific_signal": true
+        },
+        "windows": null,
+        "note": "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+      },
+      "homeForm": [
+        "W",
+        "L",
+        "L",
+        "W",
+        "W"
+      ],
+      "awayForm": [
+        "L",
+        "D",
+        "D",
+        "L",
+        "D"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.4,
+          0.8
+        ],
+        "shots": [
+          14,
+          12
+        ],
+        "possession": [
+          51,
+          50
+        ]
+      },
+      "ourTake": "Model projects Chelsea at 54% (1.4 goals/game vs Tottenham's 0.8). Market reference price closely reflects the home projection."
+    },
+    {
+      "id": "560612",
+      "date": "2026-10-25T14:00:00Z",
+      "league": "Premier League",
+      "home": "Liverpool",
+      "away": "Brighton",
+      "p": [
+        0.4755,
+        0.2517,
+        0.2728
+      ],
+      "fair_odds": [
+        2.1,
+        3.97,
+        3.67
+      ],
+      "odds": [
+        2.15,
+        3.75,
+        3.1
+      ],
+      "reference_source": "Unibet (UK)",
+      "featured": false,
+      "low_confidence": false,
+      "goals": {
+        "exp_home": 1.704,
+        "exp_away": 1.243,
+        "exp_total": 2.947,
+        "p_total": [
+          0.059,
+          0.141,
+          0.235,
+          0.224,
+          0.341
+        ],
+        "over": {
+          "0.5": 0.941,
+          "1.5": 0.8,
+          "2.5": 0.565,
+          "3.5": 0.341
+        },
+        "btts": 0.589,
+        "clean_sheet": [
+          0.288,
+          0.182
+        ],
+        "top_scores": [
+          {
+            "score": "1-1",
+            "probability": 0.118
+          },
+          {
+            "score": "2-1",
+            "probability": 0.095
+          },
+          {
+            "score": "1-0",
+            "probability": 0.083
+          }
+        ]
+      },
+      "winner": {
+        "pick": "home",
+        "p": [
+          0.475,
+          0.252,
+          0.273
+        ],
+        "confidence": "medium"
+      },
+      "timing": {
+        "level": "half",
+        "halves": {
+          "home": {
+            "first": 0.759,
+            "second": 0.945
+          },
+          "away": {
+            "first": 0.525,
+            "second": 0.718
+          },
+          "p_first_half_goal": 0.723,
+          "league_first_share": 0.45,
+          "team_specific_signal": true
+        },
+        "windows": null,
+        "note": "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+      },
+      "homeForm": [
+        "W",
+        "D",
+        "W",
+        "L",
+        "W"
+      ],
+      "awayForm": [
+        "L",
+        "D",
+        "W",
+        "W",
+        "W"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.5,
+          2.1
+        ],
+        "shots": [
+          16,
+          13
+        ],
+        "possession": [
+          51,
+          50
+        ]
+      },
+      "ourTake": "Model projects Liverpool at 48% (1.5 goals/game vs Brighton's 2.1). Shows a +2.2% value edge vs reference odds."
+    },
+    {
+      "id": "560613",
+      "date": "2026-10-25T14:00:00Z",
+      "league": "Premier League",
+      "home": "Crystal Palace",
+      "away": "Newcastle",
+      "p": [
+        0.3433,
+        0.2684,
+        0.3883
+      ],
+      "fair_odds": [
+        2.91,
+        3.73,
+        2.58
+      ],
+      "odds": [
+        2.88,
+        3.6,
+        2.3
+      ],
+      "reference_source": "Betfred (UK)",
+      "featured": false,
+      "low_confidence": false,
+      "goals": {
+        "exp_home": 1.336,
+        "exp_away": 1.435,
+        "exp_total": 2.771,
+        "p_total": [
+          0.07,
+          0.159,
+          0.248,
+          0.222,
+          0.302
+        ],
+        "over": {
+          "0.5": 0.93,
+          "1.5": 0.771,
+          "2.5": 0.524,
+          "3.5": 0.302
+        },
+        "btts": 0.569,
+        "clean_sheet": [
+          0.238,
+          0.263
+        ],
+        "top_scores": [
+          {
+            "score": "1-1",
+            "probability": 0.127
+          },
+          {
+            "score": "1-2",
+            "probability": 0.086
+          },
+          {
+            "score": "0-1",
+            "probability": 0.083
+          }
+        ]
+      },
+      "winner": {
+        "pick": "too close to call",
+        "p": [
+          0.343,
+          0.268,
+          0.388
+        ],
+        "confidence": "low"
+      },
+      "timing": {
+        "level": "half",
+        "halves": {
+          "home": {
+            "first": 0.569,
+            "second": 0.767
+          },
+          "away": {
+            "first": 0.687,
+            "second": 0.748
+          },
+          "p_first_half_goal": 0.715,
+          "league_first_share": 0.45,
+          "team_specific_signal": true
+        },
+        "windows": null,
+        "note": "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+      },
+      "homeForm": [
+        "W",
+        "L",
+        "D",
+        "W",
+        "L"
+      ],
+      "awayForm": [
+        "D",
+        "W",
+        "D",
+        "L",
+        "L"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.1,
+          1.2
+        ],
+        "shots": [
+          12,
+          13
+        ],
+        "possession": [
+          48,
+          51
+        ]
+      },
+      "ourTake": "Balanced fixture (Crystal Palace 34%, Draw 27%, Newcastle 39%) based on multi-season Poisson ratings."
+    },
+    {
+      "id": "560615",
+      "date": "2026-10-25T14:00:00Z",
+      "league": "Premier League",
+      "home": "Man Utd",
+      "away": "Bournemouth",
+      "p": [
+        0.4894,
+        0.2534,
+        0.2572
+      ],
+      "fair_odds": [
+        2.04,
+        3.95,
+        3.89
+      ],
+      "odds": [
+        2.1,
+        3.75,
+        3.2
+      ],
+      "reference_source": "Betfred (UK)",
+      "featured": false,
+      "low_confidence": false,
+      "goals": {
+        "exp_home": 1.697,
+        "exp_away": 1.173,
+        "exp_total": 2.87,
+        "p_total": [
+          0.063,
+          0.149,
+          0.24,
+          0.223,
+          0.324
+        ],
+        "over": {
+          "0.5": 0.937,
+          "1.5": 0.787,
+          "2.5": 0.547,
+          "3.5": 0.324
+        },
+        "btts": 0.571,
+        "clean_sheet": [
+          0.309,
+          0.183
+        ],
+        "top_scores": [
+          {
+            "score": "1-1",
+            "probability": 0.12
+          },
+          {
+            "score": "2-1",
+            "probability": 0.096
+          },
+          {
+            "score": "1-0",
+            "probability": 0.089
+          }
+        ]
+      },
+      "winner": {
+        "pick": "home",
+        "p": [
+          0.489,
+          0.253,
+          0.257
+        ],
+        "confidence": "medium"
+      },
+      "timing": {
+        "level": "half",
+        "halves": {
+          "home": {
+            "first": 0.711,
+            "second": 0.986
+          },
+          "away": {
+            "first": 0.492,
+            "second": 0.681
+          },
+          "p_first_half_goal": 0.7,
+          "league_first_share": 0.45,
+          "team_specific_signal": true
+        },
+        "windows": null,
+        "note": "Half splits use team estimates shrunk toward the league average; no exact-minute prediction."
+      },
+      "homeForm": [
+        "D",
+        "L",
+        "D",
+        "D",
+        "D"
+      ],
+      "awayForm": [
+        "D",
+        "D",
+        "L",
+        "L",
+        "W"
+      ],
+      "stats": {
+        "goalsPerGame": [
+          1.9,
+          1.5
+        ],
+        "shots": [
+          15,
+          14
+        ],
+        "possession": [
+          50,
+          50
+        ]
+      },
+      "ourTake": "Model projects Man Utd at 49% (1.9 goals/game vs Bournemouth's 1.5). Shows a +2.8% value edge vs reference odds."
+    }
+  ],
+  "model_notes": {
+    "goals": "Score markets are derived from one normalized Dixon-Coles Poisson grid.",
+    "winner": "Confidence reflects the gap between the two most likely outcomes; close outcomes are not called.",
+    "timing": "Half-time shares use validated historical halftime scores with league shrinkage; no exact minute is predicted."
+  },
+  "recent_comparisons": []
+}

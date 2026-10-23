@@ -30,6 +30,7 @@ class ApiFootballProvider(FixtureProvider):
         self.cache_dir = cache_dir or (config.MODEL_DIR / "data" / "provider_cache")
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self._last_request = 0.0
+        self.requests_remaining: int | None = None
 
     def _get(self, params: dict[str, str]) -> list[dict[str, Any]]:
         query = urllib.parse.urlencode(params)
@@ -48,6 +49,11 @@ class ApiFootballProvider(FixtureProvider):
             try:
                 self._last_request = time.monotonic()
                 with urllib.request.urlopen(request, timeout=20) as response:
+                    try:
+                        header = response.headers.get("x-ratelimit-requests-remaining")
+                        self.requests_remaining = int(header) if header is not None else None
+                    except (TypeError, ValueError):
+                        self.requests_remaining = None
                     payload = json.loads(response.read().decode("utf-8"))
                 if not isinstance(payload, dict) or payload.get("errors"):
                     raise ValueError("API-Football returned an error response")

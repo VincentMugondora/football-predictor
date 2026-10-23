@@ -31,9 +31,9 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*
+.env
+.env.*
 !.env.example
-.env.example
 
 # typescript
 *.tsbuildinfo
@@ -49,7 +49,11 @@ example
 __pycache__/
 *.py[cod]
 .pytest_cache/
+/.pytest-temp*/
+/.jest-cache/
 
 # Raw downloaded CSV cache
 model/data/raw/*.csv
+model/data/timing_events/
+model/data/timing_backfill_state.json
 
