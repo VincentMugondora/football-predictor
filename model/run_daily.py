@@ -32,7 +32,7 @@ from model.timing_windows import MinuteWindowTimingModel, load_cached_goal_event
 from model.timing_backfill import run_timing_backfill
 
 SCHEMA_VERSION = "2.0"
-MODEL_VERSION = "poisson-dc-v2.0"
+MODEL_VERSION = "bivariate-dc-xg-elo-v3.0"
 LAST_API_FOOTBALL_REMAINING: int | None = None
 COMPETITION_TO_LEAGUE = {"PL": "E0", "BL1": "D1", "SA": "I1", "PD": "SP1",
                          "E0": "E0", "D1": "D1", "I1": "I1", "SP1": "SP1"}
@@ -203,10 +203,32 @@ def build_picks_payload(
         div = str(row.Div)
         home = str(row.HomeTeam)
         away = str(row.AwayTeam)
-        trained_model.predict_proba(div, home, away)
+        match_date = getattr(row, "Date", None)
+        trained_model.predict_proba(div, home, away, match_date=match_date)
         hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
         as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
-        trained_model.observe_match(div, home, away, int(row.FTHG), int(row.FTAG), hs, as_)
+        hst = float(row.HST) if hasattr(row, "HST") and pd.notna(row.HST) else None
+        ast = float(row.AST) if hasattr(row, "AST") and pd.notna(row.AST) else None
+        hc = float(row.HC) if hasattr(row, "HC") and pd.notna(row.HC) else None
+        ac = float(row.AC) if hasattr(row, "AC") and pd.notna(row.AC) else None
+        hr = float(row.HR) if hasattr(row, "HR") and pd.notna(row.HR) else None
+        ar = float(row.AR) if hasattr(row, "AR") and pd.notna(row.AR) else None
+        trained_model.observe_match(
+            div,
+            home,
+            away,
+            int(row.FTHG),
+            int(row.FTAG),
+            home_shots=hs,
+            away_shots=as_,
+            home_sot=hst,
+            away_sot=ast,
+            home_corners=hc,
+            away_corners=ac,
+            home_red=hr,
+            away_red=ar,
+            match_date=match_date,
+        )
         timing_model.observe(
             div, home, away, row.FTHG, row.FTAG,
             getattr(row, "HTHG", float("nan")), getattr(row, "HTAG", float("nan")),
@@ -242,7 +264,9 @@ def build_picks_payload(
         kickoff_iso = fixture.kickoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         match_id = fixture.id
 
-        market_prediction = trained_model.predict_markets(div, home, away)
+        market_prediction = trained_model.predict_markets(
+            div, home, away, match_date=fixture.kickoff
+        )
         p_h, p_d, p_a = market_prediction["p"]
         goals_raw = market_prediction["goals"]
         grid = market_prediction["grid"]

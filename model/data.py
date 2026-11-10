@@ -184,13 +184,12 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     work["OddsUnder25"] = under25
     work["OddsOverUnderSource"] = ou_src
 
-    # Optional match stats columns (shots) if present in CSV
-    if "HS" in work.columns and "AS" in work.columns:
-        work["HS"] = pd.to_numeric(work["HS"], errors="coerce")
-        work["AS"] = pd.to_numeric(work["AS"], errors="coerce")
-    else:
-        work["HS"] = np.nan
-        work["AS"] = np.nan
+    # Optional match stats columns (shots, shots on target, corners, red cards) if present in CSV
+    for stat_col in ("HS", "AS", "HST", "AST", "HC", "AC", "HR", "AR"):
+        if stat_col in work.columns:
+            work[stat_col] = pd.to_numeric(work[stat_col], errors="coerce")
+        else:
+            work[stat_col] = np.nan
 
     valid_rows = (
         work["Date"].notna()
@@ -249,6 +248,12 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         "OddsCloseSource",
         "HS",
         "AS",
+        "HST",
+        "AST",
+        "HC",
+        "AC",
+        "HR",
+        "AR",
     ]
     return work[keep_cols]
 
@@ -266,7 +271,7 @@ def load_historical_matches(
     leagues: Iterable[str] = config.ACTIVE_LEAGUES,
     seasons: Iterable[str] = config.SEASONS,
     raw_dir: Path = config.RAW_DATA_DIR,
-    download_missing: bool = True,
+    download_missing: bool = config.ALLOW_FOOTBALL_DATA_DOWNLOADS,
 ) -> pd.DataFrame:
     """Loads eligible league histories; underfilled leagues are skipped with reasons."""
     frames: list[pd.DataFrame] = []

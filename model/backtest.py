@@ -173,7 +173,8 @@ def run_walk_forward_backtest(
         closing_odds_tuple = tuple(float(value) for value in raw_closing_odds) if has_closing_odds else None
 
         # 1. Predict BEFORE observing result
-        market_prediction = model.predict_markets(league, home, away)
+        match_date = getattr(row, "Date", None)
+        market_prediction = model.predict_markets(league, home, away, match_date=match_date)
         p_model = market_prediction["p"]
         goals_prediction = market_prediction["goals"]
         p_book = remove_bookmaker_margin(*odds_tuple) if odds_tuple else None
@@ -264,7 +265,28 @@ def run_walk_forward_backtest(
         # 2. Observe result AFTER prediction
         hs = float(row.HS) if hasattr(row, "HS") and pd.notna(row.HS) else None
         as_ = float(row.AS) if hasattr(row, "AS") and pd.notna(row.AS) else None
-        model.observe_match(league, home, away, fthg, ftag, hs, as_)
+        hst = float(row.HST) if hasattr(row, "HST") and pd.notna(row.HST) else None
+        ast = float(row.AST) if hasattr(row, "AST") and pd.notna(row.AST) else None
+        hc = float(row.HC) if hasattr(row, "HC") and pd.notna(row.HC) else None
+        ac = float(row.AC) if hasattr(row, "AC") and pd.notna(row.AC) else None
+        hr = float(row.HR) if hasattr(row, "HR") and pd.notna(row.HR) else None
+        ar = float(row.AR) if hasattr(row, "AR") and pd.notna(row.AR) else None
+        model.observe_match(
+            league,
+            home,
+            away,
+            fthg,
+            ftag,
+            home_shots=hs,
+            away_shots=as_,
+            home_sot=hst,
+            away_sot=ast,
+            home_corners=hc,
+            away_corners=ac,
+            home_red=hr,
+            away_red=ar,
+            match_date=match_date,
+        )
         timing_model.observe(
             league, home, away, fthg, ftag,
             getattr(row, "HTHG", np.nan), getattr(row, "HTAG", np.nan),

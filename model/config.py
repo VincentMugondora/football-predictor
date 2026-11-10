@@ -55,11 +55,17 @@ ODDS_SOURCE_PRIORITY: tuple[tuple[str, tuple[str, str, str]], ...] = (
     ("Avg", ("AvgH", "AvgD", "AvgA")),
 )
 
-# Default online Poisson hyperparameters (Section 6.1)
-DEFAULT_LR = 0.012
-DEFAULT_LR_GLOBAL = 0.003
-DEFAULT_DECAY = 0.0015
-DEFAULT_DIXON_COLES_RHO = -0.06
+# Default hybrid Bivariate-Poisson + Dixon-Coles + xG/Elo hyperparameters (Section 6.1)
+DEFAULT_LR = 0.022
+DEFAULT_LR_SHORT = 0.045
+DEFAULT_LR_VENUE = 0.008
+DEFAULT_LR_GLOBAL = 0.004
+DEFAULT_DECAY = 0.0025
+DEFAULT_SHORT_DECAY = 0.045
+DEFAULT_DIXON_COLES_RHO = -0.085
+DEFAULT_BIVARIATE_GAMMA = 0.055
+DEFAULT_DRAW_PARITY_BOOST = 0.065
+DEFAULT_OFFSEASON_REGRESSION = 0.80
 
 # Team name normalisation mapping (Section 5.3)
 TEAM_NAME_MAP: dict[str, str] = {
