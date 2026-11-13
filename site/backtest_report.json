@@ -1,69 +1,74 @@
 {
   "test_matches": 3192,
   "bookmaker_test_matches": 3192,
-  "log_loss_model": 0.9865,
+  "log_loss_model": 0.9795,
   "log_loss_book": 0.9631,
   "log_loss_baseline": 1.0764,
-  "brier_model": 0.588,
+  "brier_model": 0.5839,
   "brier_book": 0.5728,
-  "gap": 0.0233,
+  "gap": 0.0163,
   "verdict": "no_edge",
   "verdict_message": "No proven edge: treat these as estimates.",
-  "clv_mean": -0.033,
-  "roi_at_3pct_edge": -0.1168,
-  "roi_ci_low": -0.1804,
-  "roi_ci_high": -0.0527,
+  "clv_mean": -0.0328,
+  "roi_at_3pct_edge": -0.0963,
+  "roi_ci_low": -0.1534,
+  "roi_ci_high": -0.0361,
   "winner_metrics": {
-    "log_loss_model": 0.9865,
+    "log_loss_model": 0.9795,
     "log_loss_closing_market": 0.9622,
     "log_loss_league_average": 1.0764,
-    "brier_model": 0.588,
+    "brier_model": 0.5839,
     "brier_closing_market": 0.5723,
     "brier_league_average": 0.6513,
-    "rps_model": 0.1982,
+    "rps_model": 0.1962,
     "rps_closing_market": 0.1908,
     "rps_league_average": 0.2286,
-    "top_pick_accuracy_model": 0.5298,
+    "top_pick_accuracy_model": 0.5304,
     "top_pick_accuracy_closing_market": 0.547,
     "closing_market_matches": 3192,
     "top_pick_accuracy_league_average": 0.4301,
     "verdict": "No proven winner edge: compare model, closing-market, and league-average metrics."
   },
   "goals_metrics": {
-    "poisson_log_loss_home": 1.476,
-    "poisson_log_loss_away": 1.3795,
+    "poisson_log_loss_home": 1.4737,
+    "poisson_log_loss_away": 1.3785,
     "over_2_5_calibration": [
       {
-        "predicted": 0.384,
-        "actual": 0.324,
-        "count": 37
+        "predicted": 0.377,
+        "actual": 0.327,
+        "count": 104
       },
       {
-        "predicted": 0.518,
-        "actual": 0.473,
-        "count": 2173
+        "predicted": 0.515,
+        "actual": 0.482,
+        "count": 2030
       },
       {
-        "predicted": 0.659,
-        "actual": 0.614,
-        "count": 973
+        "predicted": 0.666,
+        "actual": 0.595,
+        "count": 1036
       },
       {
-        "predicted": 0.56,
+        "predicted": 0.562,
         "actual": 0.515,
         "count": 3192
       }
     ],
     "btts_calibration": [
       {
-        "predicted": 0.549,
-        "actual": 0.511,
-        "count": 1975
+        "predicted": 0.392,
+        "actual": 0.5,
+        "count": 2
       },
       {
-        "predicted": 0.644,
-        "actual": 0.588,
-        "count": 1217
+        "predicted": 0.543,
+        "actual": 0.509,
+        "count": 1925
+      },
+      {
+        "predicted": 0.65,
+        "actual": 0.589,
+        "count": 1265
       },
       {
         "predicted": 0.585,
@@ -71,13 +76,13 @@
         "count": 3192
       }
     ],
-    "over_2_5_log_loss_model": 0.6848,
+    "over_2_5_log_loss_model": 0.6861,
     "over_2_5_log_loss_closing_market": 0.6725,
     "verdict": "No proven goals edge against closing over/under odds; calibration is shown for review."
   },
   "timing_metrics": {
-    "log_loss_model": 1.0557,
-    "log_loss_league_average": 1.0549,
+    "log_loss_model": 1.0549,
+    "log_loss_league_average": 1.0541,
     "league_first_half_share": {
       "E0": 0.45,
       "SP1": 0.441,

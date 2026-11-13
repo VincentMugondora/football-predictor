@@ -37,13 +37,16 @@ function MatchPickCardComponent({
 
   const matchTitle = `${match.home} vs ${match.away}`;
   const kickoff = formatKickoffTime(match.date);
-  const winnerPick = match.winner?.pick === 'home'
-    ? `${match.home} win`
-    : match.winner?.pick === 'away'
-      ? `${match.away} win`
-      : match.winner?.pick === 'draw'
-        ? 'Draw'
-        : match.winner?.pick === 'too close to call' ? 'Too close to call' : null;
+  const winnerPick =
+    match.winner?.pick === 'home'
+      ? `${match.home} win`
+      : match.winner?.pick === 'away'
+        ? `${match.away} win`
+        : match.winner?.pick === 'draw'
+          ? 'Draw'
+          : match.winner?.pick === 'too close to call'
+            ? 'Too close to call'
+            : null;
   const confidenceLabel = match.low_confidence
     ? 'low confidence · limited history'
     : `${match.winner?.confidence} confidence`;
@@ -97,11 +100,16 @@ function MatchPickCardComponent({
       </View>
 
       {match.low_confidence ? (
-        <Text style={styles.lowConfidenceText}>LOW CONFIDENCE · limited team history</Text>
+        <Text style={styles.lowConfidenceText}>
+          LOW CONFIDENCE · limited team history
+        </Text>
       ) : null}
 
       {match.winner && match.goals ? (
-        <Text style={styles.summaryText} accessibilityLabel={`Model pick ${winnerPick}, ${confidenceLabel}. Expected total goals ${match.goals.exp_total.toFixed(1)}. Over 2.5 goals ${Math.round(match.goals.over['2.5'] * 100)} percent.`}>
+        <Text
+          style={styles.summaryText}
+          accessibilityLabel={`Model pick ${winnerPick}, ${confidenceLabel}. Expected total goals ${match.goals.exp_total.toFixed(1)}. Over 2.5 goals ${Math.round(match.goals.over['2.5'] * 100)} percent.`}
+        >
           {`Pick: ${winnerPick} · ${confidenceLabel} · ${match.goals.exp_total.toFixed(1)} expected goals · Over 2.5 ${Math.round(match.goals.over['2.5'] * 100)}%`}
         </Text>
       ) : null}

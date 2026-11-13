@@ -1,6 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-import { GoalTimeWindow, MatchPick, MinuteWindowPrediction, PicksPayload, PicksRepository } from '@/data/types';
+import {
+  GoalTimeWindow,
+  MatchPick,
+  MinuteWindowPrediction,
+  PicksPayload,
+  PicksRepository,
+} from '@/data/types';
 
 const CACHE_KEY = 'football-predictor-live-picks-v1';
 const PICKS_URL = process.env.EXPO_PUBLIC_PICKS_URL;
@@ -75,23 +82,44 @@ function validatePayload(value: unknown, url: string): PicksPayload {
   const candidate = value as Partial<PicksPayload>;
   const generatedAt = candidate.generated_at;
   if (typeof generatedAt !== 'string' || !Number.isFinite(Date.parse(generatedAt))) {
-    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “generated_at” field.', url, 'generated_at');
+    throw new PicksLoadError(
+      'schema_validation_failed',
+      'The picks data has a missing or invalid “generated_at” field.',
+      url,
+      'generated_at'
+    );
   }
   if (!Array.isArray(candidate.matches)) {
-    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “matches” field.', url, 'matches');
+    throw new PicksLoadError(
+      'schema_validation_failed',
+      'The picks data has a missing or invalid “matches” field.',
+      url,
+      'matches'
+    );
   }
   if (!candidate.backtest || typeof candidate.backtest !== 'object') {
-    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “backtest” field.', url, 'backtest');
+    throw new PicksLoadError(
+      'schema_validation_failed',
+      'The picks data has a missing or invalid “backtest” field.',
+      url,
+      'backtest'
+    );
   }
   if (typeof candidate.backtest.verdict !== 'string') {
-    throw new PicksLoadError('schema_validation_failed', 'The picks data has a missing or invalid “backtest.verdict” field.', url, 'backtest.verdict');
+    throw new PicksLoadError(
+      'schema_validation_failed',
+      'The picks data has a missing or invalid “backtest.verdict” field.',
+      url,
+      'backtest.verdict'
+    );
   }
 
   candidate.matches.forEach((match, index) => {
     const prefix = `matches[${index}]`;
     if (!match || typeof match !== 'object') schemaFailure(`${prefix}`, url);
     if (typeof match.id !== 'string' || !match.id) schemaFailure(`${prefix}.id`, url);
-    if (typeof match.date !== 'string' || !Number.isFinite(Date.parse(match.date))) schemaFailure(`${prefix}.date`, url);
+    if (typeof match.date !== 'string' || !Number.isFinite(Date.parse(match.date)))
+      schemaFailure(`${prefix}.date`, url);
     if (typeof match.league !== 'string') schemaFailure(`${prefix}.league`, url);
     if (typeof match.home !== 'string') schemaFailure(`${prefix}.home`, url);
     if (typeof match.away !== 'string') schemaFailure(`${prefix}.away`, url);
@@ -105,88 +133,187 @@ function validatePayload(value: unknown, url: string): PicksPayload {
     ) {
       schemaFailure(`${prefix}.p`, url);
     }
-    if (match.odds !== null && !isFiniteTuple(match.odds)) schemaFailure(`${prefix}.odds`, url);
+    if (match.odds !== null && !isFiniteTuple(match.odds))
+      schemaFailure(`${prefix}.odds`, url);
     if (Date.parse(match.date) <= Date.parse(generatedAt)) {
       schemaFailure(`${prefix}.date`, url);
     }
     if (match.goals !== undefined) {
       const goals = match.goals;
       if (!goals || typeof goals !== 'object') schemaFailure(`${prefix}.goals`, url);
-      if (![goals.exp_home, goals.exp_away, goals.exp_total].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0)) {
+      if (
+        ![goals.exp_home, goals.exp_away, goals.exp_total].every(
+          (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0
+        )
+      ) {
         schemaFailure(`${prefix}.goals.expected`, url);
       }
-      if (!Array.isArray(goals.p_total) || goals.p_total.length !== 5 || !goals.p_total.every(isProbability) || Math.abs(goals.p_total.reduce((sum, item) => sum + item, 0) - 1) > 0.01) {
+      if (
+        !Array.isArray(goals.p_total) ||
+        goals.p_total.length !== 5 ||
+        !goals.p_total.every(isProbability) ||
+        Math.abs(goals.p_total.reduce((sum, item) => sum + item, 0) - 1) > 0.01
+      ) {
         schemaFailure(`${prefix}.goals.p_total`, url);
       }
-      if (!goals.over || !['0.5', '1.5', '2.5', '3.5'].every((line) => isProbability(goals.over[line as keyof typeof goals.over]))) {
+      if (
+        !goals.over ||
+        !['0.5', '1.5', '2.5', '3.5'].every((line) =>
+          isProbability(goals.over[line as keyof typeof goals.over])
+        )
+      ) {
         schemaFailure(`${prefix}.goals.over`, url);
       }
-      const overs = ['0.5', '1.5', '2.5', '3.5'].map((line) => goals.over[line as keyof typeof goals.over]);
-      if (overs.some((value, index) => index > 0 && value > overs[index - 1])) schemaFailure(`${prefix}.goals.over`, url);
+      const overs = ['0.5', '1.5', '2.5', '3.5'].map(
+        (line) => goals.over[line as keyof typeof goals.over]
+      );
+      if (overs.some((value, index) => index > 0 && value > overs[index - 1]))
+        schemaFailure(`${prefix}.goals.over`, url);
       if (!isProbability(goals.btts)) schemaFailure(`${prefix}.goals.btts`, url);
-      if (!Array.isArray(goals.clean_sheet) || goals.clean_sheet.length !== 2 || !goals.clean_sheet.every(isProbability)) {
+      if (
+        !Array.isArray(goals.clean_sheet) ||
+        goals.clean_sheet.length !== 2 ||
+        !goals.clean_sheet.every(isProbability)
+      ) {
         schemaFailure(`${prefix}.goals.clean_sheet`, url);
       }
-      if (!Array.isArray(goals.top_scores) || goals.top_scores.length !== 3 || goals.top_scores.some((score) => !score || typeof score.score !== 'string' || !isProbability(score.probability))) {
+      if (
+        !Array.isArray(goals.top_scores) ||
+        goals.top_scores.length !== 3 ||
+        goals.top_scores.some(
+          (score) =>
+            !score || typeof score.score !== 'string' || !isProbability(score.probability)
+        )
+      ) {
         schemaFailure(`${prefix}.goals.top_scores`, url);
       }
     }
     if (match.winner !== undefined) {
-      if (!match.winner || !['home', 'draw', 'away', 'too close to call'].includes(match.winner.pick)) {
+      if (
+        !match.winner ||
+        !['home', 'draw', 'away', 'too close to call'].includes(match.winner.pick)
+      ) {
         schemaFailure(`${prefix}.winner.pick`, url);
       }
-      if (!isFiniteTuple(match.winner.p) || !match.winner.p.every(isProbability) || Math.abs(match.winner.p.reduce((sum, p) => sum + p, 0) - 1) > 0.01) {
+      if (
+        !isFiniteTuple(match.winner.p) ||
+        !match.winner.p.every(isProbability) ||
+        Math.abs(match.winner.p.reduce((sum, p) => sum + p, 0) - 1) > 0.01
+      ) {
         schemaFailure(`${prefix}.winner.p`, url);
       }
-      if (!['low', 'medium', 'high'].includes(match.winner.confidence)) schemaFailure(`${prefix}.winner.confidence`, url);
+      if (!['low', 'medium', 'high'].includes(match.winner.confidence))
+        schemaFailure(`${prefix}.winner.confidence`, url);
     }
     if (match.timing !== undefined) {
       const timing = match.timing;
-      if (!timing || !['minute', 'half', 'none'].includes(timing.level)) schemaFailure(`${prefix}.timing.level`, url);
+      if (!timing || !['minute', 'half', 'none'].includes(timing.level))
+        schemaFailure(`${prefix}.timing.level`, url);
       if (timing.halves !== null) {
         const halves = timing.halves;
-        if (!halves || !['home', 'away'].every((side) => {
-          const half = halves[side as 'home' | 'away'];
-          return half && [half.first, half.second].every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0);
-        }) || !isProbability(halves.p_first_half_goal) || !isProbability(halves.league_first_share) || typeof halves.team_specific_signal !== 'boolean') {
+        if (
+          !halves ||
+          !['home', 'away'].every((side) => {
+            const half = halves[side as 'home' | 'away'];
+            return (
+              half &&
+              [half.first, half.second].every(
+                (value) =>
+                  typeof value === 'number' && Number.isFinite(value) && value >= 0
+              )
+            );
+          }) ||
+          !isProbability(halves.p_first_half_goal) ||
+          !isProbability(halves.league_first_share) ||
+          typeof halves.team_specific_signal !== 'boolean'
+        ) {
           schemaFailure(`${prefix}.timing.halves`, url);
         }
       }
       if (timing.windows !== null) {
         const windows = timing.windows;
-        const labels: GoalTimeWindow[] = ['0-15', '16-30', '31-45+', '46-60', '61-75', '76-90+'];
-        const validSide = (side: MinuteWindowPrediction['home']) => side && labels.every((label) => {
-          const window = side[label];
-          return window
-            && typeof window.expected_goals === 'number'
-            && Number.isFinite(window.expected_goals)
-            && window.expected_goals >= 0
-            && isProbability(window.p_at_least_one);
-        });
-        if (!windows || !validSide(windows.home) || !validSide(windows.away)
-          || !isProbability(windows.p_first_goal_before_30)
-          || typeof windows.team_specific_signal !== 'boolean'
-          || !Number.isInteger(windows.league_goal_sample) || windows.league_goal_sample < 0) {
+        const labels: GoalTimeWindow[] = [
+          '0-15',
+          '16-30',
+          '31-45+',
+          '46-60',
+          '61-75',
+          '76-90+',
+        ];
+        const validSide = (side: MinuteWindowPrediction['home']) =>
+          side &&
+          labels.every((label) => {
+            const window = side[label];
+            return (
+              window &&
+              typeof window.expected_goals === 'number' &&
+              Number.isFinite(window.expected_goals) &&
+              window.expected_goals >= 0 &&
+              isProbability(window.p_at_least_one)
+            );
+          });
+        if (
+          !windows ||
+          !validSide(windows.home) ||
+          !validSide(windows.away) ||
+          !isProbability(windows.p_first_goal_before_30) ||
+          typeof windows.team_specific_signal !== 'boolean' ||
+          !Number.isInteger(windows.league_goal_sample) ||
+          windows.league_goal_sample < 0
+        ) {
           schemaFailure(`${prefix}.timing.windows`, url);
         }
       }
-      if (timing.level === 'minute' && timing.windows === null) schemaFailure(`${prefix}.timing.windows`, url);
-      if (timing.level !== 'minute' && timing.windows !== null) schemaFailure(`${prefix}.timing.windows`, url);
+      if (timing.level === 'minute' && timing.windows === null)
+        schemaFailure(`${prefix}.timing.windows`, url);
+      if (timing.level !== 'minute' && timing.windows !== null)
+        schemaFailure(`${prefix}.timing.windows`, url);
       if (typeof timing.note !== 'string') schemaFailure(`${prefix}.timing.note`, url);
     }
   });
   return candidate as PicksPayload;
 }
 
+const LOCAL_DEV_URL_PATTERN =
+  /^http:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[0-1])\.\d+\.\d+)(?::(\d+))?(\/.*)?$/i;
+
+function resolveCandidateUrls(
+  configuredUrl: string,
+  allowDevHostFallback: boolean
+): string[] {
+  if (!allowDevHostFallback) {
+    return [configuredUrl];
+  }
+  const match = LOCAL_DEV_URL_PATTERN.exec(configuredUrl.trim());
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (!match || !hostUri) {
+    return [configuredUrl];
+  }
+  const [metroHost, metroPort = '8081'] = hostUri.split(':');
+  if (!metroHost) {
+    return [configuredUrl];
+  }
+  const configuredPort = match[2] ?? '80';
+  const pathname = match[3] || '/picks.json';
+  const candidates = [
+    `http://${metroHost}:${metroPort}${pathname}`,
+    `http://${metroHost}:${configuredPort}${pathname}`,
+    configuredUrl,
+  ];
+  return Array.from(new Set(candidates));
+}
+
 export class LivePicksRepository implements PicksRepository {
   private cached: PicksPayload | null = null;
   private readonly url: string | undefined;
+  private readonly allowDevHostFallback: boolean;
   private readonly request: typeof fetch;
   private readonly storage: PicksStorage;
   private readonly timeoutMs: number;
 
   constructor(options: RepositoryOptions = {}) {
     this.url = options.url ?? PICKS_URL;
+    this.allowDevHostFallback = options.url === undefined;
     this.request = options.request ?? fetch;
     this.storage = options.storage ?? AsyncStorage;
     this.timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
@@ -194,6 +321,66 @@ export class LivePicksRepository implements PicksRepository {
 
   getCachedPicks(): PicksPayload | null {
     return this.cached;
+  }
+
+  private async fetchFromUrl(requestedUrl: string): Promise<PicksPayload> {
+    console.info(`[picks] Requesting exact URL: ${requestedUrl}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      let response: Response;
+      try {
+        response = await this.request(requestedUrl, { signal: controller.signal });
+      } catch (cause) {
+        if ((cause as { name?: string })?.name === 'AbortError') {
+          throw new PicksLoadError(
+            'timeout',
+            'The picks server took too long to respond. Try again when your connection is better.',
+            requestedUrl
+          );
+        }
+        throw new PicksLoadError(
+          'network_unreachable',
+          'The picks server could not be reached. Check your internet connection and try again.',
+          requestedUrl
+        );
+      }
+      if (!response.ok) {
+        throw new PicksLoadError(
+          'http_status',
+          `The picks server returned HTTP ${response.status}. Try again later or contact the publisher.`,
+          requestedUrl,
+          undefined,
+          response.status
+        );
+      }
+
+      let body: unknown;
+      try {
+        body = await response.json();
+      } catch {
+        throw new PicksLoadError(
+          'invalid_json',
+          'The picks server returned invalid JSON. Contact the publisher.',
+          requestedUrl
+        );
+      }
+      const payload = validatePayload(body, requestedUrl);
+      const serialized = JSON.stringify(payload);
+      if (utf8ByteLength(serialized) > MAX_PICKS_BYTES) {
+        throw new PicksLoadError(
+          'schema_validation_failed',
+          'The picks data failed validation at “payload_size” (over 50 KB).',
+          requestedUrl,
+          'payload_size'
+        );
+      }
+      this.cached = payload;
+      await this.storage.setItem(CACHE_KEY, serialized).catch(() => undefined);
+      return payload;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   async getPicks(): Promise<PicksPayload> {
@@ -222,54 +409,51 @@ export class LivePicksRepository implements PicksRepository {
       throw error;
     }
 
-    const requestedUrl = this.url;
-    console.info(`[picks] Requesting exact URL: ${requestedUrl}`);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
-    try {
-      let response: Response;
-      try {
-        response = await this.request(requestedUrl, { signal: controller.signal });
-      } catch (cause) {
-        if ((cause as { name?: string })?.name === 'AbortError') {
-          throw new PicksLoadError('timeout', 'The picks server took too long to respond. Try again when your connection is better.', requestedUrl);
-        }
-        throw new PicksLoadError('network_unreachable', 'The picks server could not be reached. Check your internet connection and try again.', requestedUrl);
-      }
-      if (!response.ok) {
-        throw new PicksLoadError(
-          'http_status',
-          `The picks server returned HTTP ${response.status}. Try again later or contact the publisher.`,
-          requestedUrl,
-          undefined,
-          response.status
-        );
-      }
+    const candidateUrls = resolveCandidateUrls(this.url, this.allowDevHostFallback);
+    let lastError: PicksLoadError | null = null;
 
-      let body: unknown;
+    for (let index = 0; index < candidateUrls.length; index += 1) {
+      const requestedUrl = candidateUrls[index];
       try {
-        body = await response.json();
-      } catch {
-        throw new PicksLoadError('invalid_json', 'The picks server returned invalid JSON. Contact the publisher.', requestedUrl);
+        return await this.fetchFromUrl(requestedUrl);
+      } catch (error) {
+        const typedError =
+          error instanceof PicksLoadError
+            ? error
+            : new PicksLoadError(
+                'network_unreachable',
+                'The picks server could not be reached. Check your internet connection and try again.',
+                requestedUrl
+              );
+        lastError = typedError;
+        const hasMoreCandidates = index < candidateUrls.length - 1;
+        const canRetryNext =
+          hasMoreCandidates &&
+          (typedError.kind === 'network_unreachable' ||
+            typedError.kind === 'timeout' ||
+            typedError.status === 404);
+        if (canRetryNext) {
+          continue;
+        }
+        console.error('[picks] Request failed:', {
+          url: requestedUrl,
+          kind: typedError.kind,
+          message: typedError.message,
+        });
+        if (this.cached) return this.cached;
+        throw typedError;
       }
-      const payload = validatePayload(body, requestedUrl);
-      const serialized = JSON.stringify(payload);
-      if (utf8ByteLength(serialized) > MAX_PICKS_BYTES) {
-        throw new PicksLoadError('schema_validation_failed', 'The picks data failed validation at “payload_size” (over 50 KB).', requestedUrl, 'payload_size');
-      }
-      this.cached = payload;
-      await this.storage.setItem(CACHE_KEY, serialized).catch(() => undefined);
-      return payload;
-    } catch (error) {
-      const typedError = error instanceof PicksLoadError
-        ? error
-        : new PicksLoadError('network_unreachable', 'The picks server could not be reached. Check your internet connection and try again.', requestedUrl);
-      console.error('[picks] Request failed:', { url: requestedUrl, kind: typedError.kind, message: typedError.message });
-      if (this.cached) return this.cached;
-      throw typedError;
-    } finally {
-      clearTimeout(timeout);
     }
+
+    if (this.cached) return this.cached;
+    throw (
+      lastError ??
+      new PicksLoadError(
+        'network_unreachable',
+        'The picks server could not be reached. Check your internet connection and try again.',
+        this.url
+      )
+    );
   }
 
   getMatchById(id: string): MatchPick | undefined {

@@ -59,9 +59,9 @@ describe('Tab Screen Render Tests', () => {
   beforeEach(() => {
     useAppStore.getState().resetStoreToDefaults();
     jest.spyOn(picksRepository, 'getPicks').mockResolvedValue(recordedPicks);
-    jest.spyOn(picksRepository, 'getMatchById').mockImplementation(
-      (id) => recordedPicks.matches.find((match) => match.id === id)
-    );
+    jest
+      .spyOn(picksRepository, 'getMatchById')
+      .mockImplementation((id) => recordedPicks.matches.find((match) => match.id === id));
     mockedRouterHooks.useLocalSearchParams.mockReturnValue({ id: recordedMatch.id });
   });
 
@@ -71,7 +71,8 @@ describe('Tab Screen Render Tests', () => {
 
   it('renders PicksScreen with backtest verdict banner, featured match, and compliance footer', async () => {
     await render(<PicksScreen />);
-    const listMatch = recordedPicks.matches.find((match) => !match.featured) ?? recordedMatch;
+    const listMatch =
+      recordedPicks.matches.find((match) => !match.featured) ?? recordedMatch;
 
     expect(screen.getByText(recordedPicks.backtest.verdict)).toBeTruthy();
 
@@ -83,10 +84,19 @@ describe('Tab Screen Render Tests', () => {
   });
 
   it('shows the repository’s specific plain-language error on the Picks screen', async () => {
-    const message = 'The picks server returned HTTP 503. Try again later or contact the publisher.';
-    jest.spyOn(picksRepository, 'getPicks').mockRejectedValueOnce(
-      new PicksLoadError('http_status', message, 'https://example.test/picks.json', undefined, 503)
-    );
+    const message =
+      'The picks server returned HTTP 503. Try again later or contact the publisher.';
+    jest
+      .spyOn(picksRepository, 'getPicks')
+      .mockRejectedValueOnce(
+        new PicksLoadError(
+          'http_status',
+          message,
+          'https://example.test/picks.json',
+          undefined,
+          503
+        )
+      );
 
     await render(<PicksScreen />);
 
@@ -120,21 +130,38 @@ describe('Tab Screen Render Tests', () => {
   it('renders goals, winner, and halftime timing from the recorded live picks.json sample', async () => {
     await render(<MatchDetailScreen />);
 
-    expect(screen.getByText(`${recordedMatch.home} vs ${recordedMatch.away}`)).toBeTruthy();
+    expect(
+      screen.getByText(`${recordedMatch.home} vs ${recordedMatch.away}`)
+    ).toBeTruthy();
     expect(screen.getByText('MATCH OUTCOME PROBABILITIES')).toBeTruthy();
     expect(screen.getByText('GOALS AND SCORELINES')).toBeTruthy();
     expect(screen.getByText('GOAL TIMING')).toBeTruthy();
-    expect(screen.getByText(/Statistical estimates, not certainties\. Exact scores and goal minutes are hard to predict\./)).toBeTruthy();
-    expect(screen.getByText(new RegExp(`${recordedMatch.home} ${recordedMatch.goals?.exp_home.toFixed(2)} expected`))).toBeTruthy();
+    expect(
+      screen.getByText(
+        /Statistical estimates, not certainties\. Exact scores and goal minutes are hard to predict\./
+      )
+    ).toBeTruthy();
+    expect(
+      screen.getByText(
+        new RegExp(
+          `${recordedMatch.home} ${recordedMatch.goals?.exp_home.toFixed(2)} expected`
+        )
+      )
+    ).toBeTruthy();
     expect(screen.getByText(recordedMatch.timing?.note ?? '')).toBeTruthy();
   });
 
   it('renders league-average minute windows without implying team-specific timing', async () => {
     const labels = ['0-15', '16-30', '31-45+', '46-60', '61-75', '76-90+'] as const;
-    const sideWindows = Object.fromEntries(labels.map((label) => [label, {
-      expected_goals: 0.1,
-      p_at_least_one: 0.095,
-    }])) as MinuteWindowPrediction['home'];
+    const sideWindows = Object.fromEntries(
+      labels.map((label) => [
+        label,
+        {
+          expected_goals: 0.1,
+          p_at_least_one: 0.095,
+        },
+      ])
+    ) as MinuteWindowPrediction['home'];
     const windowMatch: MatchPick = {
       ...recordedMatch,
       id: 'minute-window-test',

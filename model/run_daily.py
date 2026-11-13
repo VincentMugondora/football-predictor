@@ -327,15 +327,37 @@ def build_picks_payload(
                 home, away, float(goals_raw["exp_home"]), float(goals_raw["exp_away"])
             )
             if windows_raw is not None:
+                home_windows = {
+                    label: {key: round(float(value), 3) for key, value in row.items()}
+                    for label, row in windows_raw["home"].items()
+                }
+                away_windows = {
+                    label: {key: round(float(value), 3) for key, value in row.items()}
+                    for label, row in windows_raw["away"].items()
+                }
+                if home_windows:
+                    last_h = tuple(home_windows.keys())[-1]
+                    diff_h = round(
+                        goals_payload["exp_home"]
+                        - sum(r["expected_goals"] for r in home_windows.values()),
+                        3,
+                    )
+                    home_windows[last_h]["expected_goals"] = round(
+                        home_windows[last_h]["expected_goals"] + diff_h, 3
+                    )
+                if away_windows:
+                    last_a = tuple(away_windows.keys())[-1]
+                    diff_a = round(
+                        goals_payload["exp_away"]
+                        - sum(r["expected_goals"] for r in away_windows.values()),
+                        3,
+                    )
+                    away_windows[last_a]["expected_goals"] = round(
+                        away_windows[last_a]["expected_goals"] + diff_a, 3
+                    )
                 windows = {
-                    "home": {
-                        label: {key: round(float(value), 3) for key, value in row.items()}
-                        for label, row in windows_raw["home"].items()
-                    },
-                    "away": {
-                        label: {key: round(float(value), 3) for key, value in row.items()}
-                        for label, row in windows_raw["away"].items()
-                    },
+                    "home": home_windows,
+                    "away": away_windows,
                     "p_first_goal_before_30": round(float(windows_raw["p_first_goal_before_30"]), 3),
                     "team_specific_signal": bool(windows_raw["team_specific_signal"]),
                     "league_goal_sample": int(windows_raw["league_goal_sample"]),
@@ -463,7 +485,7 @@ def write_status_file(
 
 def run_daily_pipeline(
     picks_path: Path = config.PICKS_JSON_PATH,
-    app_picks_path: Path | None = None,
+    app_picks_path: Path | None = config.PUBLIC_PICKS_JSON_PATH,
     status_path: Path = config.STATUS_JSON_PATH,
 ) -> dict[str, object]:
     """

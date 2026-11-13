@@ -79,7 +79,9 @@ export function OutcomeEdgeRow({
             />
           </View>
           <Text style={styles.metaDot}>•</Text>
-            <Text style={styles.metaText}>{activeOdds > 1 ? `BE ${breakEvenPct}%` : 'Enter odds for BE'}</Text>
+          <Text style={styles.metaText}>
+            {activeOdds > 1 ? `BE ${breakEvenPct}%` : 'Enter odds for BE'}
+          </Text>
           <Text style={styles.metaDot}>•</Text>
           <Text style={styles.edgeBadgeText}>
             Edge {edgeText} {isValuePick ? '▲ VALUE' : ''}

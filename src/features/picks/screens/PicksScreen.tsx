@@ -136,9 +136,10 @@ export function PicksScreen() {
     }
 
     const marketLoss = payload.backtest.log_loss_book;
-    const backtestSubtitle = marketLoss === null
-      ? `Model log-loss ${payload.backtest.log_loss_model.toFixed(3)} • Market reference unavailable • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`
-      : `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${marketLoss.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
+    const backtestSubtitle =
+      marketLoss === null
+        ? `Model log-loss ${payload.backtest.log_loss_model.toFixed(3)} • Market reference unavailable • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`
+        : `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${marketLoss.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
 
     return (
       <View style={styles.footerBlock}>
@@ -214,11 +215,19 @@ export function PicksScreen() {
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <EmptyState
-            title={payload?.data_status === 'no_fixtures' ? 'No upcoming fixtures' : 'No matches found'}
-            message={payload?.data_status === 'no_fixtures'
-              ? 'No verified fixtures are available in the next seven days. Check again when the data source updates.'
-              : 'No fixtures match your current filter or search.'}
-            actionLabel={payload?.data_status === 'no_fixtures' ? 'Refresh' : 'Show All Matches'}
+            title={
+              payload?.data_status === 'no_fixtures'
+                ? 'No upcoming fixtures'
+                : 'No matches found'
+            }
+            message={
+              payload?.data_status === 'no_fixtures'
+                ? 'No verified fixtures are available in the next seven days. Check again when the data source updates.'
+                : 'No fixtures match your current filter or search.'
+            }
+            actionLabel={
+              payload?.data_status === 'no_fixtures' ? 'Refresh' : 'Show All Matches'
+            }
             onAction={() => {
               if (payload?.data_status === 'no_fixtures') void reload();
               else {
