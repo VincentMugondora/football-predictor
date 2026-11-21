@@ -212,7 +212,7 @@ export function PicksScreen() {
         renderItem={renderItem}
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
-          featuredMatch && selectedLeague === 'All' && !searchQuery.trim() ? null : (
+          featuredMatch && selectedLeague === 'All' && !searchQuery.trim() ? undefined : (
             <EmptyState
               title={
                 payload?.data_status === 'no_fixtures' ? 'No upcoming fixtures' : 'No matches found'
