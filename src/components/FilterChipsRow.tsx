@@ -57,7 +57,7 @@ function createStyles(theme: AppTheme) {
       paddingVertical: theme.spacing.xs,
     },
     chip: {
-      minHeight: theme.layout.minTouchTarget,
+      minHeight: 40,
       paddingHorizontal: theme.spacing.lg,
       borderRadius: theme.radii.pill,
       alignItems: 'center',
@@ -65,7 +65,7 @@ function createStyles(theme: AppTheme) {
       borderWidth: theme.layout.borderWidth,
     },
     chipActive: {
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.primaryMuted,
       borderColor: theme.colors.primary,
     },
     chipInactive: {
@@ -77,10 +77,11 @@ function createStyles(theme: AppTheme) {
       fontWeight: theme.typography.weights.semibold,
     },
     chipTextActive: {
-      color: theme.colors.primaryTextOnColor,
+      color: theme.colors.primary,
+      fontWeight: theme.typography.weights.bold,
     },
     chipTextInactive: {
-      color: theme.colors.textPrimary,
+      color: theme.colors.textSecondary,
     },
   });
 }

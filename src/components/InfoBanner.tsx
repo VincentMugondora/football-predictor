@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -15,7 +16,13 @@ export function InfoBanner({ title, subtitle, tone = 'info' }: InfoBannerProps) 
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme, tone), [theme, tone]);
 
-  const iconSymbol = tone === 'danger' ? '!' : tone === 'warning' ? '!' : 'i';
+  const iconName = tone === 'info' ? 'information-circle-outline' : 'warning-outline';
+  const iconColor =
+    tone === 'danger'
+      ? theme.colors.dangerText
+      : tone === 'warning'
+        ? theme.colors.warningText
+        : theme.colors.primary;
 
   return (
     <View
@@ -24,9 +31,7 @@ export function InfoBanner({ title, subtitle, tone = 'info' }: InfoBannerProps) 
       accessibilityRole="alert"
       accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}
     >
-      <View style={styles.iconCircle}>
-        <Text style={styles.iconText}>{iconSymbol}</Text>
-      </View>
+      <Ionicons name={iconName} size={22} color={iconColor} />
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -38,22 +43,19 @@ export function InfoBanner({ title, subtitle, tone = 'info' }: InfoBannerProps) 
 function createStyles(theme: AppTheme, tone: InfoBannerTone) {
   let bg = theme.colors.surfaceBanner;
   let border = theme.colors.borderAccent;
-  let accent = theme.colors.primary;
 
   if (tone === 'warning') {
     bg = theme.colors.surfaceWarningBanner;
     border = theme.colors.borderWarning;
-    accent = theme.colors.badgeGold;
   } else if (tone === 'danger') {
     bg = theme.colors.surfaceDangerBanner;
     border = theme.colors.borderDanger;
-    accent = theme.colors.danger;
   }
 
   return StyleSheet.create({
     banner: {
       flexDirection: 'row',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       backgroundColor: bg,
       borderColor: border,
       borderWidth: theme.layout.borderWidth,
@@ -62,34 +64,20 @@ function createStyles(theme: AppTheme, tone: InfoBannerTone) {
       paddingVertical: theme.spacing.md,
       gap: theme.spacing.md,
     },
-    iconCircle: {
-      width: 24,
-      height: 24,
-      borderRadius: theme.radii.pill,
-      borderColor: accent,
-      borderWidth: 2,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    iconText: {
-      color: accent,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.bold,
-    },
     content: {
       flex: 1,
       gap: theme.spacing.xxs,
     },
     title: {
       color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.body,
-      lineHeight: theme.typography.lineHeights.body,
-      fontWeight: theme.typography.weights.medium,
+      fontSize: 15,
+      lineHeight: 21,
+      fontWeight: theme.typography.weights.bold,
     },
     subtitle: {
       color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
-      lineHeight: theme.typography.lineHeights.caption,
+      fontSize: 13,
+      lineHeight: 19,
     },
   });
 }

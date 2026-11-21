@@ -100,7 +100,7 @@ function createStyles(theme: AppTheme, identity: ClubColors, size: 'sm' | 'md' |
     shield: {
       width: dimension,
       height: dimension,
-      borderRadius: size === 'sm' ? theme.radii.pill : theme.radii.card,
+      borderRadius: theme.radii.pill,
       backgroundColor: identity.bg,
       borderColor: identity.border,
       borderWidth: 2,

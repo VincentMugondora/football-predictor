@@ -35,6 +35,11 @@ export interface ColorPalette {
   textPrimary: string;
   textSecondary: string;
   textMuted: string;
+  dangerText: string;
+  warningText: string;
+  warningTextSoft: string;
+  winSurface: string;
+  tossUpText: string;
   overlay: string;
 }
 
@@ -72,7 +77,13 @@ export const darkColors: ColorPalette = {
   neutralBarTrack: '#224734',
   textPrimary: '#F3F7F4',
   textSecondary: '#A8C2B3',
-  textMuted: '#759684',
+  // Lightened from #759684 so small captions pass 4.5:1 contrast on the green surfaces.
+  textMuted: '#8FB09E',
+  dangerText: '#FF6B6B',
+  warningText: '#F5B544',
+  warningTextSoft: '#E6D3A3',
+  winSurface: '#173F26',
+  tossUpText: '#C9D9CF',
   overlay: 'rgba(2, 18, 10, 0.78)',
 };
 
