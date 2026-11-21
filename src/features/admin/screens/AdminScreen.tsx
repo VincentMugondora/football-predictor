@@ -234,9 +234,23 @@ function Dashboard({ styles, theme, onLock }: { styles: ReturnType<typeof create
     }
   }, []);
 
+  // First load: state is only set in the promise callbacks, never synchronously in the effect.
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    fetchHistory()
+      .then((data) => {
+        if (!cancelled) setHistory(data);
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) setError(e instanceof Error ? e.message : 'The history file could not be loaded.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const entries = useMemo(() => history?.entries ?? [], [history]);
   const leagues = useMemo(() => ['All', ...historyLeagues(entries)], [entries]);
