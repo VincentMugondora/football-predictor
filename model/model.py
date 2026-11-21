@@ -234,6 +234,72 @@ class OnlinePoissonModel:
         norm = p_home + p_draw + p_away
         return (p_home / norm, p_draw / norm, p_away / norm)
 
+    @staticmethod
+    def margin_breakdown(grid: np.ndarray) -> dict[str, object]:
+        """Winning-margin chances from the score grid.
+
+        ``home``/``away`` hold the chance of winning by exactly 1, exactly 2, and 3 or more
+        goals, so ``sum(home) + draw + sum(away) == 1``.
+        """
+        home = [0.0, 0.0, 0.0]
+        away = [0.0, 0.0, 0.0]
+        draw = 0.0
+        exp_diff = 0.0
+        for h in range(grid.shape[0]):
+            for a in range(grid.shape[1]):
+                p = float(grid[h, a])
+                diff = h - a
+                exp_diff += diff * p
+                if diff > 0:
+                    home[min(diff, 3) - 1] += p
+                elif diff < 0:
+                    away[min(-diff, 3) - 1] += p
+                else:
+                    draw += p
+        return {"home": home, "draw": draw, "away": away, "exp_goal_diff": exp_diff}
+
+    @staticmethod
+    def predicted_result(grid: np.ndarray, p: tuple[float, float, float]) -> dict[str, object]:
+        """Name the most likely result, its most likely margin, and a matching scoreline.
+
+        The outcome is the most likely of home/draw/away. The margin is the most likely
+        exact winning margin *given* that outcome, and the scoreline is the most likely
+        exact score with that outcome and margin, so all three always agree.
+        """
+        outcome_index = int(np.argmax(p))
+        outcome = ("home", "draw", "away")[outcome_index]
+        # Exact-margin chances (no 3+ bucket here, so big margins are not favoured by pooling).
+        exact: dict[int, float] = defaultdict(float)
+        for h in range(grid.shape[0]):
+            for a in range(grid.shape[1]):
+                exact[h - a] += float(grid[h, a])
+        if outcome == "draw":
+            margin = 0
+        elif outcome == "home":
+            margin = max((d for d in exact if d > 0), key=lambda d: (exact[d], -d))
+        else:
+            margin = max((-d for d in exact if d < 0), key=lambda m: (exact[-m], -m))
+        p_margin = exact[margin if outcome != "away" else -margin]
+        p_outcome = float(p[outcome_index])
+
+        best_score, best_p = None, -1.0
+        for h in range(grid.shape[0]):
+            for a in range(grid.shape[1]):
+                diff = h - a
+                if outcome == "away":
+                    diff = -diff
+                if diff == margin and float(grid[h, a]) > best_p:
+                    best_score, best_p = (h, a), float(grid[h, a])
+        assert best_score is not None
+        return {
+            "outcome": outcome,
+            "margin": margin,
+            "p_margin": p_margin,
+            "p_margin_given_outcome": p_margin / p_outcome if p_outcome > 0 else 0.0,
+            "score": f"{best_score[0]}-{best_score[1]}",
+            "p_score": best_p,
+        }
+
     def predict_markets(
         self, league: str, home: str, away: str, match_date: Any = None
     ) -> dict[str, object]:
@@ -256,6 +322,7 @@ class OnlinePoissonModel:
         return {
             "p": (p_home, p_draw, p_away),
             "grid": grid,
+            "margin": self.margin_breakdown(grid),
             "goals": {
                 "exp_home": exp_home,
                 "exp_away": exp_away,

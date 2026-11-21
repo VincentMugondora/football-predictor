@@ -189,6 +189,51 @@ def test_score_grid_derives_consistent_goal_and_winner_markets() -> None:
     assert all(0.0 <= item["probability"] <= 1.0 for item in goals["top_scores"])
 
 
+def test_margin_breakdown_sums_to_one_and_matches_outcomes() -> None:
+    model = OnlinePoissonModel()
+    prediction = model.predict_markets("E0", "Arsenal", "Chelsea")
+    margin = prediction["margin"]
+    p_home, p_draw, p_away = prediction["p"]
+
+    assert math.isclose(sum(margin["home"]), p_home, abs_tol=1e-9)
+    assert math.isclose(margin["draw"], p_draw, abs_tol=1e-9)
+    assert math.isclose(sum(margin["away"]), p_away, abs_tol=1e-9)
+    assert math.isclose(sum(margin["home"]) + margin["draw"] + sum(margin["away"]), 1.0, abs_tol=1e-9)
+    exp_diff = prediction["goals"]["exp_home"] - prediction["goals"]["exp_away"]
+    assert math.isclose(margin["exp_goal_diff"], exp_diff, abs_tol=1e-9)
+
+
+@pytest.mark.parametrize("home_strength", [-0.8, 0.0, 0.8, 1.4])
+def test_predicted_result_margin_and_score_always_agree(home_strength: float) -> None:
+    model = OnlinePoissonModel()
+    model.attack["Home FC"] = home_strength
+    model.defence["Home FC"] = home_strength
+    grid = model.predict_score_grid("E0", "Home FC", "Away FC")
+    p = model.outcome_probabilities(grid)
+    result = model.predicted_result(grid, p)
+
+    home_goals, away_goals = (int(x) for x in result["score"].split("-"))
+    diff = home_goals - away_goals
+    assert result["outcome"] == ("home", "draw", "away")[int(np.argmax(p))]
+    if result["outcome"] == "draw":
+        assert diff == 0 and result["margin"] == 0
+    else:
+        signed = diff if result["outcome"] == "home" else -diff
+        assert signed > 0
+        assert signed == result["margin"]
+    assert 0.0 <= result["p_margin"] <= result["p_margin_given_outcome"] <= 1.0
+
+
+def test_strong_favourite_is_picked_with_margin() -> None:
+    model = OnlinePoissonModel()
+    model.attack["Giants"] = 1.2
+    model.defence["Giants"] = 1.0
+    grid = model.predict_score_grid("E0", "Giants", "Minnows")
+    result = model.predicted_result(grid, model.outcome_probabilities(grid))
+    assert result["outcome"] == "home"
+    assert result["margin"] >= 1
+
+
 def test_halftime_model_shrinks_small_samples_and_waits_for_observation() -> None:
     timing = HalfTimeGoalTimingModel()
     assert timing.predict("E0", "Arsenal", "Chelsea", 2.0, 1.0) is None
@@ -329,6 +374,13 @@ def test_v2_match_payload_has_consistent_goals_winner_timing_and_size() -> None:
     assert match["goals"]["exp_total"] == pytest.approx(match["goals"]["exp_home"] + match["goals"]["exp_away"], abs=0.002)
     assert sum(match["goals"]["p_total"]) == pytest.approx(1.0, abs=0.01)
     assert sum(match["winner"]["p"]) == pytest.approx(1.0, abs=0.002)
+    assert match["winner"]["pick"] in {"home", "draw", "away"}
+    margin = match["winner"]["margin"]
+    assert isinstance(margin["goals"], int) and margin["goals"] >= 0
+    assert (margin["goals"] == 0) == (match["winner"]["pick"] == "draw")
+    assert margin["p"] <= margin["p_given_pick"] <= 1.0
+    margins = match["winner"]["margins"]
+    assert sum(margins["home"]) + margins["draw"] + sum(margins["away"]) == pytest.approx(1.0, abs=0.01)
     assert match["timing"]["level"] == "half"
     assert match["timing"]["windows"] is None
     assert "league average, no team-specific signal yet" in match["timing"]["note"]
@@ -427,3 +479,35 @@ def test_history_loader_fails_clearly_when_no_league_meets_minimum(tmp_path: Pat
             leagues=("SP1", "I1", "D1"), seasons=("2425",), raw_dir=tmp_path, download_missing=False,
         )
     assert "SP1" in str(exc.value) and "I1" in str(exc.value) and "D1" in str(exc.value)
+
+
+def test_latest_season_refreshes_at_most_twice_weekly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import os
+    import time
+    from model import data as data_module
+
+    calls: list[str] = []
+    monkeypatch.setattr(data_module, "_download_file", lambda url, dest, **_: calls.append(url) or dest)
+    latest = config.SEASONS[-1]
+    dest = tmp_path / f"E0_{latest}.csv"
+    dest.write_text("x" * 200, encoding="utf-8")
+
+    data_module.download_season_csv("E0", latest, raw_dir=tmp_path)
+    assert calls == []  # fresh file: no download
+
+    old = time.time() - 4 * 24 * 3600
+    os.utime(dest, (old, old))
+    data_module.download_season_csv("E0", latest, raw_dir=tmp_path)
+    assert len(calls) == 1  # older than 3.5 days: refresh
+
+
+def test_provider_results_on_csv_day_are_not_double_counted() -> None:
+    hist = pd.DataFrame([{"Div": "E0", "Date": pd.Timestamp("2026-11-01"), "HomeTeam": "Arsenal",
+                          "AwayTeam": "Chelsea", "FTHG": 2, "FTAG": 1, "HS": 15.0}])
+    recent = pd.DataFrame([{"Div": "E0", "Date": pd.Timestamp("2026-11-01 15:00"), "HomeTeam": "Arsenal",
+                            "AwayTeam": "Chelsea", "FTHG": 2, "FTAG": 1, "HS": float("nan")}])
+    from model.run_daily import drop_same_day_duplicates
+
+    deduped = drop_same_day_duplicates(pd.concat([hist, recent], ignore_index=True))
+    assert len(deduped) == 1
+    assert deduped.iloc[0]["HS"] == 15.0  # the CSV row, with match stats, is kept

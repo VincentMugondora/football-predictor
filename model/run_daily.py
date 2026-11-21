@@ -16,6 +16,7 @@ except ImportError:  # Keys may also be injected directly by the scheduler.
     load_dotenv = None
 
 from model import config
+from model import history
 from model.backtest import (
     BacktestReport,
     run_walk_forward_backtest,
@@ -58,6 +59,20 @@ def _load_environment_file(path: Path = config.REPO_ROOT / ".env") -> None:
             value = value[1:-1]
         if key:
             os.environ.setdefault(key, value)
+
+
+def drop_same_day_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    """Drop repeat rows for the same fixture on the same calendar day, keeping the first.
+
+    CSV dates are midnight while provider dates carry kickoff times, so an exact-date match
+    misses duplicates. History rows come first, so the CSV row (with shots, odds and
+    halftime data) is the one kept.
+    """
+    match_day = pd.to_datetime(df["Date"]).dt.normalize()
+    keep = ~df.assign(_match_day=match_day).duplicated(
+        subset=["Div", "_match_day", "HomeTeam", "AwayTeam"], keep="first"
+    )
+    return df.loc[keep]
 
 
 def validate_fixtures_against_history(
@@ -275,7 +290,11 @@ def build_picks_payload(
         winner_index, winning_probability = ordered_outcomes[0]
         winning_gap = winning_probability - ordered_outcomes[1][1]
         winner_names = ("home", "draw", "away")
-        winner_pick = "too close to call" if winning_gap < 0.05 else winner_names[winner_index]
+        # Always name the most likely result; close calls are flagged and rated low confidence.
+        winner_pick = winner_names[winner_index]
+        close_call = winning_gap < 0.05
+        result_raw = OnlinePoissonModel.predicted_result(grid, (p_h, p_d, p_a))
+        margin_raw = market_prediction["margin"]
         low_confidence = home not in historical_teams or away not in historical_teams
         confidence = (
             "low" if low_confidence or winning_gap < 0.05 else
@@ -394,6 +413,7 @@ def build_picks_payload(
         match_entry: dict[str, object] = {
             "id": match_id,
             "date": kickoff_iso,
+            "div": div,
             "league": league_name,
             "home": home,
             "away": away,
@@ -408,6 +428,20 @@ def build_picks_payload(
                 "pick": winner_pick,
                 "p": [round(float(value), 3) for value in winner_probs],
                 "confidence": confidence,
+                "close_call": close_call,
+                "margin": {
+                    "goals": int(result_raw["margin"]),
+                    "p": round(float(result_raw["p_margin"]), 3),
+                    "p_given_pick": round(float(result_raw["p_margin_given_outcome"]), 3),
+                    "score": str(result_raw["score"]),
+                    "p_score": round(float(result_raw["p_score"]), 3),
+                },
+                "margins": {
+                    "home": [round(float(v), 3) for v in margin_raw["home"]],
+                    "draw": round(float(margin_raw["draw"]), 3),
+                    "away": [round(float(v), 3) for v in margin_raw["away"]],
+                    "exp_goal_diff": round(float(margin_raw["exp_goal_diff"]), 2),
+                },
             },
             "timing": timing_payload,
             "homeForm": home_summary["form"],
@@ -463,7 +497,8 @@ def build_picks_payload(
         "matches": matches_out,
         "model_notes": {
             "goals": "Score markets are derived from one normalized Dixon-Coles Poisson grid.",
-            "winner": "Confidence reflects the gap between the two most likely outcomes; close outcomes are not called.",
+            "winner": "Every match names the most likely result. Confidence reflects the gap between the two most likely outcomes; close calls are flagged low confidence.",
+            "margin": "Winning margin is the most likely exact margin given the predicted result; the scoreline is the most likely exact score with that result and margin.",
             "timing": "Halves use validated halftime scores with league shrinkage; optional 15-minute windows stay league-wide until the 3,000-goal threshold and never predict an exact minute.",
         },
         "recent_comparisons": [],
@@ -487,6 +522,8 @@ def run_daily_pipeline(
     picks_path: Path = config.PICKS_JSON_PATH,
     app_picks_path: Path | None = config.PUBLIC_PICKS_JSON_PATH,
     status_path: Path = config.STATUS_JSON_PATH,
+    dataset_dir: Path = history.DATASET_DIR,
+    history_path: Path = history.HISTORY_JSON_PATH,
 ) -> dict[str, object]:
     """
     Runs the daily pipeline end-to-end:
@@ -530,7 +567,7 @@ def run_daily_pipeline(
                 recent_results[col] = float("nan")
             recent_results["OddsSource"] = ""
             df_hist = pd.concat([df_hist, recent_results], ignore_index=True)
-            df_hist = df_hist.drop_duplicates(subset=["Div", "Date", "HomeTeam", "AwayTeam"], keep="last")
+            df_hist = drop_same_day_duplicates(df_hist)
             df_hist = df_hist.sort_values(["Date", "Div", "HomeTeam", "AwayTeam"]).reset_index(drop=True)
         report, _ = run_walk_forward_backtest(df_hist)
         try:
@@ -589,6 +626,16 @@ def run_daily_pipeline(
                                       minute_timing_model=minute_timing_model,
                                       minute_timing_league=timing_league)
 
+        # Your own dataset: save upcoming predictions before kick-off, add real results for
+        # finished ones, and publish the newest finished matches for the app.
+        predictions_path = dataset_dir / history.PREDICTIONS_PATH.name
+        results_path = dataset_dir / history.RESULTS_PATH.name
+        dataset = history.load_dataset(predictions_path, results_path)
+        recorded = history.record_predictions(dataset, payload["matches"], now, MODEL_VERSION)
+        settled = history.settle_results(dataset, df_hist, now)
+        history_entries = history.build_entries(dataset)
+        payload["recent_comparisons"] = history.app_comparisons(history_entries)
+
         # Compact UTF-8 JSON keeps downloads economical on mobile data.
         serialized = json.dumps(payload, separators=(",", ":"), allow_nan=False)
         byte_len = len(serialized.encode("utf-8"))
@@ -608,9 +655,13 @@ def run_daily_pipeline(
             app_tmp_path.write_text(serialized, encoding="utf-8")
             app_tmp_path.replace(app_picks_path)
 
+        history.save_dataset(dataset, predictions_path, results_path)
+        history.write_history_json(history_entries, now, history_path)
+
         write_status_file(
             "ok",
-            f"Published {len(payload['matches'])} verified upcoming predictions ({byte_len} bytes).",
+            f"Published {len(payload['matches'])} verified upcoming predictions ({byte_len} bytes); "
+            f"dataset: {recorded} predictions saved, {settled} new results.",
             status_path=status_path,
         )
         return payload
