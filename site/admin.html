@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MatchSense · Model check</title>
+<style>
+  :root {
+    --bg: #052617; --surface: #0A3320; --elevated: #0F4029; --hero: #0B3622;
+    --border: #194D33; --border-accent: #256B48; --lime: #D4E137; --lime-muted: #1E4628;
+    --on-lime: #071F12; --text: #F3F7F4; --text-2: #A8C2B3; --text-3: #8FB09E;
+    --win: #38C958; --win-bg: #173F26; --loss: #FF6B6B; --loss-bg: #2C1215;
+    --amber: #F5B544; --amber-bg: #2B220B; --track: #224734; --grey-bar: #A9BBAF;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: var(--lime); }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--border); }
+  header .wrap { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; padding-top: 16px; padding-bottom: 16px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 900; }
+  .mark { width: 36px; height: 36px; border-radius: 10px; background: var(--lime); color: var(--on-lime); display: grid; place-items: center; font-size: 20px; }
+  .brand .sub { font-weight: 500; color: var(--text-2); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .pill.admin { background: var(--amber-bg); color: var(--amber); }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 13px; color: var(--text-2); }
+  button.ghost { height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-accent); background: transparent; color: var(--text); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  button.ghost:hover { background: var(--elevated); }
+  main { padding-top: 28px; padding-bottom: 48px; display: flex; flex-direction: column; gap: 24px; }
+  .titlebar { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between; }
+  h1 { margin: 0; font-size: 32px; font-weight: 900; }
+  h2 { margin: 0; font-size: 18px; font-weight: 700; }
+  .muted { color: var(--text-2); font-size: 13px; line-height: 19px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; }
+  label.field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-2); }
+  select { height: 40px; min-width: 160px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border-accent); background: var(--surface); color: var(--text); font: inherit; font-size: 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+  .card { padding: 20px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); }
+  .tile .label { font-size: 13px; color: var(--text-2); }
+  .tile .value { font-size: 32px; font-weight: 900; }
+  .tile .of { font-size: 14px; color: var(--text-2); margin-left: 6px; }
+  .tile .sub { font-size: 12px; color: var(--text-3); margin-top: 4px; line-height: 17px; }
+  .row2 { display: flex; flex-wrap: wrap; gap: 16px; }
+  .row2 > .wide { flex: 999 1 560px; min-width: 0; }
+  .row2 > .narrow { flex: 1 1 360px; min-width: 0; }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .bar { height: 12px; border-radius: 6px; background: var(--track); overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 6px; }
+  .split { display: flex; justify-content: space-between; font-size: 14px; }
+  .calib { display: grid; grid-template-columns: 90px 1fr 80px; gap: 12px; align-items: center; }
+  .calib .track { position: relative; height: 26px; border-radius: 6px; background: var(--track); overflow: hidden; }
+  .calib .got { position: absolute; inset: 0 auto 0 0; background: var(--grey-bar); border-radius: 6px; }
+  .calib .said { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--text); }
+  .calib .num { position: absolute; left: 10px; top: 5px; font-size: 13px; font-weight: 700; color: var(--on-lime); }
+  .table-box { overflow-x: auto; }
+  table { width: 100%; min-width: 1000px; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; color: var(--text-2); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--border-accent); }
+  td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  td.c, th.c { text-align: center; }
+  .lime { color: var(--lime); }
+  .dim { color: var(--text-2); }
+  .mk { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 13px; font-size: 13px; font-weight: 900; }
+  .mk.ok { background: var(--win-bg); color: var(--win); }
+  .mk.no { background: var(--loss-bg); color: var(--loss); }
+  .mk.wait { background: var(--track); color: #C9D9CF; }
+  .pager { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--text-2); }
+  .pager button { height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border-accent); background: var(--elevated); color: var(--text); font: inherit; cursor: pointer; }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  .notice { padding: 16px; border-radius: 14px; background: var(--amber-bg); border: 1px solid #6B5314; color: #E6D3A3; }
+  footer { font-size: 12px; color: var(--text-3); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">M</span>
+      <span>Match<span class="lime">Sense</span> <span class="sub">· Model check</span></span>
+      <span class="pill admin">Admin</span>
+    </div>
+    <div class="meta">
+      <span id="meta">Loading…</span>
+      <button class="ghost" id="export" type="button">Export CSV</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="titlebar">
+    <div>
+      <h1>Predicted against real results</h1>
+      <p class="muted" style="margin: 6px 0 0">Every prediction is saved before kick-off, then checked against the final score.</p>
+    </div>
+    <div class="filters">
+      <label class="field">Period
+        <select id="period">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="365">Last 12 months</option>
+          <option value="all">Everything</option>
+        </select>
+      </label>
+      <label class="field">League
+        <select id="league"><option value="all">All leagues</option></select>
+      </label>
+      <label class="field">Show
+        <select id="show">
+          <option value="all">All matches</option>
+          <option value="wrong">Wrong winner only</option>
+          <option value="pending">Awaiting result</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div id="error" class="notice" hidden></div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="row2">
+    <section class="card wide stack" aria-labelledby="calib-h">
+      <div>
+        <h2 id="calib-h">Are our chances honest?</h2>
+        <div class="muted">When we gave a result this chance, how often did it happen? White line = what we said, bar = what happened.</div>
+      </div>
+      <div id="calib" class="stack"></div>
+    </section>
+    <section class="card narrow stack" aria-labelledby="book-h">
+      <div>
+        <h2 id="book-h">Model against bookmakers</h2>
+        <div class="muted" id="book-sub"></div>
+      </div>
+      <div id="book" class="stack"></div>
+    </section>
+  </div>
+
+  <section class="card stack" aria-labelledby="rows-h">
+    <div class="split" style="align-items: baseline">
+      <h2 id="rows-h">Match by match</h2>
+      <span class="muted" id="rows-count"></span>
+    </div>
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>League</th><th>Match</th><th>We predicted</th><th>Chance</th>
+            <th>Real result</th><th class="c">Winner</th><th class="c">Margin</th><th class="c">Score</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <span id="page-info"></span>
+      <span><button type="button" id="prev">Previous</button> <button type="button" id="next">Next</button></span>
+    </div>
+  </section>
+
+  <footer>Admin only. Anyone with this link can see it; it holds predictions and scores only.</footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var PAGE = 25;
+  var state = { entries: [], page: 0 };
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var pct = function (x) { return Math.round(x * 100) + '%'; };
+  var dash = function (s) { return String(s || '').replace('-', '–'); };
+
+  function pickLabel(e) {
+    if (e.pick === 'draw') return 'Draw';
+    var team = e.pick === 'away' ? e.away : e.home;
+    return e.margin ? team + ' by ' + e.margin : team + ' win';
+  }
+  function actualLabel(e) {
+    if (!e.actual_score) return '';
+    var g = e.actual_score.split('-').map(Number);
+    if (g[0] === g[1]) return 'Draw';
+    return (g[0] > g[1] ? e.home : e.away) + ' by ' + Math.abs(g[0] - g[1]);
+  }
+  function pickChance(e) {
+    var i = { home: 0, draw: 1, away: 2 }[e.pick];
+    return e.p && i != null ? pct(e.p[i]) : '–';
+  }
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) + ' ' +
+      d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function filtered() {
+    var period = $('period').value, league = $('league').value, show = $('show').value;
+    var since = period === 'all' ? 0 : Date.now() - Number(period) * 86400000;
+    return state.entries.filter(function (e) {
+      if (e.status === 'no_result') return false;
+      if (new Date(e.date).getTime() < since) return false;
+      if (league !== 'all' && e.league !== league) return false;
+      if (show === 'wrong' && !(e.status === 'final' && !e.hit_winner)) return false;
+      if (show === 'pending' && e.status !== 'pending') return false;
+      return true;
+    });
+  }
+
+  function stats(list) {
+    var fin = list.filter(function (e) { return e.status === 'final'; });
+    var s = { finished: fin.length, pending: list.length - fin.length, winner: 0, margin: 0, score: 0, draws: 0, drawsSpotted: 0,
+      bookN: 0, bookHits: 0, modelHitsOnBook: 0, ll: 0, bookLl: 0, calib: [] };
+    var buckets = [[0.2, 0.4, '20–40%'], [0.4, 0.6, '40–60%'], [0.6, 0.8, '60–80%'], [0.8, 1.01, '80%+']].map(function (b) {
+      return { lo: b[0], hi: b[1], label: b[2], n: 0, said: 0, hit: 0 };
+    });
+    fin.forEach(function (e) {
+      if (e.hit_winner) s.winner++;
+      if (e.hit_margin) s.margin++;
+      if (e.hit_score) s.score++;
+      if (e.actual_outcome === 'Draw') { s.draws++; if (e.pick === 'draw') s.drawsSpotted++; }
+      if (e.book_favourite) {
+        s.bookN++; if (e.book_correct) s.bookHits++; if (e.hit_winner) s.modelHitsOnBook++;
+        s.ll += e.log_loss; s.bookLl += e.book_log_loss;
+      }
+      var actual = { Home: 0, Draw: 1, Away: 2 }[e.actual_outcome];
+      (e.p || []).forEach(function (p, i) {
+        buckets.forEach(function (b) { if (p >= b.lo && p < b.hi) { b.n++; b.said += p; if (i === actual) b.hit++; } });
+      });
+    });
+    s.calib = buckets.filter(function (b) { return b.n > 0; });
+    return s;
+  }
+
+  function render() {
+    var list = filtered();
+    var s = stats(list);
+    var n = s.finished;
+    var tiles = [
+      ['Right winner', s.winner, 'of ' + n, n ? pct(s.winner / n) + ' · random guessing gets about 33%' : 'No finished matches yet', 'var(--lime)'],
+      ['Right margin', s.margin, 'of ' + n, n ? pct(s.margin / n) + ' · winner and goal gap both right' : '', 'var(--text)'],
+      ['Exact score', s.score, 'of ' + n, n ? pct(s.score / n) + ' · around 10% is normal' : '', 'var(--text)'],
+      ['Draws spotted', s.drawsSpotted, 'of ' + s.draws, 'Draws are the hardest result to call', 'var(--amber)'],
+      ['Awaiting result', s.pending, 'matches', 'Checked after each evening run', 'var(--text)']
+    ];
+    $('tiles').innerHTML = tiles.map(function (t) {
+      return '<div class="card tile"><div class="label">' + esc(t[0]) + '</div><div><span class="value" style="color:' + t[4] + '">' +
+        esc(t[1]) + '</span><span class="of">' + esc(t[2]) + '</span></div><div class="sub">' + esc(t[3]) + '</div></div>';
+    }).join('');
+
+    $('calib').innerHTML = s.calib.length ? s.calib.map(function (b) {
+      var said = b.said / b.n, got = b.hit / b.n;
+      return '<div class="calib"><strong>' + b.label + '</strong><span class="track" role="img" aria-label="We said ' + pct(said) +
+        ', it happened ' + pct(got) + '"><span class="got" style="width:' + (got * 100).toFixed(1) + '%"></span><span class="said" style="left:' +
+        (said * 100).toFixed(1) + '%"></span><span class="num">' + pct(got) + '</span></span><span class="dim" style="text-align:right">' +
+        b.n + ' chances</span></div>';
+    }).join('') : '<div class="muted">Appears once matches have finished.</div>';
+
+    if (s.bookN) {
+      $('book-sub').textContent = 'Right winner on the ' + s.bookN + ' finished matches with saved odds';
+      var m = s.modelHitsOnBook / s.bookN, b = s.bookHits / s.bookN;
+      $('book').innerHTML =
+        '<div class="stack" style="gap:6px"><div class="split"><span>Our model</span><strong class="lime">' + pct(m) + ' · ' + s.modelHitsOnBook + '</strong></div><div class="bar"><span style="width:' + (m * 100) + '%;background:var(--lime)"></span></div></div>' +
+        '<div class="stack" style="gap:6px"><div class="split"><span>Bookmakers’ favourite</span><strong>' + pct(b) + ' · ' + s.bookHits + '</strong></div><div class="bar"><span style="width:' + (b * 100) + '%;background:var(--grey-bar)"></span></div></div>' +
+        '<div class="split" style="padding-top:12px;border-top:1px solid var(--border)"><span class="dim">Log loss (lower is better)</span><strong>' +
+        (s.ll / s.bookN).toFixed(3) + ' vs ' + (s.bookLl / s.bookN).toFixed(3) + '</strong></div>' +
+        '<div class="muted">Wait for a few hundred matches before drawing conclusions.</div>';
+    } else {
+      $('book-sub').textContent = 'Needs finished matches with saved bookmaker odds';
+      $('book').innerHTML = '<div class="muted">No comparison yet.</div>';
+    }
+
+    var pages = Math.max(1, Math.ceil(list.length / PAGE));
+    state.page = Math.min(state.page, pages - 1);
+    var slice = list.slice(state.page * PAGE, state.page * PAGE + PAGE);
+    var mk = function (hit, label) {
+      return '<span class="mk ' + (hit ? 'ok' : 'no') + '" aria-label="' + label + (hit ? ' right' : ' wrong') + '">' + (hit ? '✓' : '✕') + '</span>';
+    };
+    var wait = '<span class="mk wait" aria-label="Awaiting">·</span>';
+    $('rows').innerHTML = slice.map(function (e) {
+      var done = e.status === 'final';
+      return '<tr><td class="dim" style="white-space:nowrap">' + esc(fmtDate(e.date)) + '</td><td class="dim">' + esc(e.league) + '</td>' +
+        '<td><strong>' + esc(e.home) + ' vs ' + esc(e.away) + '</strong></td>' +
+        '<td><strong class="lime">' + esc(dash(e.score) || '–') + '</strong> <span class="dim">· ' + esc(pickLabel(e)) + '</span></td>' +
+        '<td>' + pickChance(e) + '</td>' +
+        '<td>' + (done ? '<strong>' + esc(dash(e.actual_score)) + '</strong> <span class="dim">· ' + esc(actualLabel(e)) +
+          (e.actual_ht_score ? ' (HT ' + esc(dash(e.actual_ht_score)) + ')' : '') + '</span>' : '<span class="dim">Awaiting</span>') + '</td>' +
+        '<td class="c">' + (done ? mk(e.hit_winner, 'Winner') : wait) + '</td>' +
+        '<td class="c">' + (done ? mk(e.hit_margin, 'Margin') : wait) + '</td>' +
+        '<td class="c">' + (done ? mk(e.hit_score, 'Score') : wait) + '</td></tr>';
+    }).join('') || '<tr><td colspan="9" class="dim">No matches for these filters.</td></tr>';
+    $('rows-count').textContent = s.finished + ' finished · ' + s.pending + ' awaiting · newest first';
+    $('page-info').textContent = list.length ? 'Showing ' + (state.page * PAGE + 1) + '–' + (state.page * PAGE + slice.length) + ' of ' + list.length : '';
+    $('prev').disabled = state.page === 0;
+    $('next').disabled = state.page >= pages - 1;
+  }
+
+  function exportCsv() {
+    var cols = ['date', 'league', 'home', 'away', 'pick', 'margin', 'score', 'p_home', 'p_draw', 'p_away',
+      'odds_home', 'odds_draw', 'odds_away', 'status', 'actual_score', 'actual_ht_score', 'hit_winner', 'hit_margin',
+      'hit_score', 'log_loss', 'book_favourite', 'book_correct', 'model_version', 'predicted_at'];
+    var cell = function (v) { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [cols.join(',')].concat(filtered().map(function (e) {
+      var p = e.p || [], o = e.odds || [];
+      var row = { p_home: p[0], p_draw: p[1], p_away: p[2], odds_home: o[0], odds_draw: o[1], odds_away: o[2] };
+      return cols.map(function (c) { return cell(c in row ? row[c] : e[c]); }).join(',');
+    }));
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'matchsense-predictions-vs-results.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  ['period', 'league', 'show'].forEach(function (id) { $(id).addEventListener('change', function () { state.page = 0; render(); }); });
+  $('prev').addEventListener('click', function () { state.page--; render(); });
+  $('next').addEventListener('click', function () { state.page++; render(); });
+  $('export').addEventListener('click', exportCsv);
+
+  fetch('history.json', { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (data) {
+      state.entries = Array.isArray(data.entries) ? data.entries : [];
+      var leagues = Array.from(new Set(state.entries.map(function (e) { return e.league; }).filter(Boolean))).sort();
+      $('league').insertAdjacentHTML('beforeend', leagues.map(function (l) { return '<option>' + esc(l) + '</option>'; }).join(''));
+      $('meta').textContent = state.entries.length + ' predictions logged · updated ' + fmtDate(data.generated_at);
+      render();
+    })
+    .catch(function (err) {
+      $('meta').textContent = 'No data';
+      $('error').hidden = false;
+      $('error').textContent = 'Could not load history.json (' + err.message + '). It appears after the daily job has run once with the new dataset code.';
+      render();
+    });
+})();
+</script>
+</body>
+</html>
