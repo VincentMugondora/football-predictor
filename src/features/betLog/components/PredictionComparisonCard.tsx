@@ -1,105 +1,76 @@
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ResultIconBadge } from '@/components/ResultIconBadge';
-import { TeamCrest } from '@/components/TeamCrest';
 import { MatchResultComparison } from '@/data/types';
-import { formatPercentage } from '@/lib/calculations';
+import { formatShortDayAndMonth } from '@/lib/dateUtils';
+import { resultLabel } from '@/lib/historyStats';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
 export interface PredictionComparisonCardProps {
   item: MatchResultComparison;
 }
 
-function formatShortDate(isoDate: string): string {
-  const dt = new Date(isoDate);
-  if (Number.isNaN(dt.getTime())) {
-    return isoDate.slice(0, 10);
-  }
-  return dt.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+function predictedLabel(item: MatchResultComparison): string {
+  if (item.predicted_outcome === 'Draw') return 'Draw';
+  const team = item.predicted_outcome === 'Home' ? item.home : item.away;
+  return item.predicted_margin ? `${team} by ${item.predicted_margin}` : `${team} win`;
 }
 
 function PredictionComparisonCardComponent({ item }: PredictionComparisonCardProps) {
   const theme = useAppTheme();
-  const styles = useMemo(() => createStyles(theme, item.correct), [theme, item.correct]);
-
-  const [pH, pD, pA] = item.p;
-  const predictedProb =
-    item.predicted_outcome === 'Home' ? pH : item.predicted_outcome === 'Draw' ? pD : pA;
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const chance =
+    item.predicted_outcome === 'Home' ? item.p[0] : item.predicted_outcome === 'Draw' ? item.p[1] : item.p[2];
+  const actualScore = item.actual_score.replace(/\s*-\s*/, '–');
+  const predictedScore = item.predicted_score ? item.predicted_score.replace('-', '–') : null;
+  const checks: { label: string; hit: boolean }[] = [{ label: 'Winner', hit: item.correct }];
+  if (typeof item.hit_margin === 'boolean') checks.push({ label: 'Margin', hit: item.hit_margin });
+  if (typeof item.hit_score === 'boolean') checks.push({ label: 'Score', hit: item.hit_score });
 
   return (
     <View
       style={styles.card}
-      accessible={true}
-      accessibilityLabel={`${item.league} on ${formatShortDate(item.date)}: ${item.home} ${item.actual_score} ${item.away}. Model predicted ${item.predicted_outcome} (${formatPercentage(predictedProb, 0)}), actual outcome ${item.actual_outcome}, ${item.correct ? 'Hit' : 'Miss'}`}
+      accessible
+      accessibilityLabel={`${item.home} vs ${item.away}, ${item.league}. We predicted ${predictedLabel(item)}${
+        predictedScore ? ` ${predictedScore}` : ''
+      }. Final score ${actualScore}. Winner ${item.correct ? 'right' : 'wrong'}.`}
     >
-      {/* League & Date header */}
-      <View style={styles.topHeader}>
-        <Text style={styles.leagueText}>
-          {item.league} • {formatShortDate(item.date)}
-        </Text>
-        <View
-          style={[
-            styles.verdictPill,
-            item.correct ? styles.verdictHit : styles.verdictMiss,
-          ]}
-        >
-          <Text
-            style={[
-              styles.verdictPillText,
-              item.correct ? styles.verdictHitText : styles.verdictMissText,
-            ]}
-          >
-            {item.correct ? '✓ PREDICTION HIT' : '✕ PREDICTION MISS'}
+      <View style={styles.topRow}>
+        <Text style={styles.meta}>{formatShortDayAndMonth(item.date)}</Text>
+        <Text style={styles.meta}>{item.league}</Text>
+      </View>
+      <Text style={styles.title}>
+        {item.home} vs {item.away}
+      </Text>
+      <View style={styles.boxes}>
+        <View style={styles.box}>
+          <Text style={styles.boxLabel}>PREDICTED</Text>
+          <Text style={styles.boxScoreLime}>{predictedScore ?? '–'}</Text>
+          <Text style={styles.boxText} numberOfLines={1}>
+            {predictedLabel(item)} · {Math.round(chance * 100)}%
+          </Text>
+        </View>
+        <View style={[styles.box, item.correct ? styles.boxRight : styles.boxWrong]}>
+          <Text style={styles.boxLabel}>REAL RESULT</Text>
+          <Text style={styles.boxScore}>{actualScore}</Text>
+          <Text style={styles.boxText} numberOfLines={1}>
+            {resultLabel(item.home, item.away, item.actual_score.replace(/\s/g, ''))}
           </Text>
         </View>
       </View>
-
-      {/* Main scoreline & comparison row */}
-      <View style={styles.mainRow}>
-        <View style={styles.clubsBox}>
-          <View style={styles.clubCol}>
-            <TeamCrest teamName={item.home} size="sm" />
-            <Text style={styles.clubName} numberOfLines={1}>
-              {item.home}
+      <View style={styles.checks}>
+        {checks.map((check) => (
+          <View key={check.label} style={[styles.check, check.hit ? styles.checkRight : styles.checkWrong]}>
+            <Text style={[styles.checkText, check.hit ? styles.checkTextRight : styles.checkTextWrong]}>
+              {check.hit ? '✓' : '✕'} {check.label}
             </Text>
           </View>
-
-          <View style={styles.scoreCol}>
-            <Text style={styles.scoreText}>{item.actual_score}</Text>
-            <Text style={styles.ftLabel}>FT ({item.actual_outcome})</Text>
-          </View>
-
-          <View style={styles.clubCol}>
-            <TeamCrest teamName={item.away} size="sm" />
-            <Text style={styles.clubName} numberOfLines={1}>
-              {item.away}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.predictedCol}>
-          <Text style={styles.predictedLabel}>Predicted</Text>
-          <Text style={styles.predictedValue}>{item.predicted_outcome}</Text>
-          <Text style={styles.predictedProb}>{formatPercentage(predictedProb, 0)}</Text>
-        </View>
-
-        <ResultIconBadge result={item.correct ? 'Win' : 'Loss'} />
-      </View>
-
-      {/* Pre-match probabilities vs Closing Odds */}
-      <View style={styles.footerRow}>
-        <Text style={styles.probsText}>
-          Pre-match Model: H {formatPercentage(pH, 0)} • D {formatPercentage(pD, 0)} • A{' '}
-          {formatPercentage(pA, 0)}
-        </Text>
-        <Text style={styles.marketText}>
-          Mkt Fav: {item.book_favourite} ({item.book_correct ? '✓' : '✕'})
-        </Text>
+        ))}
+        {item.book_favourite ? (
+          <Text style={styles.bookText}>
+            Bookmakers’ favourite: {item.book_favourite} {item.book_correct ? '✓' : '✕'}
+          </Text>
+        ) : null}
       </View>
     </View>
   );
@@ -107,129 +78,35 @@ function PredictionComparisonCardComponent({ item }: PredictionComparisonCardPro
 
 export const PredictionComparisonCard = memo(PredictionComparisonCardComponent);
 
-function createStyles(theme: AppTheme, isCorrect: boolean) {
+function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     card: {
+      gap: 10,
+      padding: 14,
+      borderRadius: 16,
       backgroundColor: theme.colors.surface,
-      borderColor: isCorrect ? theme.colors.borderAccent : theme.colors.border,
       borderWidth: theme.layout.borderWidth,
-      borderRadius: theme.radii.card,
-      padding: theme.spacing.md,
-      gap: theme.spacing.sm,
+      borderColor: theme.colors.border,
       marginBottom: theme.spacing.md,
     },
-    topHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: theme.spacing.xs,
-    },
-    leagueText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.medium,
-      flex: 1,
-    },
-    verdictPill: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xxs,
-      borderRadius: theme.radii.pill,
-      borderWidth: theme.layout.borderWidth,
-    },
-    verdictHit: {
-      backgroundColor: theme.colors.primaryMuted,
-      borderColor: theme.colors.primary,
-    },
-    verdictMiss: {
-      backgroundColor: theme.colors.dangerMuted,
-      borderColor: theme.colors.danger,
-    },
-    verdictPillText: {
-      fontSize: theme.typography.sizes.badge,
-      fontWeight: theme.typography.weights.bold,
-      letterSpacing: 0.4,
-    },
-    verdictHitText: {
-      color: theme.colors.primary,
-    },
-    verdictMissText: {
-      color: theme.colors.danger,
-    },
-    mainRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: theme.spacing.sm,
-    },
-    clubsBox: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    clubCol: {
-      width: 76,
-      alignItems: 'center',
-      gap: theme.spacing.xs,
-    },
-    clubName: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.semibold,
-      textAlign: 'center',
-    },
-    scoreCol: {
-      alignItems: 'center',
-      gap: theme.spacing.xxs,
-      paddingHorizontal: theme.spacing.xs,
-    },
-    scoreText: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.screenTitle,
-      fontWeight: theme.typography.weights.bold,
-    },
-    ftLabel: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.badge,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    predictedCol: {
-      alignItems: 'center',
-      paddingHorizontal: theme.spacing.xs,
-      gap: theme.spacing.xxs,
-    },
-    predictedLabel: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.badge,
-    },
-    predictedValue: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.bold,
-    },
-    predictedProb: {
-      color: isCorrect ? theme.colors.primary : theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.bold,
-    },
-    footerRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderTopColor: theme.colors.border,
-      borderTopWidth: theme.layout.borderWidth,
-      paddingTop: theme.spacing.xs,
-      gap: theme.spacing.xs,
-    },
-    probsText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.badge,
-      flex: 1,
-    },
-    marketText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.badge,
-      fontWeight: theme.typography.weights.semibold,
-    },
+    topRow: { flexDirection: 'row', justifyContent: 'space-between' },
+    meta: { color: theme.colors.textSecondary, fontSize: 12 },
+    title: { color: theme.colors.textPrimary, fontSize: 16, fontWeight: theme.typography.weights.bold },
+    boxes: { flexDirection: 'row', gap: theme.spacing.sm },
+    box: { flex: 1, padding: 10, borderRadius: 12, backgroundColor: theme.colors.surfaceElevated },
+    boxRight: { backgroundColor: theme.colors.winSurface },
+    boxWrong: { backgroundColor: theme.colors.surfaceDangerBanner },
+    boxLabel: { color: theme.colors.textMuted, fontSize: 11, fontWeight: theme.typography.weights.bold, letterSpacing: 0.6 },
+    boxScore: { color: theme.colors.textPrimary, fontSize: 20, fontWeight: '900' },
+    boxScoreLime: { color: theme.colors.primary, fontSize: 20, fontWeight: '900' },
+    boxText: { color: theme.colors.textSecondary, fontSize: 12 },
+    checks: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+    check: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: theme.radii.pill },
+    checkRight: { backgroundColor: theme.colors.winSurface },
+    checkWrong: { backgroundColor: theme.colors.surfaceDangerBanner },
+    checkText: { fontSize: 12, fontWeight: theme.typography.weights.bold },
+    checkTextRight: { color: theme.colors.formWin },
+    checkTextWrong: { color: theme.colors.dangerText },
+    bookText: { color: theme.colors.textSecondary, fontSize: 12, marginLeft: theme.spacing.xs },
   });
 }

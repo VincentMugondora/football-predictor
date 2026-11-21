@@ -10,141 +10,80 @@ export interface WinRateComparisonCardProps {
 
 export function WinRateComparisonCard({ comparison }: WinRateComparisonCardProps) {
   const theme = useAppTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const winPct = Math.round(comparison.winRate * 100);
   const breakEvenPct = Math.round(comparison.breakEvenRate * 100);
-  const deltaPct = comparison.delta * 100;
-  const deltaSign = deltaPct > 0 ? '+' : '';
-  const deltaText = `${deltaSign}${deltaPct.toFixed(1)}%`;
-
-  const styles = useMemo(
-    () => createStyles(theme, winPct, breakEvenPct, deltaPct),
-    [theme, winPct, breakEvenPct, deltaPct]
-  );
+  const gap = Math.round(comparison.delta * 100);
+  const verdict =
+    comparison.settledCount === 0
+      ? 'No finished bets yet.'
+      : gap >= 0
+        ? `You are ${gap} points above break-even so far.`
+        : `You are ${-gap} points below break-even so far.`;
 
   return (
     <View
       style={styles.card}
       accessible={true}
-      accessibilityLabel={`Win rate vs break-even rate across ${comparison.settledCount} settled bets: Actual win rate ${winPct}%, Required break-even rate ${breakEvenPct}%, Difference ${deltaText}`}
+      accessibilityLabel={`Are you winning often enough? You win ${winPct}%. You need ${breakEvenPct}% to break even. ${verdict}`}
     >
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Win rate vs break-even rate</Text>
-        <Text style={styles.deltaBadge}>
-          {deltaText} {deltaPct >= 0 ? '▲' : '▼'}
+      <View style={styles.header}>
+        <Text style={styles.title} accessibilityRole="header">
+          Are you winning often enough?
+        </Text>
+        <Text style={styles.subtitle}>
+          At your odds you need to win {breakEvenPct}% of bets just to break even.
         </Text>
       </View>
-
       <View style={styles.barGroup}>
-        <View style={styles.barRow}>
-          <Text style={styles.barLabel}>Actual win rate</Text>
-          <View style={styles.track}>
-            <View style={styles.winFill} />
-          </View>
-          <Text style={styles.winValue}>{winPct}%</Text>
+        <View style={styles.barTop}>
+          <Text style={styles.barLabel}>You win</Text>
+          <Text style={[styles.barValue, gap >= 0 ? styles.good : styles.bad]}>{winPct}%</Text>
         </View>
-
-        <View style={styles.barRow}>
-          <Text style={styles.barLabel}>Break-even req.</Text>
-          <View style={styles.track}>
-            <View style={styles.breakEvenFill} />
-          </View>
-          <Text style={styles.breakEvenValue}>{breakEvenPct}%</Text>
+        <View style={styles.track}>
+          <View style={[styles.fill, gap >= 0 ? styles.fillGood : styles.fillBad, { width: `${winPct}%` }]} />
         </View>
       </View>
-
+      <View style={styles.barGroup}>
+        <View style={styles.barTop}>
+          <Text style={styles.barLabel}>Needed to break even</Text>
+          <Text style={styles.barValue}>{breakEvenPct}%</Text>
+        </View>
+        <View style={styles.track}>
+          <View style={[styles.fill, styles.fillNeutral, { width: `${breakEvenPct}%` }]} />
+        </View>
+      </View>
       <Text style={styles.caption}>
-        Based on {comparison.settledCount} settled bets (excludes Pending and Void).
+        {verdict} Based on {comparison.settledCount} finished bets (not counting pending or void).
       </Text>
     </View>
   );
 }
 
-function createStyles(
-  theme: AppTheme,
-  winPct: number,
-  breakEvenPct: number,
-  deltaPct: number
-) {
-  const deltaColor =
-    deltaPct > 0
-      ? theme.colors.primary
-      : deltaPct < 0
-        ? theme.colors.danger
-        : theme.colors.textSecondary;
-
+function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     card: {
+      gap: 14,
+      padding: 18,
+      borderRadius: 18,
       backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.border,
       borderWidth: theme.layout.borderWidth,
-      borderRadius: theme.radii.card,
-      padding: theme.spacing.lg,
-      gap: theme.spacing.md,
+      borderColor: theme.colors.border,
     },
-    headerRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    title: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.sectionTitle,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    deltaBadge: {
-      color: deltaColor,
-      fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.bold,
-    },
-    barGroup: {
-      gap: theme.spacing.sm,
-    },
-    barRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    barLabel: {
-      width: 108,
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.body,
-    },
-    track: {
-      flex: 1,
-      height: theme.layout.progressBarHeight,
-      backgroundColor: theme.colors.neutralBarTrack,
-      borderRadius: theme.radii.pill,
-      overflow: 'hidden',
-    },
-    winFill: {
-      width: `${Math.min(100, Math.max(2, winPct))}%`,
-      height: '100%',
-      backgroundColor: theme.colors.primary,
-      borderRadius: theme.radii.pill,
-    },
-    breakEvenFill: {
-      width: `${Math.min(100, Math.max(2, breakEvenPct))}%`,
-      height: '100%',
-      backgroundColor: theme.colors.neutralBadge,
-      borderRadius: theme.radii.pill,
-    },
-    winValue: {
-      width: 44,
-      textAlign: 'right',
-      color: theme.colors.primary,
-      fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.bold,
-    },
-    breakEvenValue: {
-      width: 44,
-      textAlign: 'right',
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.bodyStrong,
-      fontWeight: theme.typography.weights.bold,
-    },
-    caption: {
-      color: theme.colors.textMuted,
-      fontSize: theme.typography.sizes.caption,
-    },
+    header: { gap: 2 },
+    title: { color: theme.colors.textPrimary, fontSize: 17, fontWeight: theme.typography.weights.bold },
+    subtitle: { color: theme.colors.textSecondary, fontSize: 13, lineHeight: 19 },
+    barGroup: { gap: 6 },
+    barTop: { flexDirection: 'row', justifyContent: 'space-between' },
+    barLabel: { color: theme.colors.textPrimary, fontSize: 14 },
+    barValue: { color: theme.colors.textPrimary, fontSize: 14, fontWeight: theme.typography.weights.bold },
+    good: { color: theme.colors.formWin },
+    bad: { color: theme.colors.dangerText },
+    track: { height: 12, borderRadius: 6, backgroundColor: theme.colors.neutralBarTrack, overflow: 'hidden' },
+    fill: { height: 12, borderRadius: 6 },
+    fillGood: { backgroundColor: theme.colors.formWin },
+    fillBad: { backgroundColor: theme.colors.danger },
+    fillNeutral: { backgroundColor: theme.colors.probBarDraw },
+    caption: { color: theme.colors.textSecondary, fontSize: 13, lineHeight: 19 },
   });
 }

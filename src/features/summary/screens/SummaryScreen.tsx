@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { AppButton } from '@/components/AppButton';
 import { AppHeader } from '@/components/AppHeader';
 import { DisclaimerFooter } from '@/components/DisclaimerFooter';
 import { InfoBanner } from '@/components/InfoBanner';
@@ -18,23 +17,30 @@ export function SummaryScreen() {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const metrics = useSummaryMetrics();
 
-  const profitSign = metrics.totalProfit > 0 ? '+' : metrics.totalProfit < 0 ? '-' : '';
+  const profitSign = metrics.totalProfit > 0 ? '+' : metrics.totalProfit < 0 ? '−' : '';
   const profitFormatted = `${profitSign}$${Math.abs(metrics.totalProfit).toFixed(2)}`;
-
   const roiPct = metrics.roi * 100;
-  const roiSign = roiPct > 0 ? '+' : '';
-  const roiFormatted = `${roiSign}${roiPct.toFixed(1)}%`;
-
-  const currentDdPct = (metrics.drawdown.currentDrawdownPct * 100).toFixed(1);
-  const maxDdPct = (metrics.drawdown.maxDrawdownPct * 100).toFixed(1);
+  const roiFormatted = `${roiPct > 0 ? '+' : roiPct < 0 ? '−' : ''}${Math.abs(roiPct).toFixed(1)}%`;
+  const dipPct = Math.max(metrics.drawdown.currentDrawdownPct, metrics.drawdown.maxDrawdownPct) * 100;
+  const settledCount = metrics.winRateComparison.settledCount;
 
   return (
     <ScreenContainer>
-      <AppHeader />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <AppHeader
+        title="Summary"
+        showBack
+        right={
+          <TouchableOpacity
+            style={styles.settingsPill}
+            onPress={() => router.push('/settings')}
+            accessibilityRole="button"
+            accessibilityLabel="Open bankroll and threshold settings"
+          >
+            <Text style={styles.settingsPillText}>Settings</Text>
+          </TouchableOpacity>
+        }
+      />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {metrics.isDrawdownAlertActive ? (
           <DrawdownAlertBanner
             currentDrawdownPct={metrics.drawdown.currentDrawdownPct}
@@ -46,61 +52,44 @@ export function SummaryScreen() {
         {metrics.isSmallSampleSize ? (
           <InfoBanner
             tone="info"
-            title="Fewer than 100 settled bets is mostly luck"
-            subtitle={`You have ${metrics.winRateComparison.settledCount} settled bets. Short-term variance dominates small samples.`}
+            title={`${settledCount} finished ${settledCount === 1 ? 'bet is' : 'bets are'} too few to judge`}
+            subtitle="Under about 100 finished bets, wins and losses are mostly luck. Keep logging and check back."
           />
         ) : null}
 
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle} accessibilityRole="header">
-            Bankroll & Performance
-          </Text>
-          <AppButton
-            label="Settings"
-            onPress={() => router.push('/settings')}
-            variant="secondary"
-            compact
-            accessibilityLabel="Open bankroll and threshold settings"
-          />
-        </View>
-
         <View style={styles.gridRow}>
           <StatTile
-            label="Current Bankroll"
+            label="Bankroll now"
             value={`$${metrics.currentBankroll.toFixed(2)}`}
             sublabel={`Started at $${metrics.startingBankroll.toFixed(2)}`}
           />
           <StatTile
-            label="Total Profit"
+            label="Total profit"
             value={profitFormatted}
-            sublabel="Settled net P/L"
-            tone={
-              metrics.totalProfit > 0
-                ? 'positive'
-                : metrics.totalProfit < 0
-                  ? 'negative'
-                  : 'default'
-            }
+            sublabel="From finished bets"
+            tone={metrics.totalProfit > 0 ? 'positive' : metrics.totalProfit < 0 ? 'negative' : 'default'}
           />
         </View>
-
         <View style={styles.gridRow}>
           <StatTile
-            label="ROI (Yield)"
+            label="Return"
             value={roiFormatted}
-            sublabel="Profit / settled stake"
+            sublabel="Profit ÷ money staked"
             tone={metrics.roi > 0 ? 'positive' : metrics.roi < 0 ? 'negative' : 'default'}
           />
           <StatTile
-            label="Drawdown from Peak"
-            value={`-${currentDdPct}%`}
-            sublabel={`Peak $${metrics.drawdown.peakBankroll.toFixed(2)} • Max DD -${maxDdPct}%`}
-            tone={metrics.isDrawdownAlertActive ? 'negative' : 'default'}
+            label="Biggest dip"
+            value={`−${dipPct.toFixed(1)}%`}
+            sublabel={`From a peak of $${metrics.drawdown.peakBankroll.toFixed(2)}`}
+            tone={metrics.isDrawdownAlertActive ? 'negative' : 'warning'}
           />
         </View>
 
         <WinRateComparisonCard comparison={metrics.winRateComparison} />
 
+        <Text style={styles.care}>
+          Worried about how much you bet? Talk to someone you trust, or set a lower stake in Settings.
+        </Text>
         <DisclaimerFooter />
       </ScrollView>
     </ScreenContainer>
@@ -109,24 +98,18 @@ export function SummaryScreen() {
 
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
-    scrollContent: {
-      gap: theme.spacing.md,
-      paddingBottom: theme.spacing.xxl,
-    },
-    sectionHeaderRow: {
-      flexDirection: 'row',
+    scrollContent: { gap: theme.spacing.lg, paddingBottom: theme.spacing.xxl },
+    gridRow: { flexDirection: 'row', gap: 10 },
+    settingsPill: {
+      minHeight: 40,
+      paddingHorizontal: 14,
+      borderRadius: 20,
+      borderWidth: theme.layout.borderWidth,
+      borderColor: theme.colors.borderAccent,
       alignItems: 'center',
-      justifyContent: 'space-between',
-      marginTop: theme.spacing.xs,
+      justifyContent: 'center',
     },
-    sectionTitle: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.sectionTitle,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    gridRow: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
+    settingsPillText: { color: theme.colors.textPrimary, fontSize: 14, fontWeight: theme.typography.weights.bold },
+    care: { color: theme.colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
   });
 }

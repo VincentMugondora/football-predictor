@@ -1,15 +1,19 @@
-import { router } from 'expo-router';
-import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Constants from 'expo-constants';
+import { Href, router } from 'expo-router';
+import React, { useMemo, useRef, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { AppButton } from '@/components/AppButton';
 import { AppHeader } from '@/components/AppHeader';
 import { AppInput } from '@/components/AppInput';
 import { DisclaimerFooter } from '@/components/DisclaimerFooter';
 import { InfoBanner } from '@/components/InfoBanner';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SectionCard } from '@/components/SectionCard';
 import { useAppStore } from '@/data/store';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
+
+const ADMIN_TAPS = 5;
+const TAP_WINDOW_MS = 2500;
 
 export function SettingsScreen() {
   const theme = useAppTheme();
@@ -19,36 +23,31 @@ export function SettingsScreen() {
   const updateSettings = useAppStore((s) => s.updateSettings);
   const resetStoreToDefaults = useAppStore((s) => s.resetStoreToDefaults);
 
-  const [startingBankrollInput, setStartingBankrollInput] = useState<string>(
-    String(settings.startingBankroll)
-  );
-  const [usualStakePctInput, setUsualStakePctInput] = useState<string>(
-    String(settings.usualStakePct)
-  );
-  const [maxStakePctInput, setMaxStakePctInput] = useState<string>(
-    String(settings.maxStakePct)
-  );
-  const [drawdownAlertPctInput, setDrawdownAlertPctInput] = useState<string>(
-    String(settings.drawdownAlertPct)
-  );
-  const [edgeThresholdPctInput, setEdgeThresholdPctInput] = useState<string>(
+  const [startingBankrollInput, setStartingBankrollInput] = useState(String(settings.startingBankroll));
+  const [usualStakePctInput, setUsualStakePctInput] = useState(String(settings.usualStakePct));
+  const [maxStakePctInput, setMaxStakePctInput] = useState(String(settings.maxStakePct));
+  const [drawdownAlertPctInput, setDrawdownAlertPctInput] = useState(String(settings.drawdownAlertPct));
+  const [edgeThresholdPctInput, setEdgeThresholdPctInput] = useState(
     String(Number((settings.edgeThreshold * 100).toFixed(2)))
   );
-  const [savedNotice, setSavedNotice] = useState<boolean>(false);
+  const [savedNotice, setSavedNotice] = useState(false);
+  const taps = useRef<number[]>([]);
+
+  const bankrollNumber = Number(startingBankrollInput) || settings.startingBankroll;
+  const stakeNumber = Number(usualStakePctInput) || settings.usualStakePct;
+  const version = Constants.expoConfig?.version ?? '1.0.0';
+
+  const edit = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setSavedNotice(false);
+  };
 
   const handleSave = () => {
     const startingBankroll = Math.max(1, Number(startingBankrollInput) || 100);
     const usualStakePct = Math.min(100, Math.max(0.1, Number(usualStakePctInput) || 2));
     const maxStakePct = Math.min(100, Math.max(0.5, Number(maxStakePctInput) || 5));
-    const drawdownAlertPct = Math.min(
-      95,
-      Math.max(1, Number(drawdownAlertPctInput) || 20)
-    );
-    const edgeThresholdPct = Math.min(
-      50,
-      Math.max(0, Number(edgeThresholdPctInput) || 3)
-    );
-
+    const drawdownAlertPct = Math.min(95, Math.max(1, Number(drawdownAlertPctInput) || 20));
+    const edgeThresholdPct = Math.min(50, Math.max(0, Number(edgeThresholdPctInput) || 3));
     updateSettings({
       startingBankroll,
       usualStakePct,
@@ -69,109 +68,101 @@ export function SettingsScreen() {
     setSavedNotice(false);
   };
 
+  // Hidden admin entry: tap the version line 5 times within a few seconds.
+  const handleVersionTap = () => {
+    const now = Date.now();
+    taps.current = [...taps.current.filter((t) => now - t < TAP_WINDOW_MS), now];
+    if (taps.current.length >= ADMIN_TAPS) {
+      taps.current = [];
+      router.push('/admin' as Href);
+    }
+  };
+
   return (
     <ScreenContainer>
-      <AppHeader title="Settings" showBack />
+      <AppHeader title="Settings" showBack hideSettings />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Bankroll & Risk Rules</Text>
+        <View style={styles.titleBlock}>
+          <Text style={styles.title} accessibilityRole="header">
+            Money and limits
+          </Text>
+          <Text style={styles.subtitle}>
+            These stay on your phone. They power the Summary and the warnings you see.
+          </Text>
+        </View>
 
+        <SectionCard>
           <AppInput
-            label="Starting Bankroll ($)"
+            label="Starting bankroll ($)"
             value={startingBankrollInput}
-            onChangeText={(val) => {
-              setStartingBankrollInput(val);
-              setSavedNotice(false);
-            }}
+            onChangeText={edit(setStartingBankrollInput)}
             keyboardType="decimal-pad"
-            helperText="Baseline bankroll before your logged bets."
+            helperText="The money you set aside for betting."
           />
-
           <AppInput
-            label="Usual Stake (%)"
+            label="Usual stake (% of bankroll)"
             value={usualStakePctInput}
-            onChangeText={(val) => {
-              setUsualStakePctInput(val);
-              setSavedNotice(false);
-            }}
+            onChangeText={edit(setUsualStakePctInput)}
             keyboardType="decimal-pad"
-            helperText="Default percentage prefilled when logging a bet."
+            helperText={`At $${bankrollNumber.toFixed(0)} that is $${((bankrollNumber * stakeNumber) / 100).toFixed(2)} a bet.`}
           />
-
           <AppInput
-            label="Max Stake Warning (%)"
+            label="Warn me above (% of bankroll)"
             value={maxStakePctInput}
-            onChangeText={(val) => {
-              setMaxStakePctInput(val);
-              setSavedNotice(false);
-            }}
+            onChangeText={edit(setMaxStakePctInput)}
             keyboardType="decimal-pad"
-            helperText="Warns before saving a bet that exceeds this % of bankroll."
+            helperText="We warn you before you log a bigger bet."
           />
-
           <AppInput
-            label="Drawdown Alert (%)"
+            label="Alert after a drop of (%)"
             value={drawdownAlertPctInput}
-            onChangeText={(val) => {
-              setDrawdownAlertPctInput(val);
-              setSavedNotice(false);
-            }}
+            onChangeText={edit(setDrawdownAlertPctInput)}
             keyboardType="decimal-pad"
-            helperText="Triggers the 'Stop and review' alert on the Summary screen."
+            helperText="We show a stop-and-review alert if your bankroll falls this far from its peak."
           />
-
           <AppInput
-            label="Edge Threshold (%)"
+            label="Highlight a gap of at least (points)"
             value={edgeThresholdPctInput}
-            onChangeText={(val) => {
-              setEdgeThresholdPctInput(val);
-              setSavedNotice(false);
-            }}
+            onChangeText={edit(setEdgeThresholdPctInput)}
             keyboardType="decimal-pad"
-            helperText="Highlights match outcomes where (Model % - Break-even %) meets or exceeds this value."
+            helperText="How much our chance must beat the bookmakers’ before we point it out."
           />
-
           {savedNotice ? (
-            <InfoBanner
-              tone="info"
-              title="Settings saved to device"
-              subtitle="Your thresholds and bankroll parameters have been updated."
-            />
+            <InfoBanner tone="info" title="Settings saved" subtitle="Your limits have been updated on this phone." />
           ) : null}
+        </SectionCard>
 
-          <View style={styles.actionsRow}>
-            <AppButton
-              label="Reset Demo Data"
-              onPress={handleReset}
-              variant="secondary"
-              accessibilityLabel="Reset bets and settings to initial demo defaults"
-            />
-            <AppButton
-              label="Save Settings"
-              onPress={handleSave}
-              variant="primary"
-              accessibilityLabel="Save settings"
-            />
-          </View>
-        </View>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={handleSave}
+          accessibilityRole="button"
+          accessibilityLabel="Save settings"
+        >
+          <Text style={styles.primaryButtonText}>Save settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.dangerButton}
+          onPress={handleReset}
+          accessibilityRole="button"
+          accessibilityLabel="Reset bets and settings to initial demo defaults"
+        >
+          <Text style={styles.dangerButtonText}>Reset demo data</Text>
+        </TouchableOpacity>
 
-        <View style={styles.doneRow}>
-          <AppButton
-            label="Back to App"
-            onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/');
-              }
-            }}
-            variant="ghost"
-          />
-        </View>
+        <SectionCard title="About the predictions">
+          <Text style={styles.body}>
+            A statistical model trained on past results, updated twice a day. Data: football-data.co.uk,
+            football-data.org and The Odds API.
+          </Text>
+        </SectionCard>
 
+        <Pressable onPress={handleVersionTap} accessibilityRole="text" accessibilityLabel={`App version ${version}`}>
+          <Text style={styles.version}>MatchSense version {version}</Text>
+        </Pressable>
         <DisclaimerFooter />
       </ScrollView>
     </ScreenContainer>
@@ -180,32 +171,28 @@ export function SettingsScreen() {
 
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
-    scrollContent: {
-      gap: theme.spacing.md,
-      paddingBottom: theme.spacing.xxl,
-    },
-    card: {
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.border,
-      borderWidth: theme.layout.borderWidth,
-      borderRadius: theme.radii.card,
-      padding: theme.spacing.lg,
-      gap: theme.spacing.md,
-      marginTop: theme.spacing.xs,
-    },
-    sectionTitle: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.sectionTitle,
-      fontWeight: theme.typography.weights.bold,
-    },
-    actionsRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      gap: theme.spacing.sm,
-      marginTop: theme.spacing.xs,
-    },
-    doneRow: {
+    scrollContent: { gap: theme.spacing.lg, paddingBottom: theme.spacing.xxl },
+    titleBlock: { gap: 4 },
+    title: { color: theme.colors.textPrimary, fontSize: 26, fontWeight: '900' },
+    subtitle: { color: theme.colors.textSecondary, fontSize: 14, lineHeight: 20 },
+    body: { color: theme.colors.textSecondary, fontSize: 13, lineHeight: 19 },
+    primaryButton: {
+      minHeight: 52,
+      borderRadius: 14,
+      backgroundColor: theme.colors.primary,
       alignItems: 'center',
+      justifyContent: 'center',
     },
+    primaryButtonText: { color: theme.colors.primaryTextOnColor, fontSize: 16, fontWeight: theme.typography.weights.bold },
+    dangerButton: {
+      minHeight: 48,
+      borderRadius: 14,
+      borderWidth: theme.layout.borderWidth,
+      borderColor: theme.colors.borderDanger,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dangerButtonText: { color: theme.colors.dangerText, fontSize: 15, fontWeight: theme.typography.weights.bold },
+    version: { color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', paddingVertical: theme.spacing.sm },
   });
 }

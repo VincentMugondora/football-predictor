@@ -30,40 +30,26 @@ export function StatTile({ label, value, sublabel, tone = 'default' }: StatTileP
 }
 
 function createStyles(theme: AppTheme, tone: StatTileTone) {
-  let valueColor = theme.colors.textPrimary;
-  if (tone === 'positive') {
-    valueColor = theme.colors.primary;
-  } else if (tone === 'negative') {
-    valueColor = theme.colors.danger;
-  } else if (tone === 'warning') {
-    valueColor = theme.colors.badgeGold;
-  }
-
+  const valueColor =
+    tone === 'positive'
+      ? theme.colors.formWin
+      : tone === 'negative'
+        ? theme.colors.dangerText
+        : tone === 'warning'
+          ? theme.colors.warningText
+          : theme.colors.textPrimary;
   return StyleSheet.create({
     tile: {
       flex: 1,
-      minWidth: '45%',
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.border,
-      borderWidth: theme.layout.borderWidth,
-      borderRadius: theme.radii.card,
+      gap: 6,
       padding: theme.spacing.lg,
-      gap: theme.spacing.xs,
+      borderRadius: 18,
+      backgroundColor: theme.colors.surface,
+      borderWidth: theme.layout.borderWidth,
+      borderColor: theme.colors.border,
     },
-    label: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    value: {
-      color: valueColor,
-      fontSize: theme.typography.sizes.statValue,
-      lineHeight: theme.typography.lineHeights.statValue,
-      fontWeight: theme.typography.weights.bold,
-    },
-    sublabel: {
-      color: theme.colors.textMuted,
-      fontSize: theme.typography.sizes.caption,
-    },
+    label: { color: theme.colors.textSecondary, fontSize: 13 },
+    value: { color: valueColor, fontSize: 26, fontWeight: '900' },
+    sublabel: { color: theme.colors.textMuted, fontSize: 12, lineHeight: 17 },
   });
 }
