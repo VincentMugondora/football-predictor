@@ -2,11 +2,20 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { ConfidenceTag } from '@/components/ConfidenceTag';
 import { TeamCrest } from '@/components/TeamCrest';
 import { MatchPick, OutcomeKey } from '@/data/types';
 import { OutcomeEdgeRow } from '@/features/picks/components/OutcomeEdgeRow';
+import { OutcomeSplitBar } from '@/features/picks/components/OutcomeSplitBar';
 import { analyzeMatchOutcomes } from '@/lib/calculations';
-import { formatKickoffTime } from '@/lib/dateUtils';
+import { formatLocalTime } from '@/lib/dateUtils';
+import {
+  confidenceLevel,
+  formatLikelyScore,
+  formatWinnerShort,
+  pickChance,
+  summariseWinner,
+} from '@/lib/winnerLabels';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
 export interface MatchPickCardProps {
@@ -31,91 +40,87 @@ function MatchPickCardComponent({
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const outcomes = useMemo(
-    () => analyzeMatchOutcomes(match.p, match.odds, edgeThreshold),
-    [match.p, match.odds, edgeThreshold]
+    () => (showOddsBreakdown ? analyzeMatchOutcomes(match.p, match.odds, edgeThreshold) : []),
+    [showOddsBreakdown, match.p, match.odds, edgeThreshold]
   );
 
   const matchTitle = `${match.home} vs ${match.away}`;
-  const kickoff = formatKickoffTime(match.date);
-  const winnerPick =
-    match.winner?.pick === 'home'
-      ? `${match.home} win`
-      : match.winner?.pick === 'away'
-        ? `${match.away} win`
-        : match.winner?.pick === 'draw'
-          ? 'Draw'
-          : match.winner?.pick === 'too close to call'
-            ? 'Too close to call'
-            : null;
-  const confidenceLabel = match.low_confidence
-    ? 'low confidence · limited history'
-    : `${match.winner?.confidence} confidence`;
+  const kickoff = formatLocalTime(match.date);
+  const summary = summariseWinner(match);
+  const pickText = summary?.headline ?? 'No prediction';
+  const likelyScore = formatLikelyScore(match);
+  const chancePct = Math.round(pickChance(match) * 100);
+  const level = confidenceLevel(match);
 
   return (
-    <View style={[styles.card, theme.shadows.card]}>
-      <View style={styles.fixtureRow}>
-        <TouchableOpacity
-          style={styles.teamsTouchArea}
-          onPress={() => onPressMatch(match.id)}
-          accessibilityRole="button"
-          accessibilityLabel={`View match details for ${matchTitle}, kickoff ${kickoff}`}
-        >
-          <View style={styles.timeColumn}>
-            <Text style={styles.timeText}>{kickoff}</Text>
+    <View style={styles.wrapper}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => onPressMatch(match.id)}
+        accessibilityRole="button"
+        accessibilityLabel={`${matchTitle}, ${match.league}, kickoff ${kickoff}. Prediction ${
+          formatWinnerShort(match) ?? pickText
+        }, ${chancePct}% chance, ${level}. Opens full prediction`}
+      >
+        <View style={styles.topRow}>
+          <Text style={styles.meta} numberOfLines={1}>
+            {match.league} · {kickoff}
+          </Text>
+          <View style={styles.topRight}>
+            <ConfidenceTag level={level} />
+            <TouchableOpacity
+              style={styles.starButton}
+              onPress={() => onToggleFavourite(match.id)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isFavourite }}
+              accessibilityLabel={
+                isFavourite ? `Remove ${matchTitle} from favourites` : `Save ${matchTitle} to favourites`
+              }
+            >
+              <Ionicons
+                name={isFavourite ? 'star' : 'star-outline'}
+                size={20}
+                color={isFavourite ? theme.colors.primary : theme.colors.textSecondary}
+              />
+            </TouchableOpacity>
           </View>
+        </View>
 
-          <View style={styles.stackedTeamsColumn}>
-            <View style={styles.teamLine}>
-              <TeamCrest teamName={match.home} size="sm" />
-              <Text style={styles.teamName} numberOfLines={1}>
-                {match.home}
-              </Text>
-            </View>
-            <View style={styles.teamLine}>
-              <TeamCrest teamName={match.away} size="sm" />
-              <Text style={styles.teamName} numberOfLines={1}>
-                {match.away}
-              </Text>
-            </View>
+        <View style={styles.teamsRow}>
+          <View style={styles.teamSide}>
+            <TeamCrest teamName={match.home} size="sm" />
+            <Text style={styles.teamName} numberOfLines={2}>
+              {match.home}
+            </Text>
           </View>
-        </TouchableOpacity>
+          <Text style={styles.score}>{likelyScore ?? 'vs'}</Text>
+          <View style={[styles.teamSide, styles.teamSideRight]}>
+            <Text style={[styles.teamName, styles.teamNameRight]} numberOfLines={2}>
+              {match.away}
+            </Text>
+            <TeamCrest teamName={match.away} size="sm" />
+          </View>
+        </View>
 
-        <TouchableOpacity
-          style={styles.starButton}
-          onPress={() => onToggleFavourite(match.id)}
-          accessibilityRole="button"
-          accessibilityState={{ selected: isFavourite }}
-          accessibilityLabel={
-            isFavourite
-              ? `Remove ${matchTitle} from favourites`
-              : `Add ${matchTitle} to favourites`
-          }
-        >
-          <Ionicons
-            name={isFavourite ? 'star' : 'star-outline'}
-            size={24}
-            color={isFavourite ? theme.colors.primary : theme.colors.textSecondary}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {match.low_confidence ? (
-        <Text style={styles.lowConfidenceText}>
-          LOW CONFIDENCE · limited team history
-        </Text>
-      ) : null}
-
-      {match.winner && match.goals ? (
-        <Text
-          style={styles.summaryText}
-          accessibilityLabel={`Model pick ${winnerPick}, ${confidenceLabel}. Expected total goals ${match.goals.exp_total.toFixed(1)}. Over 2.5 goals ${Math.round(match.goals.over['2.5'] * 100)} percent.`}
-        >
-          {`Pick: ${winnerPick} · ${confidenceLabel} · ${match.goals.exp_total.toFixed(1)} expected goals · Over 2.5 ${Math.round(match.goals.over['2.5'] * 100)}%`}
-        </Text>
-      ) : null}
+        <View style={styles.pickRow}>
+          <Text style={styles.pickText} numberOfLines={1}>
+            {pickText}
+          </Text>
+          <Text style={styles.chanceText}>{chancePct}% chance</Text>
+        </View>
+        <OutcomeSplitBar
+          probabilities={match.winner?.p ?? match.p}
+          home={match.home}
+          away={match.away}
+          variant="thin"
+        />
+        {match.low_confidence ? (
+          <Text style={styles.lowNote}>Limited history for one of these teams.</Text>
+        ) : null}
+      </TouchableOpacity>
 
       {showOddsBreakdown ? (
-        <View style={styles.outcomesList}>
+        <View style={styles.outcomesSection}>
           {outcomes.map((item) => (
             <OutcomeEdgeRow
               key={item.outcome}
@@ -134,79 +139,90 @@ export const MatchPickCard = memo(MatchPickCardComponent);
 
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
+    wrapper: { marginBottom: theme.spacing.md },
     card: {
+      gap: theme.spacing.md,
+      padding: theme.spacing.lg,
+      borderRadius: 18,
       backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.border,
       borderWidth: theme.layout.borderWidth,
-      borderRadius: theme.radii.card,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-      gap: theme.spacing.sm,
-      marginBottom: theme.spacing.sm,
+      borderColor: theme.colors.border,
     },
-    fixtureRow: {
+    topRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: theme.spacing.sm,
     },
-    lowConfidenceText: {
+    meta: {
+      flexShrink: 1,
       color: theme.colors.textSecondary,
-      fontSize: 11,
-      fontWeight: '700',
-      letterSpacing: 0.4,
+      fontSize: 13,
     },
-    summaryText: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.caption,
-      lineHeight: theme.typography.lineHeights.caption,
-      fontWeight: theme.typography.weights.semibold,
-      paddingTop: theme.spacing.xs,
-    },
-    teamsTouchArea: {
-      flex: 1,
+    topRight: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.lg,
-      minHeight: theme.layout.minTouchTarget,
-    },
-    timeColumn: {
-      minWidth: 74,
-      justifyContent: 'center',
-    },
-    timeText: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.fixtureTime,
-      lineHeight: theme.typography.lineHeights.fixtureTime,
-      fontWeight: theme.typography.weights.bold,
-      letterSpacing: -0.5,
-    },
-    stackedTeamsColumn: {
-      flex: 1,
       gap: theme.spacing.xs,
     },
-    teamLine: {
+    starButton: {
+      width: theme.layout.minTouchTarget,
+      height: theme.layout.minTouchTarget,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: -theme.spacing.sm,
+      marginVertical: -theme.spacing.sm,
+    },
+    teamsRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.sm,
     },
+    teamSide: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    teamSideRight: { justifyContent: 'flex-end' },
     teamName: {
       flexShrink: 1,
       color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.bodyStrong,
-      lineHeight: theme.typography.lineHeights.bodyStrong,
-      fontWeight: theme.typography.weights.medium,
+      fontSize: 15,
+      fontWeight: theme.typography.weights.bold,
     },
-    starButton: {
-      minWidth: theme.layout.minTouchTarget,
-      minHeight: theme.layout.minTouchTarget,
+    teamNameRight: { textAlign: 'right' },
+    score: {
+      color: theme.colors.primary,
+      fontSize: 26,
+      fontWeight: '900',
+      minWidth: 60,
+      textAlign: 'center',
+    },
+    pickRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       alignItems: 'center',
-      justifyContent: 'center',
-    },
-    outcomesList: {
-      borderTopColor: theme.colors.border,
+      gap: theme.spacing.sm,
+      paddingTop: 10,
       borderTopWidth: theme.layout.borderWidth,
-      paddingTop: theme.spacing.sm,
+      borderTopColor: theme.colors.border,
+    },
+    pickText: {
+      flexShrink: 1,
+      color: theme.colors.textPrimary,
+      fontSize: 16,
+      fontWeight: theme.typography.weights.bold,
+    },
+    chanceText: {
+      color: theme.colors.textSecondary,
+      fontSize: 13,
+    },
+    lowNote: {
+      color: theme.colors.warningText,
+      fontSize: 12,
+    },
+    outcomesSection: {
+      marginTop: theme.spacing.sm,
       gap: theme.spacing.xs,
     },
   });

@@ -1,108 +1,86 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { TeamCrest } from '@/components/TeamCrest';
-import { MatchPick, OutcomeKey } from '@/data/types';
-import { OutcomeEdgeRow } from '@/features/picks/components/OutcomeEdgeRow';
-import { StackedProbBar } from '@/features/picks/components/StackedProbBar';
-import { analyzeMatchOutcomes } from '@/lib/calculations';
+import { ConfidenceTag } from '@/components/ConfidenceTag';
+import { MatchPick } from '@/data/types';
+import { impliedFromOdds } from '@/lib/calculations';
+import { formatDayTitle, formatLocalTime } from '@/lib/dateUtils';
+import { confidenceLevel, formatLikelyScore, summariseWinner } from '@/lib/winnerLabels';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
 export interface PredictionMatchCardProps {
   match: MatchPick;
-  edgeThreshold: number;
   updatedFallbackLabel: string;
   onPressMatch: (matchId: string) => void;
-  onLogOutcome: (match: MatchPick, outcome: OutcomeKey, odds: number) => void;
 }
 
-function PredictionMatchCardComponent({
-  match,
-  edgeThreshold,
-  updatedFallbackLabel,
-  onPressMatch,
-  onLogOutcome,
-}: PredictionMatchCardProps) {
+function comparisonNote(match: MatchPick, pickIndex: number): string {
+  if (!match.odds) return 'No bookmaker odds for this match yet.';
+  const ours = match.p[pickIndex];
+  const theirs = impliedFromOdds(match.odds)[pickIndex];
+  const gap = Math.round((ours - theirs) * 100);
+  const name = pickIndex === 0 ? match.home : pickIndex === 2 ? match.away : 'a draw';
+  if (Math.abs(gap) < 3) return 'Close to the bookmakers on this one.';
+  if (gap > 0) return `We give ${name} a ${gap}-point bigger chance than the odds do.`;
+  return `The bookmakers rate ${name} ${-gap} points higher than we do.`;
+}
+
+function PredictionMatchCardComponent({ match, updatedFallbackLabel, onPressMatch }: PredictionMatchCardProps) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [showEdges, setShowEdges] = useState(false);
-
-  const outcomes = useMemo(
-    () => analyzeMatchOutcomes(match.p, match.odds, edgeThreshold),
-    [match.p, match.odds, edgeThreshold]
-  );
-
+  const probs = match.p;
+  const pickIndex =
+    match.winner?.pick === 'home' ? 0 : match.winner?.pick === 'draw' ? 1 : match.winner?.pick === 'away' ? 2 :
+      probs.indexOf(Math.max(...probs));
+  const implied = match.odds ? impliedFromOdds(match.odds) : null;
+  const summary = summariseWinner(match);
+  const score = formatLikelyScore(match);
+  const labels = [match.home, 'Draw', match.away];
   const matchTitle = `${match.home} vs ${match.away}`;
-  const updatedText = match.updatedAtLabel ?? updatedFallbackLabel;
 
   return (
-    <View style={[styles.card, theme.shadows.card]}>
-      <TouchableOpacity
-        style={styles.teamsRow}
-        onPress={() => onPressMatch(match.id)}
-        accessibilityRole="button"
-        accessibilityLabel={`View prediction details for ${matchTitle}`}
-      >
-        <View style={styles.teamCol}>
-          <TeamCrest teamName={match.home} size="lg" />
-          <Text style={styles.teamName} numberOfLines={1}>
-            {match.home}
-          </Text>
-        </View>
-
-        <Text style={styles.versusText}>v</Text>
-
-        <View style={styles.teamCol}>
-          <TeamCrest teamName={match.away} size="lg" />
-          <Text style={styles.teamName} numberOfLines={1}>
-            {match.away}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      <StackedProbBar probabilities={match.p} />
-
-      <View style={styles.footerRow}>
-        <View style={styles.updatedGroup}>
-          <Ionicons name="time-outline" size={15} color={theme.colors.textSecondary} />
-          <Text style={styles.updatedText}>{updatedText}</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.edgeToggleBtn}
-          onPress={() => setShowEdges((prev) => !prev)}
-          accessibilityRole="button"
-          accessibilityLabel={
-            showEdges
-              ? `Hide bookmaker odds and edge for ${matchTitle}`
-              : `Show bookmaker odds and edge for ${matchTitle}`
-          }
-        >
-          <Text style={styles.edgeToggleText}>
-            {showEdges ? 'Hide odds' : 'Odds & Edge'}
-          </Text>
-          <Ionicons
-            name={showEdges ? 'chevron-up' : 'chevron-down'}
-            size={14}
-            color={theme.colors.primary}
-          />
-        </TouchableOpacity>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => onPressMatch(match.id)}
+      accessibilityRole="button"
+      accessibilityLabel={`${matchTitle}. Prediction ${summary?.headline ?? ''}${score ? `, likely score ${score}` : ''}. Opens full prediction`}
+    >
+      <View style={styles.topRow}>
+        <Text style={styles.meta} numberOfLines={1}>
+          {formatDayTitle(match.date)} {formatLocalTime(match.date)} · {match.league}
+        </Text>
+        <ConfidenceTag level={confidenceLevel(match)} />
       </View>
-
-      {showEdges ? (
-        <View style={styles.edgesContainer}>
-          {outcomes.map((item) => (
-            <OutcomeEdgeRow
-              key={item.outcome}
-              analysis={item}
-              matchTitle={matchTitle}
-              onLogPress={(outcome, odds) => onLogOutcome(match, outcome, odds)}
-            />
-          ))}
-        </View>
-      ) : null}
-    </View>
+      <View style={styles.titleBlock}>
+        <Text style={styles.matchTitle}>{matchTitle}</Text>
+        <Text style={styles.pick}>
+          {summary?.headline ?? 'No prediction'}
+          {score ? <Text style={styles.pickScore}>{`  ${score}`}</Text> : null}
+        </Text>
+      </View>
+      <View style={styles.columns}>
+        {[0, 1, 2].map((i) => {
+          const mine = i === pickIndex;
+          return (
+            <View key={labels[i]} style={[styles.col, mine ? styles.colMine : null]}>
+              <Text style={styles.colLabel} numberOfLines={1}>
+                {labels[i]}
+              </Text>
+              <Text style={[styles.colPct, mine ? styles.colPctMine : null]}>
+                {`${Math.round(probs[i] * 100)}%`}
+              </Text>
+              <Text style={styles.colOdds} numberOfLines={1}>
+                {match.odds && implied
+                  ? `Odds ${match.odds[i].toFixed(2)} · ${Math.round(implied[i] * 100)}%`
+                  : 'No odds'}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+      <Text style={styles.note}>{comparisonNote(match, pickIndex)}</Text>
+      <Text style={styles.updated}>{match.updatedAtLabel ?? updatedFallbackLabel}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -111,73 +89,41 @@ export const PredictionMatchCard = memo(PredictionMatchCardComponent);
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     card: {
-      backgroundColor: theme.colors.surface,
-      borderColor: theme.colors.border,
-      borderWidth: theme.layout.borderWidth,
-      borderRadius: theme.radii.card,
+      gap: theme.spacing.md,
       padding: theme.spacing.lg,
-      gap: theme.spacing.lg,
+      borderRadius: 18,
+      backgroundColor: theme.colors.surface,
+      borderWidth: theme.layout.borderWidth,
+      borderColor: theme.colors.border,
       marginBottom: theme.spacing.md,
     },
-    teamsRow: {
+    topRow: {
       flexDirection: 'row',
-      alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: theme.spacing.xs,
-    },
-    teamCol: {
-      flex: 1,
       alignItems: 'center',
       gap: theme.spacing.sm,
     },
-    teamName: {
-      color: theme.colors.textPrimary,
-      fontSize: theme.typography.sizes.bodyStrong,
-      lineHeight: theme.typography.lineHeights.bodyStrong,
-      fontWeight: theme.typography.weights.bold,
-      textAlign: 'center',
+    meta: { flexShrink: 1, color: theme.colors.textSecondary, fontSize: 13 },
+    titleBlock: { gap: 2 },
+    matchTitle: { color: theme.colors.textSecondary, fontSize: 15, fontWeight: theme.typography.weights.medium },
+    pick: { color: theme.colors.textPrimary, fontSize: 20, fontWeight: '900' },
+    pickScore: { color: theme.colors.primary },
+    columns: { flexDirection: 'row', gap: theme.spacing.sm },
+    col: {
+      flex: 1,
+      gap: 4,
+      padding: 10,
+      borderRadius: 12,
+      backgroundColor: theme.colors.surfaceElevated,
+      borderWidth: theme.layout.borderWidth,
+      borderColor: theme.colors.border,
     },
-    versusText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.sectionTitle,
-      fontWeight: theme.typography.weights.semibold,
-      paddingHorizontal: theme.spacing.md,
-    },
-    footerRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingTop: theme.spacing.xxs,
-    },
-    updatedGroup: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.xs,
-    },
-    updatedText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.medium,
-    },
-    edgeToggleBtn: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.xs,
-      paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.sm,
-      borderRadius: theme.radii.pill,
-      backgroundColor: theme.colors.primaryMuted,
-    },
-    edgeToggleText: {
-      color: theme.colors.primary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    edgesContainer: {
-      borderTopColor: theme.colors.border,
-      borderTopWidth: theme.layout.borderWidth,
-      paddingTop: theme.spacing.sm,
-      gap: theme.spacing.xs,
-    },
+    colMine: { backgroundColor: theme.colors.primaryMuted, borderColor: theme.colors.primary },
+    colLabel: { color: theme.colors.textSecondary, fontSize: 12, fontWeight: theme.typography.weights.bold },
+    colPct: { color: theme.colors.textPrimary, fontSize: 22, fontWeight: '900' },
+    colPctMine: { color: theme.colors.primary },
+    colOdds: { color: theme.colors.textSecondary, fontSize: 11 },
+    note: { color: theme.colors.textSecondary, fontSize: 13, lineHeight: 19 },
+    updated: { color: theme.colors.textMuted, fontSize: 12 },
   });
 }

@@ -1,21 +1,30 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
 
 import { AppHeader } from '@/components/AppHeader';
 import { AppInput } from '@/components/AppInput';
 import { DisclaimerFooter } from '@/components/DisclaimerFooter';
 import { EmptyState } from '@/components/EmptyState';
+import { InfoBanner } from '@/components/InfoBanner';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SegmentedControl } from '@/components/SegmentedControl';
 import { MatchPick } from '@/data/types';
 import { PredictionMatchCard } from '@/features/picks/components/PredictionMatchCard';
 import { usePicksScreen } from '@/features/picks/hooks/usePicksScreen';
+import { pickChance } from '@/lib/winnerLabels';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
+
+type SortMode = 'confident' | 'kickoff';
+
+const SORT_OPTIONS = [
+  { value: 'confident' as const, label: 'Most confident', accessibilityLabel: 'Sort by most confident first' },
+  { value: 'kickoff' as const, label: 'Kick-off time', accessibilityLabel: 'Sort by kick-off time' },
+];
 
 export function PredictionsScreen() {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-
+  const [sortMode, setSortMode] = useState<SortMode>('confident');
   const {
     payload,
     searchQuery,
@@ -23,9 +32,7 @@ export function PredictionsScreen() {
     isSearchVisible,
     handleToggleSearch,
     updatedLabel,
-    edgeThreshold,
     handlePressMatch,
-    handleLogOutcome,
   } = usePicksScreen();
 
   const matches = useMemo((): MatchPick[] => {
@@ -33,35 +40,43 @@ export function PredictionsScreen() {
       return [];
     }
     const q = searchQuery.trim().toLowerCase();
-    if (!q) {
-      return payload.matches;
-    }
-    return payload.matches.filter((m) =>
-      `${m.home} ${m.away} ${m.league}`.toLowerCase().includes(q)
-    );
-  }, [payload, searchQuery]);
+    const found = q
+      ? payload.matches.filter((m) => `${m.home} ${m.away} ${m.league}`.toLowerCase().includes(q))
+      : [...payload.matches];
+    return sortMode === 'confident'
+      ? found.sort((a, b) => pickChance(b) - pickChance(a))
+      : found.sort((a, b) => a.date.localeCompare(b.date));
+  }, [payload, searchQuery, sortMode]);
 
   const keyExtractor = useCallback((item: MatchPick) => item.id, []);
-
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<MatchPick>) => (
       <PredictionMatchCard
         match={item}
-        edgeThreshold={edgeThreshold}
         updatedFallbackLabel={updatedLabel}
         onPressMatch={handlePressMatch}
-        onLogOutcome={handleLogOutcome}
       />
     ),
-    [edgeThreshold, updatedLabel, handlePressMatch, handleLogOutcome]
+    [updatedLabel, handlePressMatch]
   );
 
   const listHeader = useMemo(() => {
-    const verdictText =
-      payload?.backtest.verdict ?? 'No proven edge: treat these as estimates.';
-
+    const verdictText = payload?.backtest.verdict ?? 'No proven edge: treat these as estimates.';
     return (
       <View style={styles.headerContainer}>
+        <View style={styles.titleBlock}>
+          <Text style={styles.title} accessibilityRole="header">
+            Predictions
+          </Text>
+          <Text style={styles.subtitle}>
+            Our chances next to the bookmakers’ odds, so you can see where we disagree.
+          </Text>
+        </View>
+        <InfoBanner
+          tone="warning"
+          title={verdictText}
+          subtitle="When we disagree with the bookmakers, they have usually been right. Treat a bigger chance as a talking point, not a reason to bet."
+        />
         {isSearchVisible ? (
           <AppInput
             label="Search predictions"
@@ -70,26 +85,15 @@ export function PredictionsScreen() {
             placeholder="e.g. Arsenal, Chelsea, Barcelona..."
           />
         ) : null}
-
-        <View style={styles.demoGoldBanner} accessible={true} accessibilityRole="alert">
-          <View style={styles.demoIconCircle}>
-            <Ionicons name="information" size={14} color={theme.colors.demoBannerText} />
-          </View>
-          <Text style={styles.demoBannerText}>{verdictText}</Text>
-        </View>
+        <SegmentedControl
+          options={SORT_OPTIONS}
+          value={sortMode}
+          onChange={setSortMode}
+          accessibilityLabel="Sort predictions"
+        />
       </View>
     );
-  }, [
-    payload,
-    styles.headerContainer,
-    styles.demoGoldBanner,
-    styles.demoIconCircle,
-    styles.demoBannerText,
-    theme.colors.demoBannerText,
-    isSearchVisible,
-    searchQuery,
-    setSearchQuery,
-  ]);
+  }, [payload, styles, isSearchVisible, searchQuery, setSearchQuery, sortMode]);
 
   return (
     <ScreenContainer>
@@ -102,12 +106,19 @@ export function PredictionsScreen() {
         ListEmptyComponent={
           <EmptyState
             title="No predictions found"
-            message="No matches match your search query."
-            actionLabel="Clear Search"
+            message="No matches match your search."
+            actionLabel="Clear search"
             onAction={() => setSearchQuery('')}
           />
         }
-        ListFooterComponent={<DisclaimerFooter />}
+        ListFooterComponent={
+          <View>
+            <Text style={styles.legend}>
+              Big number = our chance. Small print = bookmaker odds and the chance they imply.
+            </Text>
+            <DisclaimerFooter />
+          </View>
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
       />
@@ -118,37 +129,13 @@ export function PredictionsScreen() {
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     headerContainer: {
-      gap: theme.spacing.md,
-      marginTop: theme.spacing.xs,
-      marginBottom: theme.spacing.md,
+      gap: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
     },
-    demoGoldBanner: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: theme.colors.demoBannerBg,
-      borderRadius: theme.radii.banner,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.md,
-      gap: theme.spacing.sm,
-    },
-    demoIconCircle: {
-      width: 22,
-      height: 22,
-      borderRadius: theme.radii.pill,
-      backgroundColor: theme.colors.demoBannerIconBg,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    demoBannerText: {
-      flex: 1,
-      flexShrink: 1,
-      color: theme.colors.demoBannerText,
-      fontSize: theme.typography.sizes.body,
-      lineHeight: theme.typography.lineHeights.body,
-      fontWeight: theme.typography.weights.semibold,
-    },
-    listContent: {
-      paddingBottom: theme.spacing.xxl,
-    },
+    titleBlock: { gap: 4 },
+    title: { color: theme.colors.textPrimary, fontSize: 26, fontWeight: '900' },
+    subtitle: { color: theme.colors.textSecondary, fontSize: 14, lineHeight: 20 },
+    legend: { color: theme.colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center' },
+    listContent: { paddingBottom: theme.spacing.xxl },
   });
 }

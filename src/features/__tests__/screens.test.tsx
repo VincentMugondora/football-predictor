@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
@@ -113,13 +114,13 @@ describe('Tab Screen Render Tests', () => {
     expect(screen.getAllByText(drawPercent).length).toBeGreaterThan(0);
   });
 
-  it('renders FavouritesScreen with YOUR FAVOURITE TEAMS and ADD TEAMS sections and toggles favourite state', async () => {
+  it('renders FavouritesScreen with Your teams and Add teams sections and toggles favourite state', async () => {
     await render(<FavouritesScreen />);
 
-    expect(screen.getByText('YOUR FAVOURITE TEAMS')).toBeTruthy();
-    expect(screen.getByText('ADD TEAMS')).toBeTruthy();
-    expect(screen.getByText('Arsenal')).toBeTruthy();
-    expect(screen.getByText('Liverpool')).toBeTruthy();
+    expect(screen.getByText(/Your teams/)).toBeTruthy();
+    expect(screen.getByText('Add teams')).toBeTruthy();
+    expect(screen.getAllByText('Arsenal').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Liverpool').length).toBeGreaterThan(0);
 
     const addLivBtn = screen.getByLabelText('Add Liverpool to favourite teams');
     await fireEvent.press(addLivBtn);
@@ -133,9 +134,9 @@ describe('Tab Screen Render Tests', () => {
     expect(
       screen.getByText(`${recordedMatch.home} vs ${recordedMatch.away}`)
     ).toBeTruthy();
-    expect(screen.getByText('MATCH OUTCOME PROBABILITIES')).toBeTruthy();
-    expect(screen.getByText('GOALS AND SCORELINES')).toBeTruthy();
-    expect(screen.getByText('GOAL TIMING')).toBeTruthy();
+    expect(screen.getByText('Who wins?')).toBeTruthy();
+    expect(screen.getByText('How many goals?')).toBeTruthy();
+    expect(screen.getByText('When are goals likely?')).toBeTruthy();
     expect(
       screen.getByText(
         /Statistical estimates, not certainties\. Exact scores and goal minutes are hard to predict\./
@@ -183,10 +184,10 @@ describe('Tab Screen Render Tests', () => {
 
     await render(<MatchDetailScreen />);
 
-    expect(screen.getByText('15-minute windows')).toBeTruthy();
+    expect(screen.getByText(/15-minute windows/)).toBeTruthy();
     expect(screen.getByText('league average, no team-specific signal yet')).toBeTruthy();
     expect(screen.getByText('First goal before minute 30')).toBeTruthy();
-    expect(screen.getByText(/0-15 minutes/)).toBeTruthy();
+    expect(screen.getByText('0-15')).toBeTruthy();
   });
 
   it('renders BetLogScreen, keeps unmatched bets pending, and validates the My Bets form', async () => {
@@ -202,9 +203,9 @@ describe('Tab Screen Render Tests', () => {
 
     await render(<BetLogScreen />);
 
-    // 1. Default tab shows Post-Match Verification (Predicted vs Actual)
-    expect(screen.getByText(/Post-Match Verification/)).toBeTruthy();
-    expect(screen.getByText(/Completed match comparisons/)).toBeTruthy();
+    // 1. Default tab shows real results against predictions
+    expect(screen.getByText('Right winner')).toBeTruthy();
+    expect(screen.getByText(/Finished matches/)).toBeTruthy();
 
     // Without a matching verified result, the app must not invent a settlement.
     const settledBet = useAppStore.getState().bets[0];
@@ -215,9 +216,7 @@ describe('Tab Screen Render Tests', () => {
     const myBetsTab = screen.getByLabelText('Show your logged bets and bankroll tracker');
     await fireEvent.press(myBetsTab);
 
-    expect(
-      screen.getByText('Offline Bet Tracker — Auto-settled from real results')
-    ).toBeTruthy();
+    expect(screen.getByText(/Bets are saved on this phone only/)).toBeTruthy();
 
     const addBtn = screen.getByLabelText('Open form to log a new bet');
     await fireEvent.press(addBtn);
@@ -246,9 +245,9 @@ describe('Tab Screen Render Tests', () => {
   it('renders SummaryScreen with bankroll, ROI, <100 settled bets notice, and triggers drawdown alert when threshold passed', async () => {
     await render(<SummaryScreen />);
 
-    expect(screen.getByText('Fewer than 100 settled bets is mostly luck')).toBeTruthy();
-    expect(screen.getByText('Current Bankroll')).toBeTruthy();
-    expect(screen.getByText('Win rate vs break-even rate')).toBeTruthy();
+    expect(screen.getByText(/too few to judge/)).toBeTruthy();
+    expect(screen.getByText('Bankroll now')).toBeTruthy();
+    expect(screen.getByText('Are you winning often enough?')).toBeTruthy();
 
     // Add a large losing bet to exceed the 20% drawdown alert level
     await act(async () => {

@@ -14,8 +14,8 @@ import { DisclaimerFooter } from '@/components/DisclaimerFooter';
 import { EmptyState } from '@/components/EmptyState';
 import { FilterChipsRow } from '@/components/FilterChipsRow';
 import { InfoBanner } from '@/components/InfoBanner';
-import { PillBadge } from '@/components/PillBadge';
 import { ScreenContainer } from '@/components/ScreenContainer';
+import { SegmentedControl } from '@/components/SegmentedControl';
 import { FeaturedMatchCard } from '@/features/picks/components/FeaturedMatchCard';
 import { MatchPickCard } from '@/features/picks/components/MatchPickCard';
 import {
@@ -23,12 +23,18 @@ import {
   MatchListItem,
   usePicksScreen,
 } from '@/features/picks/hooks/usePicksScreen';
+import { DAY_FILTER_LABELS, DayFilter } from '@/lib/dateUtils';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
+
+const DAY_OPTIONS = (Object.keys(DAY_FILTER_LABELS) as DayFilter[]).map((value) => ({
+  value,
+  label: DAY_FILTER_LABELS[value],
+  accessibilityLabel: `Show matches ${DAY_FILTER_LABELS[value].toLowerCase()}`,
+}));
 
 export function PicksScreen() {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-
   const {
     payload,
     isLoading,
@@ -39,6 +45,8 @@ export function PicksScreen() {
     setSearchQuery,
     isSearchVisible,
     handleToggleSearch,
+    dayFilter,
+    setDayFilter,
     featuredMatch,
     listItems,
     updatedLabel,
@@ -57,11 +65,9 @@ export function PicksScreen() {
     ({ item }: ListRenderItemInfo<MatchListItem>) => (
       <View>
         {item.dayHeader ? (
-          <View style={styles.dayHeaderPill}>
-            <Text style={styles.dayHeaderText} accessibilityRole="header">
-              {item.dayHeader}
-            </Text>
-          </View>
+          <Text style={styles.dayHeader} accessibilityRole="header">
+            {item.dayHeader}
+          </Text>
         ) : null}
         <MatchPickCard
           match={item.match}
@@ -74,8 +80,7 @@ export function PicksScreen() {
       </View>
     ),
     [
-      styles.dayHeaderPill,
-      styles.dayHeaderText,
+      styles.dayHeader,
       edgeThreshold,
       favouriteMatchIds,
       toggleFavouriteMatch,
@@ -88,9 +93,27 @@ export function PicksScreen() {
     if (!payload) {
       return undefined;
     }
-
     return (
       <View style={styles.headerBlock}>
+        <View style={styles.freshnessRow}>
+          <View style={[styles.freshDot, staleWarning ? styles.staleDot : null]} />
+          <Text style={styles.freshText}>
+            {updatedLabel} · {staleWarning ? 'Over 3 days old' : 'Works offline'}
+          </Text>
+        </View>
+        {staleWarning ? (
+          <InfoBanner
+            title="Predictions are over 3 days old"
+            subtitle="Team news and odds may have changed since these were made."
+            tone="warning"
+          />
+        ) : null}
+        <SegmentedControl
+          options={DAY_OPTIONS}
+          value={dayFilter}
+          onChange={setDayFilter}
+          accessibilityLabel="Choose which day to show"
+        />
         {isSearchVisible ? (
           <AppInput
             label="Search club or league"
@@ -99,13 +122,11 @@ export function PicksScreen() {
             placeholder="e.g. Arsenal, La Liga..."
           />
         ) : null}
-
         <FilterChipsRow
           options={LEAGUE_FILTERS}
           selected={selectedLeague}
           onSelect={setSelectedLeague}
         />
-
         {featuredMatch && selectedLeague === 'All' && searchQuery.trim().length === 0 ? (
           <FeaturedMatchCard
             match={featuredMatch}
@@ -118,8 +139,12 @@ export function PicksScreen() {
     );
   }, [
     payload,
+    styles,
+    staleWarning,
+    updatedLabel,
+    dayFilter,
+    setDayFilter,
     edgeThreshold,
-    styles.headerBlock,
     isSearchVisible,
     searchQuery,
     setSearchQuery,
@@ -134,50 +159,23 @@ export function PicksScreen() {
     if (!payload) {
       return <DisclaimerFooter />;
     }
-
+    const tested = payload.backtest.test_matches;
     const marketLoss = payload.backtest.log_loss_book;
-    const backtestSubtitle =
+    const subtitle =
       marketLoss === null
-        ? `Model log-loss ${payload.backtest.log_loss_model.toFixed(3)} • Market reference unavailable • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`
-        : `Log-loss: Model ${payload.backtest.log_loss_model.toFixed(3)} vs Bookmaker ${marketLoss.toFixed(3)} • Edge threshold ≥ ${(edgeThreshold * 100).toFixed(1)}%`;
-
+        ? 'No bookmaker odds were available to compare against. Use these as a guide, not a sure thing.'
+        : `${tested ? `Tested on ${tested.toLocaleString()} past matches. ` : ''}${
+            payload.backtest.log_loss_model > marketLoss
+              ? 'The model was slightly less accurate than bookmaker odds.'
+              : 'The model was about as accurate as bookmaker odds.'
+          } Use it as a guide, not a sure thing.`;
     return (
       <View style={styles.footerBlock}>
-        <InfoBanner
-          title={payload.backtest.verdict}
-          subtitle={backtestSubtitle}
-          tone="info"
-        />
-
-        <View style={styles.freshnessRow}>
-          <Text style={styles.updatedText}>{updatedLabel}</Text>
-          {staleWarning ? (
-            <PillBadge label="STALE (>3 DAYS OLD)" variant="warning" />
-          ) : (
-            <PillBadge label="OFFLINE READY" variant="emerald" />
-          )}
-        </View>
-
-        {staleWarning ? (
-          <InfoBanner
-            title="Predictions are over 3 days old"
-            subtitle="Odds and team news may have shifted significantly since this snapshot."
-            tone="warning"
-          />
-        ) : null}
-
+        <InfoBanner title={payload.backtest.verdict} subtitle={subtitle} tone="info" />
         <DisclaimerFooter />
       </View>
     );
-  }, [
-    payload,
-    edgeThreshold,
-    styles.footerBlock,
-    styles.freshnessRow,
-    styles.updatedText,
-    updatedLabel,
-    staleWarning,
-  ]);
+  }, [payload, styles.footerBlock]);
 
   if (isLoading) {
     return (
@@ -185,7 +183,7 @@ export function PicksScreen() {
         <AppHeader />
         <View style={styles.centerState}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Loading offline predictions…</Text>
+          <Text style={styles.loadingText}>Loading predictions…</Text>
         </View>
       </ScreenContainer>
     );
@@ -196,7 +194,7 @@ export function PicksScreen() {
       <ScreenContainer>
         <AppHeader />
         <EmptyState
-          title="Could not load picks"
+          title="Could not load predictions"
           message={errorMessage}
           actionLabel="Retry"
           onAction={() => void reload()}
@@ -214,28 +212,27 @@ export function PicksScreen() {
         renderItem={renderItem}
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
-          <EmptyState
-            title={
-              payload?.data_status === 'no_fixtures'
-                ? 'No upcoming fixtures'
-                : 'No matches found'
-            }
-            message={
-              payload?.data_status === 'no_fixtures'
-                ? 'No verified fixtures are available in the next seven days. Check again when the data source updates.'
-                : 'No fixtures match your current filter or search.'
-            }
-            actionLabel={
-              payload?.data_status === 'no_fixtures' ? 'Refresh' : 'Show All Matches'
-            }
-            onAction={() => {
-              if (payload?.data_status === 'no_fixtures') void reload();
-              else {
-                setSelectedLeague('All');
-                setSearchQuery('');
+          featuredMatch && selectedLeague === 'All' && !searchQuery.trim() ? null : (
+            <EmptyState
+              title={
+                payload?.data_status === 'no_fixtures' ? 'No upcoming fixtures' : 'No matches found'
               }
-            }}
-          />
+              message={
+                payload?.data_status === 'no_fixtures'
+                  ? 'No verified fixtures are available in the next seven days. Check again when the data updates.'
+                  : 'No matches for this day, league or search. Try "This week".'
+              }
+              actionLabel={payload?.data_status === 'no_fixtures' ? 'Refresh' : 'Show this week'}
+              onAction={() => {
+                if (payload?.data_status === 'no_fixtures') void reload();
+                else {
+                  setDayFilter('week');
+                  setSelectedLeague('All');
+                  setSearchQuery('');
+                }
+              }}
+            />
+          )
         }
         ListFooterComponent={listFooter}
         showsVerticalScrollIndicator={false}
@@ -248,39 +245,37 @@ export function PicksScreen() {
 function createStyles(theme: AppTheme) {
   return StyleSheet.create({
     headerBlock: {
-      gap: theme.spacing.sm,
-      marginBottom: theme.spacing.xs,
-    },
-    footerBlock: {
-      marginTop: theme.spacing.md,
-      gap: theme.spacing.sm,
+      gap: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
     },
     freshnessRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: theme.spacing.xxs,
+      gap: theme.spacing.sm,
     },
-    updatedText: {
+    freshDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: theme.colors.formWin,
+    },
+    staleDot: {
+      backgroundColor: theme.colors.warningText,
+    },
+    freshText: {
       color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
-      fontWeight: theme.typography.weights.medium,
+      fontSize: 13,
     },
-    dayHeaderPill: {
-      backgroundColor: theme.colors.surfaceDayPill,
-      borderRadius: theme.radii.sm,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      marginTop: theme.spacing.sm,
-      marginBottom: theme.spacing.sm,
-      borderWidth: theme.layout.borderWidth,
-      borderColor: theme.colors.border,
-    },
-    dayHeaderText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.sizes.caption,
+    dayHeader: {
+      color: theme.colors.textPrimary,
+      fontSize: 18,
       fontWeight: theme.typography.weights.bold,
-      letterSpacing: 1.4,
+      marginTop: theme.spacing.md,
+      marginBottom: theme.spacing.md,
+    },
+    footerBlock: {
+      marginTop: theme.spacing.md,
+      gap: theme.spacing.sm,
     },
     listContent: {
       paddingBottom: theme.spacing.xxl,

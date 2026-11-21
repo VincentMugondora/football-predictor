@@ -5,9 +5,11 @@ import { PicksLoadError, picksRepository } from '@/data/picksRepository';
 import { useAppStore } from '@/data/store';
 import { MatchPick, OutcomeKey, PicksPayload } from '@/data/types';
 import {
-  formatMatchDayHeader,
+  DayFilter,
+  formatDayTitle,
   formatUpdatedRelative,
   isDataStale,
+  matchesDayFilter,
 } from '@/lib/dateUtils';
 
 export const LEAGUE_FILTERS = [
@@ -38,6 +40,8 @@ export function usePicksScreen() {
   const [selectedLeague, setSelectedLeague] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
+  // null = not chosen yet: start on the first day that has matches.
+  const [chosenDayFilter, setDayFilter] = useState<DayFilter | null>(null);
 
   const edgeThreshold = useAppStore((s) => s.settings.edgeThreshold);
   const favouriteMatchIds = useAppStore((s) => s.favouriteMatchIds);
@@ -80,16 +84,26 @@ export function usePicksScreen() {
     }
   }, []);
 
+  const dayFilter = useMemo((): DayFilter => {
+    if (chosenDayFilter) return chosenDayFilter;
+    const matches = payload?.matches ?? [];
+    if (matches.some((m) => matchesDayFilter(m.date, 'today'))) return 'today';
+    if (matches.some((m) => matchesDayFilter(m.date, 'tomorrow'))) return 'tomorrow';
+    return 'week';
+  }, [chosenDayFilter, payload]);
+
+  const dayMatches = useMemo(
+    () => (payload?.matches ?? []).filter((m) => matchesDayFilter(m.date, dayFilter)),
+    [payload, dayFilter]
+  );
+
   const featuredMatch = useMemo(() => {
-    if (!payload) {
-      return null;
-    }
     return (
-      payload.matches.find((m) => m.featured && !m.low_confidence) ??
-      payload.matches.find((m) => !m.low_confidence) ??
+      dayMatches.find((m) => m.featured && !m.low_confidence) ??
+      dayMatches.find((m) => !m.low_confidence) ??
       null
     );
-  }, [payload]);
+  }, [dayMatches]);
 
   const listItems = useMemo((): MatchListItem[] => {
     if (!payload) {
@@ -97,7 +111,7 @@ export function usePicksScreen() {
     }
     const query = searchQuery.trim().toLowerCase();
 
-    const filtered = payload.matches.filter((match) => {
+    const filtered = dayMatches.filter((match) => {
       if (
         selectedLeague === 'All' &&
         query.length === 0 &&
@@ -125,7 +139,7 @@ export function usePicksScreen() {
 
     let lastDayHeader = '';
     return filtered.map((match) => {
-      const dayHeader = formatMatchDayHeader(match.date);
+      const dayHeader = formatDayTitle(match.date);
       const showHeader = dayHeader !== lastDayHeader;
       lastDayHeader = dayHeader;
       return {
@@ -134,7 +148,7 @@ export function usePicksScreen() {
         dayHeader: showHeader ? dayHeader : undefined,
       };
     });
-  }, [payload, selectedLeague, searchQuery, favouriteMatchIds, featuredMatch]);
+  }, [payload, dayMatches, selectedLeague, searchQuery, favouriteMatchIds, featuredMatch]);
 
   const updatedLabel = useMemo(() => {
     if (!payload) {
@@ -186,6 +200,8 @@ export function usePicksScreen() {
     setSearchQuery,
     isSearchVisible,
     handleToggleSearch,
+    dayFilter,
+    setDayFilter,
     featuredMatch,
     listItems,
     updatedLabel,
