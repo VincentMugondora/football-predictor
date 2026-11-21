@@ -232,3 +232,10 @@ export function formatPercentage(ratio: number, decimals = 0): string {
   }
   return `${(ratio * 100).toFixed(decimals)}%`;
 }
+
+/** Bookmaker chances from decimal odds, with their margin removed. */
+export function impliedFromOdds(odds: [number, number, number]): [number, number, number] {
+  const raw = odds.map((o) => (o > 1 ? 1 / o : 0));
+  const total = raw[0] + raw[1] + raw[2];
+  return total > 0 ? [raw[0] / total, raw[1] / total, raw[2] / total] : [0, 0, 0];
+}

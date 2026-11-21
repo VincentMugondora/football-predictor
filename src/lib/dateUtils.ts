@@ -116,3 +116,57 @@ export function formatKickoffTime(isoDate: string): string {
 export function formatShortDayAndTime(isoDate: string): string {
   return `${formatShortDayAndMonth(isoDate)}, ${formatKickoffTime(isoDate)}`;
 }
+
+export type DayFilter = 'today' | 'tomorrow' | 'week';
+
+export const DAY_FILTER_LABELS: Record<DayFilter, string> = {
+  today: 'Today',
+  tomorrow: 'Tomorrow',
+  week: 'This week',
+};
+
+function startOfLocalDay(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** True when the kickoff falls in the chosen day range, using the phone's local time. */
+export function matchesDayFilter(
+  isoDate: string,
+  filter: DayFilter,
+  now: Date = new Date()
+): boolean {
+  const kickoff = new Date(isoDate);
+  if (Number.isNaN(kickoff.getTime())) return filter === 'week';
+  const dayOffset = Math.round((startOfLocalDay(kickoff) - startOfLocalDay(now)) / DAY_MS);
+  if (filter === 'today') return dayOffset === 0;
+  if (filter === 'tomorrow') return dayOffset === 1;
+  // "This week" also keeps any already-started matches from an older cached file.
+  return dayOffset < 7;
+}
+
+const LONG_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const LONG_MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** "Today", "Tomorrow" or "Saturday 22 November", in the phone's local time. */
+export function formatDayTitle(isoDate: string, now: Date = new Date()): string {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return isoDate;
+  const dayOffset = Math.round((startOfLocalDay(date) - startOfLocalDay(now)) / DAY_MS);
+  if (dayOffset === 0) return 'Today';
+  if (dayOffset === 1) return 'Tomorrow';
+  return `${LONG_DAYS[date.getDay()]} ${date.getDate()} ${LONG_MONTHS[date.getMonth()]}`;
+}
+
+/** Local kickoff time as "15:00". */
+export function formatLocalTime(isoDate: string): string {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return '';
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}

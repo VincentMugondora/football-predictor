@@ -204,6 +204,46 @@ function validatePayload(value: unknown, url: string): PicksPayload {
       }
       if (!['low', 'medium', 'high'].includes(match.winner.confidence))
         schemaFailure(`${prefix}.winner.confidence`, url);
+      if (match.winner.close_call !== undefined && typeof match.winner.close_call !== 'boolean')
+        schemaFailure(`${prefix}.winner.close_call`, url);
+      const margin = match.winner.margin;
+      if (margin !== undefined) {
+        const scoreMatch = typeof margin?.score === 'string' ? /^(\d+)-(\d+)$/.exec(margin.score) : null;
+        const isDraw = match.winner.pick === 'draw';
+        const diff = scoreMatch ? Number(scoreMatch[1]) - Number(scoreMatch[2]) : NaN;
+        const signed = match.winner.pick === 'away' ? -diff : diff;
+        if (
+          !margin ||
+          !Number.isInteger(margin.goals) ||
+          margin.goals < 0 ||
+          (isDraw ? margin.goals !== 0 : margin.goals < 1) ||
+          !scoreMatch ||
+          signed !== margin.goals ||
+          !isProbability(margin.p) ||
+          !isProbability(margin.p_given_pick) ||
+          !isProbability(margin.p_score)
+        ) {
+          schemaFailure(`${prefix}.winner.margin`, url);
+        }
+      }
+      const margins = match.winner.margins;
+      if (margins !== undefined) {
+        const triple = (value: unknown) =>
+          Array.isArray(value) && value.length === 3 && value.every(isProbability);
+        if (
+          !margins ||
+          !triple(margins.home) ||
+          !triple(margins.away) ||
+          !isProbability(margins.draw) ||
+          typeof margins.exp_goal_diff !== 'number' ||
+          !Number.isFinite(margins.exp_goal_diff) ||
+          Math.abs(
+            [...margins.home, margins.draw, ...margins.away].reduce((sum, v) => sum + v, 0) - 1
+          ) > 0.02
+        ) {
+          schemaFailure(`${prefix}.winner.margins`, url);
+        }
+      }
     }
     if (match.timing !== undefined) {
       const timing = match.timing;
@@ -277,7 +317,7 @@ function validatePayload(value: unknown, url: string): PicksPayload {
 const LOCAL_DEV_URL_PATTERN =
   /^http:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[0-1])\.\d+\.\d+)(?::(\d+))?(\/.*)?$/i;
 
-function resolveCandidateUrls(
+export function resolveCandidateUrls(
   configuredUrl: string,
   allowDevHostFallback: boolean
 ): string[] {

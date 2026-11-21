@@ -21,10 +21,29 @@ export interface GoalPrediction {
   top_scores: { score: string; probability: number }[];
 }
 
+export interface WinnerMargin {
+  goals: number; // 0 for a draw, otherwise the most likely winning margin
+  p: number; // chance of the pick winning by exactly this margin
+  p_given_pick: number; // same, given the pick happens
+  score: string; // most likely scoreline with this result and margin, e.g. "2-0"
+  p_score: number;
+}
+
+export interface MarginBreakdown {
+  home: [number, number, number]; // home wins by 1, 2, 3+
+  draw: number;
+  away: [number, number, number]; // away wins by 1, 2, 3+
+  exp_goal_diff: number; // expected home minus away goals
+}
+
 export interface WinnerPrediction {
+  // 'too close to call' is only in payloads published before every match named a result.
   pick: 'home' | 'draw' | 'away' | 'too close to call';
   p: OutcomeTuple;
   confidence: 'low' | 'medium' | 'high';
+  close_call?: boolean;
+  margin?: WinnerMargin;
+  margins?: MarginBreakdown;
 }
 
 export interface HalfTimingPrediction {
@@ -81,15 +100,55 @@ export interface MatchResultComparison {
   home: string;
   away: string;
   p: OutcomeTuple;
-  odds: OutcomeTuple;
+  odds: OutcomeTuple | null;
   predicted_outcome: OutcomeKey;
-  actual_score: string;
+  predicted_score?: string | null; // e.g. "2-1"
+  predicted_margin?: number | null;
+  actual_score: string; // e.g. "2-0"
   actual_outcome: OutcomeKey;
   correct: boolean;
-  book_favourite: OutcomeKey;
-  book_correct: boolean;
+  hit_margin?: boolean;
+  hit_score?: boolean;
+  book_favourite: OutcomeKey | null;
+  book_correct: boolean | null;
   log_loss: number;
   brier: number;
+}
+
+/** One row of site/history.json: a saved pre-match prediction and, once played, its result. */
+export interface HistoryEntry {
+  id: string;
+  date: string;
+  league: string;
+  home: string;
+  away: string;
+  p: OutcomeTuple;
+  odds: OutcomeTuple | null;
+  pick: 'home' | 'draw' | 'away' | 'too close to call' | null;
+  confidence?: string | null;
+  margin: number | null;
+  score: string | null;
+  model_version?: string;
+  predicted_at?: string;
+  status: 'pending' | 'final' | 'no_result';
+  actual_score?: string;
+  actual_ht_score?: string;
+  actual_outcome?: OutcomeKey;
+  predicted_outcome?: OutcomeKey;
+  hit_winner?: boolean;
+  hit_margin?: boolean;
+  hit_score?: boolean;
+  log_loss?: number;
+  brier?: number;
+  book_favourite?: OutcomeKey;
+  book_correct?: boolean;
+  book_log_loss?: number;
+}
+
+export interface HistoryPayload {
+  schema_version: string;
+  generated_at: string;
+  entries: HistoryEntry[];
 }
 
 export interface BacktestSummary {

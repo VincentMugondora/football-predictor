@@ -59,6 +59,9 @@ export interface AppStoreState {
   favouriteMatchIds: string[];
   favouriteTeams: string[];
   draftBet: BetDraft | null;
+  /** 4-digit PIN for the hidden admin screen, set on first use. Not real security. */
+  adminPin: string | null;
+  setAdminPin: (pin: string | null) => void;
   addBet: (bet: Omit<BetRecord, 'id' | 'createdAt'>) => void;
   updateBetResult: (id: string, result: BetResult) => void;
   reconcileBetsWithResults: (comparisons: MatchResultComparison[]) => number;
@@ -78,6 +81,9 @@ export const useAppStore = create<AppStoreState>()(
       favouriteMatchIds: [],
       favouriteTeams: DEFAULT_FAVOURITE_TEAMS,
       draftBet: null,
+      adminPin: null,
+
+      setAdminPin: (pin) => set({ adminPin: pin }),
 
       addBet: (newBet) =>
         set((state) => {
@@ -184,6 +190,7 @@ export const useAppStore = create<AppStoreState>()(
         settings: state.settings,
         favouriteMatchIds: state.favouriteMatchIds,
         favouriteTeams: state.favouriteTeams,
+        adminPin: state.adminPin,
       }),
     }
   )
