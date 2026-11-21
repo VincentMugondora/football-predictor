@@ -14,6 +14,7 @@ from model import config
 from model.providers.teams import canonical_team, clean_team_name
 
 USER_AGENT = "MatchSenseDataPipeline/1.0 (Offline-First Statistical Model)"
+LATEST_SEASON_REFRESH_SECONDS = int(3.5 * 24 * 3600)
 
 
 def normalise_team_name(name: str) -> str:
@@ -56,7 +57,8 @@ def download_season_csv(
         if not is_latest_season:
             return dest
         age_seconds = time.time() - dest.stat().st_mtime
-        if age_seconds < 24 * 3600:
+        # Football-Data.co.uk fair use: automated downloads at most twice weekly.
+        if age_seconds < LATEST_SEASON_REFRESH_SECONDS:
             return dest
 
     url = config.HISTORICAL_CSV_URL_TEMPLATE.format(season=season, league=league)
@@ -281,7 +283,10 @@ def load_historical_matches(
     for league in league_list:
         for season in season_list:
             csv_path = raw_dir / f"{league}_{season}.csv"
-            if not csv_path.exists() and download_missing:
+            is_latest_season = str(season) == season_list[-1]
+            if download_missing and (not csv_path.exists() or is_latest_season):
+                # Missing seasons are fetched once; the current season refreshes at most
+                # twice weekly (download_season_csv checks the cached file's age).
                 try:
                     download_season_csv(league, season, raw_dir=raw_dir)
                 except Exception as exc:

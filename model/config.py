@@ -17,8 +17,8 @@ BACKTEST_REPORT_PATH = SITE_DIR / "backtest_report.json"
 # Hard limit from Section 2 Rule 8: keep picks.json under 50 KB
 MAX_PICKS_JSON_BYTES = 50 * 1024
 
-# Seasons to download from football-data.co.uk (6 full seasons)
-SEASONS: tuple[str, ...] = ("1920", "2021", "2122", "2223", "2324", "2425", "2526")
+# Seasons to load from football-data.co.uk; the last entry is the current season
+SEASONS: tuple[str, ...] = ("1920", "2021", "2122", "2223", "2324", "2425", "2526", "2627")
 MIN_HISTORY_SEASONS_PER_LEAGUE = int(os.getenv("MIN_HISTORY_SEASONS_PER_LEAGUE", "5"))
 
 # Leagues configured for football-data.co.uk CSV ingestion
