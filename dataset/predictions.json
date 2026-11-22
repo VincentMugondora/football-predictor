@@ -1,4 +1,30 @@
 {
+ "558509": {
+  "away": "Napoli",
+  "confidence": "medium",
+  "date": "2026-11-29T14:00:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Sassuolo",
+  "id": "558509",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   4.87,
+   4.451,
+   1.754
+  ],
+  "p": [
+   0.202,
+   0.2313,
+   0.5667
+  ],
+  "p_score": 0.094,
+  "pick": "away",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "1-2"
+ },
  "558513": {
   "away": "Parma",
   "confidence": "high",
@@ -22,7 +48,7 @@
   ],
   "p_score": 0.093,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "558514": {
@@ -48,7 +74,7 @@
   ],
   "p_score": 0.093,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "558515": {
@@ -74,7 +100,7 @@
   ],
   "p_score": 0.093,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "558517": {
@@ -100,7 +126,7 @@
   ],
   "p_score": 0.087,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "558518": {
@@ -126,7 +152,7 @@
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-0"
  },
  "558519": {
@@ -152,7 +178,7 @@
   ],
   "p_score": 0.09,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "558520": {
@@ -178,7 +204,7 @@
   ],
   "p_score": 0.087,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "558521": {
@@ -256,7 +282,7 @@
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "558524": {
@@ -308,7 +334,7 @@
   ],
   "p_score": 0.095,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "560646": {
@@ -360,7 +386,7 @@
   ],
   "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "560652": {
@@ -386,7 +412,7 @@
   ],
   "p_score": 0.099,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "560653": {
@@ -412,7 +438,7 @@
   ],
   "p_score": 0.093,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "560655": {
@@ -438,7 +464,7 @@
   ],
   "p_score": 0.092,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "560656": {
@@ -464,7 +490,33 @@
   ],
   "p_score": 0.093,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "1-2"
+ },
+ "560657": {
+  "away": "Bournemouth",
+  "confidence": "low",
+  "date": "2026-11-29T14:05:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Fulham",
+  "id": "560657",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.823,
+   3.67,
+   2.679
+  ],
+  "p": [
+   0.3323,
+   0.3165,
+   0.3512
+  ],
+  "p_score": 0.082,
+  "pick": "away",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "560658": {
@@ -490,8 +542,86 @@
   ],
   "p_score": 0.084,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
+ },
+ "560659": {
+  "away": "Newcastle",
+  "confidence": "high",
+  "date": "2026-11-29T14:05:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Brighton",
+  "id": "560659",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.651,
+   4.606,
+   5.642
+  ],
+  "p": [
+   0.6009,
+   0.2266,
+   0.1725
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "2-1"
+ },
+ "560660": {
+  "away": "Tottenham",
+  "confidence": "low",
+  "date": "2026-11-29T14:05:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Sunderland",
+  "id": "560660",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.588,
+   3.485,
+   2.302
+  ],
+  "p": [
+   0.2591,
+   0.3261,
+   0.4148
+  ],
+  "p_score": 0.106,
+  "pick": "away",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "0-1"
+ },
+ "560661": {
+  "away": "Hull",
+  "confidence": "medium",
+  "date": "2026-11-29T14:05:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Crystal Palace",
+  "id": "560661",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.926,
+   4.023,
+   4.308
+  ],
+  "p": [
+   0.5066,
+   0.2739,
+   0.2195
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "2-1"
  },
  "564749": {
   "away": "Villarreal",
@@ -542,7 +672,7 @@
   ],
   "p_score": 0.085,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "564752": {
@@ -568,7 +698,7 @@
   ],
   "p_score": 0.098,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "564753": {
@@ -594,7 +724,7 @@
   ],
   "p_score": 0.144,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "0-1"
  },
  "564757": {
@@ -620,7 +750,7 @@
   ],
   "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "564759": {
@@ -646,7 +776,7 @@
   ],
   "p_score": 0.099,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-2"
  },
  "564760": {
@@ -672,8 +802,34 @@
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
+ },
+ "564761": {
+  "away": "Osasuna",
+  "confidence": "low",
+  "date": "2026-11-29T13:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Valencia",
+  "id": "564761",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.205,
+   3.51,
+   3.822
+  ],
+  "p": [
+   0.4422,
+   0.3075,
+   0.2503
+  ],
+  "p_score": 0.096,
+  "pick": "home",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "1-0"
  },
  "564762": {
   "away": "Alav\u00e9s",
@@ -698,7 +854,7 @@
   ],
   "p_score": 0.121,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-0"
  },
  "564765": {
@@ -724,7 +880,7 @@
   ],
   "p_score": 0.085,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "564767": {
@@ -750,7 +906,7 @@
   ],
   "p_score": 0.106,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "0-1"
  },
  "565863": {
@@ -776,7 +932,7 @@
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "565864": {
@@ -828,7 +984,7 @@
   ],
   "p_score": 0.095,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "565867": {
@@ -854,7 +1010,7 @@
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "565868": {
@@ -880,7 +1036,7 @@
   ],
   "p_score": 0.085,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "565869": {
@@ -906,7 +1062,7 @@
   ],
   "p_score": 0.092,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
  },
  "565870": {
@@ -932,8 +1088,34 @@
   ],
   "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "2-1"
+ },
+ "565873": {
+  "away": "RB Leipzig",
+  "confidence": "low",
+  "date": "2026-11-29T14:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T14:30:21Z",
+  "home": "Freiburg",
+  "id": "565873",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.744,
+   4.147,
+   2.535
+  ],
+  "p": [
+   0.3547,
+   0.2606,
+   0.3847
+  ],
+  "p_score": 0.079,
+  "pick": "away",
+  "predicted_at": "2026-11-22T14:30:21Z",
+  "score": "1-2"
  },
  "565874": {
   "away": "Bayern Munich",
@@ -958,7 +1140,7 @@
   ],
   "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-22T12:21:16Z",
+  "predicted_at": "2026-11-22T14:30:21Z",
   "score": "1-3"
  }
 }
