@@ -57,3 +57,6 @@ model/data/raw/*.csv
 model/data/timing_events/
 model/data/timing_backfill_state.json
 
+
+# Daily job logs
+logs/
