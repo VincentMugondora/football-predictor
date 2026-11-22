@@ -1,0 +1,912 @@
+{
+ "558513": {
+  "away": "Parma",
+  "confidence": "high",
+  "date": "2026-11-28T14:00:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Frosinone",
+  "id": "558513",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.48,
+   4.75,
+   5.5
+  ],
+  "p": [
+   0.6228,
+   0.2103,
+   0.1669
+  ],
+  "p_score": 0.093,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "558514": {
+  "away": "Lazio",
+  "confidence": "medium",
+  "date": "2026-11-28T17:00:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Torino",
+  "id": "558514",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   3.4,
+   3.4,
+   2.1
+  ],
+  "p": [
+   0.2315,
+   0.2684,
+   0.5001
+  ],
+  "p_score": 0.096,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "558515": {
+  "away": "Bologna",
+  "confidence": "medium",
+  "date": "2026-11-27T19:45:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Venezia",
+  "id": "558515",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   3.5,
+   3.5,
+   2.0
+  ],
+  "p": [
+   0.2139,
+   0.2759,
+   0.5102
+  ],
+  "p_score": 0.097,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "558518": {
+  "away": "Genoa",
+  "confidence": "high",
+  "date": "2026-11-28T19:45:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Inter",
+  "id": "558518",
+  "league": "Serie A",
+  "margin": 2,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.25,
+   5.75,
+   10.0
+  ],
+  "p": [
+   0.7324,
+   0.1719,
+   0.0957
+  ],
+  "p_score": 0.096,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-0"
+ },
+ "558519": {
+  "away": "Fiorentina",
+  "confidence": "medium",
+  "date": "2026-11-23T19:45:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Monza",
+  "id": "558519",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   3.9,
+   4.0,
+   2.0
+  ],
+  "p": [
+   0.269,
+   0.2515,
+   0.4795
+  ],
+  "p_score": 0.089,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "558520": {
+  "away": "Inter",
+  "confidence": "high",
+  "date": "2026-11-22T19:45:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Atalanta",
+  "id": "558520",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   5.0,
+   4.6,
+   1.57
+  ],
+  "p": [
+   0.1743,
+   0.1992,
+   0.6265
+  ],
+  "p_score": 0.087,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "558521": {
+  "away": "Venezia",
+  "confidence": "high",
+  "date": "2026-11-22T11:30:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Juventus",
+  "id": "558521",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.36,
+   5.0,
+   8.5
+  ],
+  "p": [
+   0.678,
+   0.2072,
+   0.1148
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "558522": {
+  "away": "Udinese",
+  "confidence": "medium",
+  "date": "2026-11-22T14:00:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Bologna",
+  "id": "558522",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.78,
+   4.0,
+   5.2
+  ],
+  "p": [
+   0.5227,
+   0.2554,
+   0.2219
+  ],
+  "p_score": 0.096,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "558523": {
+  "away": "Frosinone",
+  "confidence": "medium",
+  "date": "2026-11-22T17:00:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Milan",
+  "id": "558523",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.61,
+   4.8,
+   5.6
+  ],
+  "p": [
+   0.4506,
+   0.2479,
+   0.3015
+  ],
+  "p_score": 0.083,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "558524": {
+  "away": "Genoa",
+  "confidence": "low",
+  "date": "2026-11-22T14:00:00Z",
+  "div": "I1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Sassuolo",
+  "id": "558524",
+  "league": "Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.75,
+   3.3,
+   2.6
+  ],
+  "p": [
+   0.3463,
+   0.2834,
+   0.3703
+  ],
+  "p_score": 0.083,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "560645": {
+  "away": "Man Utd",
+  "confidence": "medium",
+  "date": "2026-11-22T16:30:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Liverpool",
+  "id": "560645",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.7,
+   4.2,
+   4.4
+  ],
+  "p": [
+   0.4718,
+   0.2589,
+   0.2693
+  ],
+  "p_score": 0.09,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "560646": {
+  "away": "Brighton",
+  "confidence": "medium",
+  "date": "2026-11-22T14:00:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Hull",
+  "id": "560646",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   6.25,
+   4.35,
+   1.48
+  ],
+  "p": [
+   0.2214,
+   0.2777,
+   0.5009
+  ],
+  "p_score": 0.096,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "560649": {
+  "away": "Everton",
+  "confidence": "low",
+  "date": "2026-11-23T20:00:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Brentford",
+  "id": "560649",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.3,
+   3.5,
+   3.0
+  ],
+  "p": [
+   0.4219,
+   0.2972,
+   0.2809
+  ],
+  "p_score": 0.09,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "560652": {
+  "away": "Coventry",
+  "confidence": "medium",
+  "date": "2026-11-28T15:00:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Leeds",
+  "id": "560652",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.57,
+   4.2,
+   5.5
+  ],
+  "p": [
+   0.5344,
+   0.2634,
+   0.2022
+  ],
+  "p_score": 0.098,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "560653": {
+  "away": "Aston Villa",
+  "confidence": "low",
+  "date": "2026-11-28T17:30:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Ipswich",
+  "id": "560653",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   3.4,
+   3.75,
+   2.0
+  ],
+  "p": [
+   0.2762,
+   0.2851,
+   0.4387
+  ],
+  "p_score": 0.091,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "560655": {
+  "away": "Brentford",
+  "confidence": "medium",
+  "date": "2026-11-28T15:00:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Man Utd",
+  "id": "560655",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.0,
+   3.75,
+   3.5
+  ],
+  "p": [
+   0.5242,
+   0.2486,
+   0.2272
+  ],
+  "p_score": 0.094,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "560658": {
+  "away": "Chelsea",
+  "confidence": "low",
+  "date": "2026-11-27T20:00:00Z",
+  "div": "E0",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Nottingham Forest",
+  "id": "560658",
+  "league": "Premier League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.8,
+   3.5,
+   2.4
+  ],
+  "p": [
+   0.4204,
+   0.2879,
+   0.2917
+  ],
+  "p_score": 0.09,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "564749": {
+  "away": "Villarreal",
+  "confidence": "high",
+  "date": "2026-11-22T13:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Barcelona",
+  "id": "564749",
+  "league": "La Liga",
+  "margin": 2,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.21,
+   8.8,
+   14.49
+  ],
+  "p": [
+   0.7614,
+   0.1463,
+   0.0923
+  ],
+  "p_score": 0.082,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "3-1"
+ },
+ "564750": {
+  "away": "Real Sociedad",
+  "confidence": "low",
+  "date": "2026-11-22T15:15:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Santander",
+  "id": "564750",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   3.4,
+   4.2,
+   2.08
+  ],
+  "p": [
+   0.3715,
+   0.2561,
+   0.3724
+  ],
+  "p_score": 0.076,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "564752": {
+  "away": "Malaga",
+  "confidence": "medium",
+  "date": "2026-11-22T17:30:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Osasuna",
+  "id": "564752",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.89,
+   3.75,
+   4.7
+  ],
+  "p": [
+   0.5156,
+   0.2691,
+   0.2153
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "564753": {
+  "away": "Atl\u00e9tico Madrid",
+  "confidence": "medium",
+  "date": "2026-11-22T20:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Getafe",
+  "id": "564753",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   7.6,
+   4.1,
+   1.56
+  ],
+  "p": [
+   0.2226,
+   0.3152,
+   0.4622
+  ],
+  "p_score": 0.114,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "0-1"
+ },
+ "564757": {
+  "away": "Elche",
+  "confidence": "medium",
+  "date": "2026-11-23T20:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Levante",
+  "id": "564757",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.26,
+   3.65,
+   3.35
+  ],
+  "p": [
+   0.4715,
+   0.273,
+   0.2555
+  ],
+  "p_score": 0.094,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "564759": {
+  "away": "Atl\u00e9tico Madrid",
+  "confidence": "medium",
+  "date": "2026-11-28T17:30:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Elche",
+  "id": "564759",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   5.0,
+   4.2,
+   1.62
+  ],
+  "p": [
+   0.2544,
+   0.2848,
+   0.4608
+  ],
+  "p_score": 0.094,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "564760": {
+  "away": "Rayo Vallecano",
+  "confidence": "medium",
+  "date": "2026-11-28T13:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Real Betis",
+  "id": "564760",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.5,
+   4.6,
+   6.0
+  ],
+  "p": [
+   0.5683,
+   0.2367,
+   0.195
+  ],
+  "p_score": 0.096,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "564762": {
+  "away": "Alav\u00e9s",
+  "confidence": "high",
+  "date": "2026-11-28T20:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Real Madrid",
+  "id": "564762",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.17,
+   8.0,
+   15.0
+  ],
+  "p": [
+   0.717,
+   0.1801,
+   0.1029
+  ],
+  "p_score": 0.092,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "564765": {
+  "away": "Santander",
+  "confidence": "medium",
+  "date": "2026-11-27T20:00:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Levante",
+  "id": "564765",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.1,
+   3.75,
+   3.2
+  ],
+  "p": [
+   0.5452,
+   0.2329,
+   0.2219
+  ],
+  "p_score": 0.091,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "564767": {
+  "away": "Athletic Club",
+  "confidence": "low",
+  "date": "2026-11-28T15:15:00Z",
+  "div": "SP1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Malaga",
+  "id": "564767",
+  "league": "La Liga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   4.33,
+   3.75,
+   1.8
+  ],
+  "p": [
+   0.3038,
+   0.3151,
+   0.3811
+  ],
+  "p_score": 0.085,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-2"
+ },
+ "565863": {
+  "away": "Hamburg",
+  "confidence": "medium",
+  "date": "2026-11-22T16:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Werder Bremen",
+  "id": "565863",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.57,
+   4.33,
+   4.9
+  ],
+  "p": [
+   0.5718,
+   0.2373,
+   0.1909
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565864": {
+  "away": "Mainz 05",
+  "confidence": "low",
+  "date": "2026-11-22T14:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Augsburg",
+  "id": "565864",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.6,
+   3.8,
+   2.38
+  ],
+  "p": [
+   0.4327,
+   0.2467,
+   0.3206
+  ],
+  "p_score": 0.08,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565866": {
+  "away": "Elversberg",
+  "confidence": "medium",
+  "date": "2026-11-28T14:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "K\u00f6ln",
+  "id": "565866",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.98,
+   3.75,
+   3.4
+  ],
+  "p": [
+   0.4592,
+   0.2802,
+   0.2606
+  ],
+  "p_score": 0.093,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565867": {
+  "away": "Union Berlin",
+  "confidence": "high",
+  "date": "2026-11-28T14:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Mainz 05",
+  "id": "565867",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.5,
+   4.5,
+   5.5
+  ],
+  "p": [
+   0.6133,
+   0.2218,
+   0.1649
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565868": {
+  "away": "Schalke 04",
+  "confidence": "low",
+  "date": "2026-11-28T14:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Paderborn",
+  "id": "565868",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   2.38,
+   3.4,
+   2.85
+  ],
+  "p": [
+   0.4066,
+   0.3105,
+   0.2829
+  ],
+  "p_score": 0.088,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565869": {
+  "away": "Gladbach",
+  "confidence": "medium",
+  "date": "2026-11-27T19:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Werder Bremen",
+  "id": "565869",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.75,
+   4.0,
+   4.0
+  ],
+  "p": [
+   0.5809,
+   0.2277,
+   0.1914
+  ],
+  "p_score": 0.094,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565870": {
+  "away": "Eintracht Frankfurt",
+  "confidence": "medium",
+  "date": "2026-11-28T17:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T03:54:26Z",
+  "home": "Stuttgart",
+  "id": "565870",
+  "league": "Bundesliga",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   1.7,
+   4.5,
+   4.0
+  ],
+  "p": [
+   0.5647,
+   0.2239,
+   0.2114
+  ],
+  "p_score": 0.09,
+  "pick": "home",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "2-1"
+ },
+ "565874": {
+  "away": "Bayern Munich",
+  "confidence": "high",
+  "date": "2026-11-28T14:30:00Z",
+  "div": "D1",
+  "first_predicted_at": "2026-11-22T04:07:24Z",
+  "home": "Hamburg",
+  "id": "565874",
+  "league": "Bundesliga",
+  "margin": 2,
+  "model_version": "bivariate-dc-xg-elo-v3.0",
+  "odds": [
+   8.5,
+   6.5,
+   1.25
+  ],
+  "p": [
+   0.1078,
+   0.163,
+   0.7292
+  ],
+  "p_score": 0.081,
+  "pick": "away",
+  "predicted_at": "2026-11-22T07:19:52Z",
+  "score": "1-3"
+ }
+}
