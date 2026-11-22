@@ -83,11 +83,11 @@ def test_odds_api_unmatched_team_marks_fixture_for_skipping(tmp_path: Path, monk
     provider.cache_dir = tmp_path
     kickoff = datetime.now(timezone.utc) + timedelta(days=1)
     fixture = Fixture("odds-x", "PL", kickoff, "Arsenal", "Chelsea")
-    cache_path = tmp_path / f"odds_soccer_epl_{datetime.now(timezone.utc).date().isoformat()}.json"
+    cache_path = tmp_path / "odds_soccer_epl_latest.json"
     cache_path.write_text(json.dumps({"payload": [{
         "home_team": "Arsenal", "away_team": "Mystery FC", "commence_time": kickoff.isoformat(),
         "bookmakers": [],
-    }], "credits_remaining": 500}), encoding="utf-8")
+    }], "credits_remaining": 500, "fetched_at": datetime.now(timezone.utc).isoformat()}), encoding="utf-8")
 
     assert provider.get_h2h_odds([fixture]) == {}
     assert provider.unmatched_fixture_ids == {"odds-x"}
@@ -564,3 +564,48 @@ def test_predict_markets_without_usable_odds_is_model_only():
         assert result["p"] == plain["p"] == result["model_p"]
     anchored = model.predict_markets("E0", "A", "B", market_odds=[1.5, 4.2, 6.5])
     assert anchored["anchored"] is True and anchored["p"][0] > plain["p"][0]
+
+
+def _book(key, title, home, draw, away, home_name="Arsenal", away_name="Chelsea"):
+    return {"key": key, "title": title, "markets": [{"key": "h2h", "outcomes": [
+        {"name": home_name, "price": home}, {"name": "Draw", "price": draw}, {"name": away_name, "price": away}]}]}
+
+
+def test_consensus_prefers_sharp_books_and_removes_margin():
+    from model.providers.the_odds_api import consensus_h2h
+
+    books = [
+        _book("betfred_uk", "Betfred", 1.70, 3.6, 4.6),
+        _book("betfair_ex_uk", "Betfair", 2.00, 3.6, 4.0),
+        _book("smarkets", "Smarkets", 2.04, 3.5, 4.1),
+    ]
+    odds, label = consensus_h2h(books, "Arsenal", "Chelsea")
+    assert label.startswith("Sharp average") and "Betfair" in label and "Betfred" not in label
+    assert abs(sum(1.0 / v for v in odds) - 1.0) < 1e-3  # fair odds, no margin
+    assert 1.95 < odds[0] < 2.1
+
+
+def test_consensus_falls_back_to_median_and_skips_incomplete_books():
+    from model.providers.the_odds_api import consensus_h2h
+
+    books = [
+        _book("a", "A", 1.8, 3.6, 4.5), _book("b", "B", 1.9, 3.5, 4.2), _book("c", "C", 2.0, 3.4, 4.0),
+        {"key": "d", "markets": [{"key": "h2h", "outcomes": [{"name": "Arsenal", "price": 1.5}]}]},
+    ]
+    odds, label = consensus_h2h(books, "Arsenal", "Chelsea")
+    assert label == "Median of 3 bookmakers"
+    assert consensus_h2h([], "Arsenal", "Chelsea") is None
+
+
+def test_odds_refresh_rules():
+    from model.providers.the_odds_api import needs_refresh
+
+    now = datetime(2026, 11, 22, 10, 0, tzinfo=timezone.utc)
+    soon = [now + timedelta(hours=5)]
+    later = [now + timedelta(days=4)]
+    assert needs_refresh(None, soon, now, 3) is True
+    assert needs_refresh(now - timedelta(hours=1), soon, now, 3) is False
+    assert needs_refresh(now - timedelta(hours=4), soon, now, 3) is True
+    assert needs_refresh(now - timedelta(hours=10), later, now, 3) is False
+    assert needs_refresh(now - timedelta(hours=25), later, now, 3) is True
+    assert needs_refresh(now - timedelta(hours=30), [now - timedelta(hours=1)], now, 3) is False

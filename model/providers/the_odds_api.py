@@ -4,15 +4,86 @@ from __future__ import annotations
 
 import json
 import os
+import statistics
 from pathlib import Path
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from model import config
 from model.providers.base import Fixture, OddsProvider
 from model.providers.teams import canonical_team, record_unmatched_team_names
+
+
+# Low-margin "sharp" prices. In walk-forward tests (docs/experiments.md) anchoring to the
+# Betfair Exchange or Pinnacle beat a single high-street bookmaker and the median of them.
+SHARP_BOOKMAKERS = ("pinnacle", "betfair_ex_uk", "betfair_ex_eu", "smarkets", "matchbook")
+
+
+def consensus_h2h(books: list[dict], home: str, away: str) -> tuple[list[float], str] | None:
+    """Margin-free consensus 1X2 odds from one event's bookmakers.
+
+    Averages the margin-free chances of the sharp books that priced all three outcomes;
+    if none did, uses the median across every bookmaker. Returns fair (no-margin) decimal
+    odds [home, draw, away] and a short source label, or None.
+    """
+    priced: list[tuple[str, str, tuple[float, float, float]]] = []
+    for book in books:
+        if not isinstance(book, dict):
+            continue
+        market = next((m for m in book.get("markets", []) if isinstance(m, dict) and m.get("key") == "h2h"), None)
+        if not market:
+            continue
+        prices: dict[str, object] = {}
+        draw_price = None
+        for outcome in market.get("outcomes", []):
+            if not isinstance(outcome, dict):
+                continue
+            name = str(outcome.get("name", ""))
+            if name.casefold() == "draw":
+                draw_price = outcome.get("price")
+            else:
+                prices[canonical_team(name, "The Odds API").casefold()] = outcome.get("price")
+        values = (prices.get(home.casefold()), draw_price, prices.get(away.casefold()))
+        if not all(isinstance(v, (int, float)) and v > 1 for v in values):
+            continue
+        inverse = [1.0 / float(v) for v in values]
+        total = sum(inverse)
+        chances = (inverse[0] / total, inverse[1] / total, inverse[2] / total)
+        priced.append((str(book.get("key", "")).lower(), str(book.get("title", book.get("key", ""))), chances))
+    if not priced:
+        return None
+    sharp = [row for row in priced if row[0] in SHARP_BOOKMAKERS]
+    if sharp:
+        chances = [sum(row[2][k] for row in sharp) / len(sharp) for k in range(3)]
+        label = "Sharp average: " + ", ".join(sorted({row[1] for row in sharp}))
+    else:
+        chances = [statistics.median(row[2][k] for row in priced) for k in range(3)]
+        label = f"Median of {len(priced)} bookmakers"
+    total = sum(chances)
+    return [round(total / c, 3) for c in chances], label
+
+
+def needs_refresh(
+    fetched_at: datetime | None,
+    kickoffs: list[datetime],
+    now: datetime,
+    refresh_hours: float,
+) -> bool:
+    """Fetch new odds when there is no cache, the cache is over a day old while matches
+    are coming up, or a match kicks off within 24 hours and the cache is older than
+    ``refresh_hours``. Keeps the free 500-credit monthly plan comfortably in budget."""
+    upcoming = [k for k in kickoffs if k > now]
+    if not upcoming:
+        return fetched_at is None
+    if fetched_at is None:
+        return True
+    age = now - fetched_at
+    if age > timedelta(hours=24):
+        return True
+    soonest = min(upcoming) - now
+    return soonest <= timedelta(hours=24) and age > timedelta(hours=refresh_hours)
 
 
 class TheOddsApiProvider(OddsProvider):
@@ -40,22 +111,32 @@ class TheOddsApiProvider(OddsProvider):
             if sport:
                 by_sport.setdefault(sport, []).append(fixture)
                 known_names.update((fixture.home, fixture.away))
+        now = datetime.now(timezone.utc)
+        refresh_hours = float(os.getenv("ODDS_REFRESH_HOURS", str(config.ODDS_REFRESH_HOURS)))
         for sport, sport_fixtures in by_sport.items():
-            cache_path = self.cache_dir / f"odds_{sport}_{datetime.now(timezone.utc).date().isoformat()}.json"
-            if (
-                self.credits_remaining is not None
-                and self.credits_remaining <= min_credits_remaining
-                and not cache_path.exists()
-            ):
-                break
+            cache_path = self.cache_dir / f"odds_{sport}_latest.json"
+            cached: dict | None = None
+            fetched_at: datetime | None = None
+            if cache_path.exists():
+                try:
+                    cached = json.loads(cache_path.read_text(encoding="utf-8"))
+                    fetched_at = datetime.fromisoformat(str(cached.get("fetched_at")))
+                except (ValueError, OSError, TypeError):
+                    cached, fetched_at = None, None
+                if cached is not None:
+                    self.credits_remaining = cached.get("credits_remaining", self.credits_remaining)
+            refresh = needs_refresh(fetched_at, [f.kickoff for f in sport_fixtures], now, refresh_hours)
+            low_credits = self.credits_remaining is not None and self.credits_remaining <= min_credits_remaining
+            if refresh and low_credits:
+                if cached is None:
+                    break
+                refresh = False  # keep the older prices rather than spend the last credits
             query = urllib.parse.urlencode({"apiKey": self.api_key, "regions": os.getenv("ODDS_REGION", "uk"),
                                             "markets": "h2h", "oddsFormat": "decimal"})
             url = f"{self.BASE_URL}/sports/{urllib.parse.quote(sport)}/odds?{query}"
             request = urllib.request.Request(url)
-            if cache_path.exists():
-                cached = json.loads(cache_path.read_text(encoding="utf-8"))
+            if cached is not None and not refresh:
                 payload = cached["payload"]
-                self.credits_remaining = cached.get("credits_remaining")
             else:
                 try:
                     with urllib.request.urlopen(request, timeout=20) as response:
@@ -66,10 +147,15 @@ class TheOddsApiProvider(OddsProvider):
                         if last_cost is not None:
                             self.credits_used += int(last_cost)
                         payload = json.loads(response.read().decode("utf-8"))
-                    cache_path.write_text(json.dumps({"payload": payload, "credits_remaining": self.credits_remaining}), encoding="utf-8")
+                    cache_path.write_text(json.dumps({"payload": payload, "credits_remaining": self.credits_remaining,
+                                                      "fetched_at": now.isoformat()}), encoding="utf-8")
                 except (urllib.error.URLError, ValueError, OSError) as exc:
-                    safe_error = str(exc).replace(self.api_key, "[redacted]")
-                    raise RuntimeError(f"The Odds API request failed: {safe_error}") from exc
+                    if cached is not None:
+                        print(f"The Odds API refresh failed for {sport}; using prices from {fetched_at}.", flush=True)
+                        payload = cached["payload"]
+                    else:
+                        safe_error = str(exc).replace(self.api_key, "[redacted]")
+                        raise RuntimeError(f"The Odds API request failed: {safe_error}") from exc
             if not isinstance(payload, list):
                 raise ValueError("The Odds API response must be a list")
             for item in payload:
@@ -98,19 +184,9 @@ class TheOddsApiProvider(OddsProvider):
                     continue
                 bookmaker_rows = item.get("bookmakers", [])
                 books = [book for book in bookmaker_rows if isinstance(book, dict)]
-                if not books:
-                    continue
-                chosen = next((b for b in books if str(b.get("key", "")).lower() == "pinnacle"), books[0])
-                market = next((m for m in chosen.get("markets", []) if isinstance(m, dict) and m.get("key") == "h2h"), None)
-                if not market:
-                    continue
-                prices = {canonical_team(str(o.get("name", "")), "The Odds API"): o.get("price")
-                          for o in market.get("outcomes", []) if isinstance(o, dict) and str(o.get("name", "")).casefold() != "draw"}
-                draw_price = next((o.get("price") for o in market.get("outcomes", [])
-                                   if isinstance(o, dict) and str(o.get("name", "")).casefold() == "draw"), None)
-                values = (prices.get(match.home), draw_price, prices.get(match.away))
-                if all(isinstance(v, (int, float)) and v > 1 for v in values):
-                    results[match.id] = {"odds": [float(v) for v in values], "source": str(chosen.get("title", "The Odds API"))}
+                consensus = consensus_h2h(books, match.home, match.away)
+                if consensus is not None:
+                    results[match.id] = {"odds": consensus[0], "source": consensus[1]}
         if unmatched_names:
             record_unmatched_team_names(sorted(unmatched_names), "The Odds API", known_names)
             for name in sorted(unmatched_names):

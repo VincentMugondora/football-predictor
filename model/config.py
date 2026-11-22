@@ -242,6 +242,9 @@ TEAM_ALIASES.update({
     "1. FC Heidenheim": "Heidenheim", "Freiburg": "Freiburg", "Stuttgart": "Stuttgart", "Wolfsburg": "Wolfsburg",
 })
 
+# Re-fetch odds when a match is within 24 hours and the saved prices are older than this.
+ODDS_REFRESH_HOURS = float(os.getenv("ODDS_REFRESH_HOURS", "3"))
+
 ALLOW_FOOTBALL_DATA_DOWNLOADS = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"
 
 
