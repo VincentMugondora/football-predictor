@@ -511,3 +511,56 @@ def test_provider_results_on_csv_day_are_not_double_counted() -> None:
     deduped = drop_same_day_duplicates(pd.concat([hist, recent], ignore_index=True))
     assert len(deduped) == 1
     assert deduped.iloc[0]["HS"] == 15.0  # the CSV row, with match stats, is kept
+
+
+def test_fit_payload_to_budget_drops_latest_non_featured_matches():
+    import json as _json
+    from model.run_daily import fit_payload_to_budget
+
+    matches = [
+        {"id": i, "date": f"2026-11-{10 + i:02d}T15:00:00Z", "featured": i == 5, "pad": "x" * 400}
+        for i in range(8)
+    ]
+    payload = {"matches": matches, "recent_comparisons": [{"id": n, "pad": "y" * 50} for n in range(20)]}
+    full = len(_json.dumps(payload, separators=(",", ":")))
+    text, dropped = fit_payload_to_budget(payload, full - 1500)
+    assert len(text.encode("utf-8")) <= full - 1500
+    assert dropped >= 1
+    assert len(payload["recent_comparisons"]) == 10
+    kept_ids = [m["id"] for m in payload["matches"]]
+    assert 5 in kept_ids  # featured match survives
+    assert kept_ids == sorted(kept_ids)[: len(kept_ids)] and max(kept_ids) < 7
+
+
+def test_fit_payload_to_budget_leaves_small_payload_untouched():
+    from model.run_daily import fit_payload_to_budget
+
+    payload = {"matches": [{"id": 1}], "recent_comparisons": [{"id": n} for n in range(20)]}
+    text, dropped = fit_payload_to_budget(payload, 50 * 1024)
+    assert dropped == 0 and len(payload["recent_comparisons"]) == 20 and text.startswith("{")
+
+
+def test_anchor_to_market_matches_odds_and_keeps_model_total():
+    from model.model import OnlinePoissonModel
+
+    model = OnlinePoissonModel()
+    lam_h, lam_a = 1.4, 1.1
+    market = OnlinePoissonModel.implied_probabilities([1.80, 3.80, 4.50])
+    assert market is not None and abs(sum(market) - 1.0) < 1e-9
+    anchored = model.anchor_to_market(lam_h, lam_a, market[0], market[2])
+    assert abs(sum(anchored) - (lam_h + lam_a)) < 1e-9
+    p = OnlinePoissonModel.outcome_probabilities(model.grid_from_lambdas(*anchored))
+    assert abs((p[0] - p[2]) - (market[0] - market[2])) < 1e-4
+
+
+def test_predict_markets_without_usable_odds_is_model_only():
+    from model.model import OnlinePoissonModel
+
+    model = OnlinePoissonModel()
+    plain = model.predict_markets("E0", "A", "B")
+    for odds in (None, [0.0, 3.0, 4.0], ["x", 3.0, 4.0], [2.0, 3.0]):
+        result = model.predict_markets("E0", "A", "B", market_odds=odds)
+        assert result["anchored"] is False
+        assert result["p"] == plain["p"] == result["model_p"]
+    anchored = model.predict_markets("E0", "A", "B", market_odds=[1.5, 4.2, 6.5])
+    assert anchored["anchored"] is True and anchored["p"][0] > plain["p"][0]

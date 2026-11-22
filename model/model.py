@@ -181,7 +181,10 @@ class OnlinePoissonModel:
         preserving the exact marginal expected goals (lam_h, lam_a).
         """
         lam_h, lam_a = self.expected_goals(league, home, away, match_date=match_date)
+        return self.grid_from_lambdas(lam_h, lam_a)
 
+    def grid_from_lambdas(self, lam_h: float, lam_a: float) -> np.ndarray:
+        """Build the normalized score grid for given expected goals (see predict_score_grid)."""
         # 1. Bivariate Poisson shared-intensity component (Karlis & Ntzoufras 2003)
         # Shared tempo rate lambda_0 correlates home and away scoring while preserving means
         lam_0 = min(lam_h, lam_a) * max(0.0, min(0.25, self.bivariate_gamma))
@@ -300,11 +303,72 @@ class OnlinePoissonModel:
             "p_score": best_p,
         }
 
+    @staticmethod
+    def implied_probabilities(odds: Any) -> tuple[float, float, float] | None:
+        """Margin-free (home, draw, away) chances from decimal 1X2 odds, or None if unusable."""
+        try:
+            values = [float(v) for v in odds]
+        except (TypeError, ValueError):
+            return None
+        if len(values) != 3 or any(not math.isfinite(v) or v <= 1.0 for v in values):
+            return None
+        inverse = [1.0 / v for v in values]
+        total = sum(inverse)
+        return inverse[0] / total, inverse[1] / total, inverse[2] / total
+
+    def anchor_to_market(
+        self, lam_h: float, lam_a: float, p_home: float, p_away: float
+    ) -> tuple[float, float]:
+        """Keep the model's total expected goals but split them so the grid's
+        home-minus-away chance matches the market's.
+
+        Walk-forward tests on 2023-2027 (docs/experiments.md) showed bookmaker
+        pre-match odds carry all of this model's 1X2 information and more, while the
+        model's own goal total is better than the total implied by 1X2 odds. This
+        hybrid beat the model alone on 1X2, exact score, margin and winner hit rate.
+        """
+        total = lam_h + lam_a
+        target = p_home - p_away
+
+        def gap(share: float) -> float:
+            p = self.outcome_probabilities(self.grid_from_lambdas(total * share, total * (1.0 - share)))
+            return (p[0] - p[2]) - target
+
+        lo, hi = 0.02, 0.98
+        if gap(lo) > 0.0:
+            return total * lo, total * (1.0 - lo)
+        if gap(hi) < 0.0:
+            return total * hi, total * (1.0 - hi)
+        for _ in range(40):
+            mid = 0.5 * (lo + hi)
+            if gap(mid) < 0.0:
+                lo = mid
+            else:
+                hi = mid
+        share = 0.5 * (lo + hi)
+        return total * share, total * (1.0 - share)
+
     def predict_markets(
-        self, league: str, home: str, away: str, match_date: Any = None
+        self,
+        league: str,
+        home: str,
+        away: str,
+        match_date: Any = None,
+        market_odds: Any = None,
     ) -> dict[str, object]:
-        """Derive every score and 1X2 market from one Bivariate Dixon-Coles-adjusted grid."""
-        grid = self.predict_score_grid(league, home, away, match_date=match_date)
+        """Derive every score and 1X2 market from one Bivariate Dixon-Coles-adjusted grid.
+
+        When pre-match 1X2 ``market_odds`` are given, the grid is anchored to them
+        (see ``anchor_to_market``); otherwise it is the model's own estimate.
+        """
+        lam_h, lam_a = self.expected_goals(league, home, away, match_date=match_date)
+        model_grid = self.grid_from_lambdas(lam_h, lam_a)
+        model_p = self.outcome_probabilities(model_grid)
+        market_p = self.implied_probabilities(market_odds) if market_odds is not None else None
+        if market_p is not None:
+            grid = self.grid_from_lambdas(*self.anchor_to_market(lam_h, lam_a, market_p[0], market_p[2]))
+        else:
+            grid = model_grid
         p_home, p_draw, p_away = self.outcome_probabilities(grid)
         home_goals = np.arange(grid.shape[0], dtype=float)
         away_goals = np.arange(grid.shape[1], dtype=float)
@@ -321,6 +385,8 @@ class OnlinePoissonModel:
             top_scores.append({"score": f"{h}-{a}", "probability": float(grid[h, a])})
         return {
             "p": (p_home, p_draw, p_away),
+            "model_p": model_p,
+            "anchored": market_p is not None,
             "grid": grid,
             "margin": self.margin_breakdown(grid),
             "goals": {

@@ -99,6 +99,28 @@ def resolve_odds_columns(df: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Ser
     return odds_h, odds_d, odds_a, source
 
 
+def resolve_pre_match_odds_columns(df: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
+    """Pre-match 1X2 prices only (PS -> B365 -> Avg), never closing prices.
+
+    These are what was knowable before kick-off, so the backtest can anchor to them
+    exactly as the live pipeline anchors to The Odds API prices.
+    """
+    odds_h = pd.Series(np.nan, index=df.index, dtype=float)
+    odds_d = pd.Series(np.nan, index=df.index, dtype=float)
+    odds_a = pd.Series(np.nan, index=df.index, dtype=float)
+    for col_h, col_d, col_a in (("PSH", "PSD", "PSA"), ("B365H", "B365D", "B365A"), ("AvgH", "AvgD", "AvgA")):
+        if not all(column in df.columns for column in (col_h, col_d, col_a)):
+            continue
+        cand_h = pd.to_numeric(df[col_h], errors="coerce")
+        cand_d = pd.to_numeric(df[col_d], errors="coerce")
+        cand_a = pd.to_numeric(df[col_a], errors="coerce")
+        valid = odds_h.isna() & cand_h.gt(1.0) & cand_d.gt(1.0) & cand_a.gt(1.0)
+        odds_h = odds_h.where(~valid, cand_h)
+        odds_d = odds_d.where(~valid, cand_d)
+        odds_a = odds_a.where(~valid, cand_a)
+    return odds_h, odds_d, odds_a
+
+
 def resolve_closing_odds_columns(df: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
     """Resolve explicitly closing 1X2 prices; never substitute opening prices."""
     n = len(df)
@@ -173,6 +195,7 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     odds_h, odds_d, odds_a, odds_src = resolve_odds_columns(work)
     closing_h, closing_d, closing_a, closing_src = resolve_closing_odds_columns(work)
+    pre_h, pre_d, pre_a = resolve_pre_match_odds_columns(work)
     over25, under25, ou_src = resolve_over_under_odds(work)
     work["OddsH"] = odds_h
     work["OddsD"] = odds_d
@@ -182,6 +205,9 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     work["OddsCloseD"] = closing_d
     work["OddsCloseA"] = closing_a
     work["OddsCloseSource"] = closing_src
+    work["OddsPreH"] = pre_h
+    work["OddsPreD"] = pre_d
+    work["OddsPreA"] = pre_a
     work["OddsOver25"] = over25
     work["OddsUnder25"] = under25
     work["OddsOverUnderSource"] = ou_src
@@ -248,6 +274,9 @@ def clean_and_normalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         "OddsCloseD",
         "OddsCloseA",
         "OddsCloseSource",
+        "OddsPreH",
+        "OddsPreD",
+        "OddsPreA",
         "HS",
         "AS",
         "HST",

@@ -174,7 +174,9 @@ def run_walk_forward_backtest(
 
         # 1. Predict BEFORE observing result
         match_date = getattr(row, "Date", None)
-        market_prediction = model.predict_markets(league, home, away, match_date=match_date)
+        # Anchor to pre-match (never closing) odds, exactly as the live pipeline does.
+        pre_odds = (getattr(row, "OddsPreH", np.nan), getattr(row, "OddsPreD", np.nan), getattr(row, "OddsPreA", np.nan))
+        market_prediction = model.predict_markets(league, home, away, match_date=match_date, market_odds=pre_odds)
         p_model = market_prediction["p"]
         goals_prediction = market_prediction["goals"]
         p_book = remove_bookmaker_margin(*odds_tuple) if odds_tuple else None

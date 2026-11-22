@@ -33,7 +33,7 @@ from model.timing_windows import MinuteWindowTimingModel, load_cached_goal_event
 from model.timing_backfill import run_timing_backfill
 
 SCHEMA_VERSION = "2.0"
-MODEL_VERSION = "bivariate-dc-xg-elo-v3.0"
+MODEL_VERSION = "bivariate-dc-xg-elo-v3.1-odds-anchor"
 LAST_API_FOOTBALL_REMAINING: int | None = None
 COMPETITION_TO_LEAGUE = {"PL": "E0", "BL1": "D1", "SA": "I1", "PD": "SP1",
                          "E0": "E0", "D1": "D1", "I1": "I1", "SP1": "SP1"}
@@ -279,8 +279,13 @@ def build_picks_payload(
         kickoff_iso = fixture.kickoff.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         match_id = fixture.id
 
+        reference = reference_odds.get(match_id)
+        ref_odds = reference.get("odds") if reference else None
+        ref_source = reference.get("source") if reference else None
+        # With live bookmaker odds, the prediction is anchored to them (see
+        # OnlinePoissonModel.anchor_to_market); without, it is model-only.
         market_prediction = trained_model.predict_markets(
-            div, home, away, match_date=fixture.kickoff
+            div, home, away, match_date=fixture.kickoff, market_odds=ref_odds
         )
         p_h, p_d, p_a = market_prediction["p"]
         goals_raw = market_prediction["goals"]
@@ -403,10 +408,6 @@ def build_picks_payload(
             round(1.0 / max(0.01, p_tuple[1]), 2),
             round(1.0 / max(0.01, p_tuple[2]), 2),
         ]
-        reference = reference_odds.get(match_id)
-        ref_odds = reference.get("odds") if reference else None
-        ref_source = reference.get("source") if reference else None
-
         home_summary = trained_model.get_team_summary(home)
         away_summary = trained_model.get_team_summary(away)
 
@@ -421,6 +422,7 @@ def build_picks_payload(
             "fair_odds": fair_odds,
             "odds": ref_odds,
             "reference_source": ref_source,
+            "anchored_to_odds": bool(market_prediction.get("anchored")),
             "featured": i == featured_idx and not low_confidence,
             "low_confidence": low_confidence,
             "goals": goals_payload,
@@ -516,6 +518,37 @@ def write_status_file(
         "message": message,
     }
     status_path.write_text(json.dumps(status_payload, indent=2), encoding="utf-8")
+
+
+def fit_payload_to_budget(payload: dict, limit_bytes: int) -> tuple[str, int]:
+    """Serialise compactly, trimming until the file fits the mobile-data size cap.
+
+    First shortens ``recent_comparisons`` to the newest 10, then drops the match with the
+    latest kick-off (never the featured one while others remain) until it fits. Returns the
+    JSON text and how many matches were dropped. Mutates ``payload``.
+    """
+    def dump() -> str:
+        return json.dumps(payload, separators=(",", ":"), allow_nan=False)
+
+    def size(text: str) -> int:
+        return len(text.encode("utf-8"))
+
+    serialized = dump()
+    if size(serialized) <= limit_bytes:
+        return serialized, 0
+    comparisons = payload.get("recent_comparisons")
+    if isinstance(comparisons, list) and len(comparisons) > 10:
+        payload["recent_comparisons"] = comparisons[:10]
+        serialized = dump()
+    dropped = 0
+    matches = payload.get("matches", [])
+    while size(serialized) > limit_bytes and len(matches) > 1:
+        candidates = [i for i, m in enumerate(matches) if not m.get("featured")] or list(range(len(matches)))
+        latest = max(candidates, key=lambda i: str(matches[i].get("date", "")))
+        matches.pop(latest)
+        dropped += 1
+        serialized = dump()
+    return serialized, dropped
 
 
 def run_daily_pipeline(
@@ -636,8 +669,12 @@ def run_daily_pipeline(
         history_entries = history.build_entries(dataset)
         payload["recent_comparisons"] = history.app_comparisons(history_entries)
 
-        # Compact UTF-8 JSON keeps downloads economical on mobile data.
-        serialized = json.dumps(payload, separators=(",", ":"), allow_nan=False)
+        # Compact UTF-8 JSON keeps downloads economical on mobile data. Every prediction is
+        # already saved in the dataset above; the app file keeps the soonest ones that fit.
+        serialized, dropped = fit_payload_to_budget(payload, config.MAX_PICKS_JSON_BYTES)
+        if dropped:
+            print(f"picks.json size cap: left out {dropped} later match(es); they are still in the dataset.",
+                  flush=True)
         byte_len = len(serialized.encode("utf-8"))
         if byte_len > config.MAX_PICKS_JSON_BYTES:
             raise ValueError(
