@@ -2,8 +2,35 @@
 
 from pathlib import Path
 import os
+import sys
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _load_dotenv_early(path: Path) -> None:
+    """Read .env before the settings below are evaluated, so values such as
+    ALLOW_FOOTBALL_DATA_DOWNLOADS work from .env (e.g. in the Windows scheduled task),
+    not only when set in the shell. Real environment variables always win.
+    Skipped under pytest so a developer's .env can't change test behaviour."""
+    if "pytest" in sys.modules:
+        return
+    try:
+        lines = path.read_text(encoding="utf-8-sig").splitlines()
+    except OSError:
+        return
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        key, value = key.strip(), value.strip()
+        if value[:1] in {"'", '"'} and value[-1:] == value[:1]:
+            value = value[1:-1]
+        if key:
+            os.environ.setdefault(key, value)
+
+
+_load_dotenv_early(REPO_ROOT / ".env")
 MODEL_DIR = REPO_ROOT / "model"
 RAW_DATA_DIR = MODEL_DIR / "data" / "raw"
 SITE_DIR = REPO_ROOT / "site"
@@ -179,6 +206,40 @@ TEAM_ALIASES.update({
     "Valladolid": "Valladolid", "Real Valladolid CF": "Valladolid",
     "Levante": "Levante", "Levante UD": "Levante",
     "Eibar": "Eibar", "SD Eibar": "Eibar",
+    # Added 2026-11-22 from team_names_review.json: football-data.org v4 and
+    # The Odds API spellings for clubs in the current E0/SP1/I1/D1 seasons.
+    # Premier League
+    "Coventry": "Coventry", "Coventry City": "Coventry", "Coventry City FC": "Coventry",
+    "Hull": "Hull", "Hull City": "Hull", "Hull City AFC": "Hull",
+    "Ipswich Town": "Ipswich", "Leeds United": "Leeds",
+    "Nottingham Forest": "Nottingham Forest", "Sunderland AFC": "Sunderland",
+    # La Liga
+    "Club Atlético de Madrid": "Atlético Madrid", "Atletico Madrid": "Atlético Madrid",
+    "Athletic Club": "Athletic Club", "Athletic Bilbao": "Athletic Club",
+    "Deportivo Alavés": "Alavés", "Alavés": "Alavés",
+    "Elche": "Elche", "Elche CF": "Elche",
+    "Espanyol": "Espanyol", "RCD Espanyol de Barcelona": "Espanyol",
+    "Malaga": "Malaga", "Málaga": "Malaga", "Málaga CF": "Malaga",
+    "Rayo Vallecano": "Rayo Vallecano", "Rayo Vallecano de Madrid": "Rayo Vallecano",
+    "Santander": "Santander", "Racing Santander": "Santander",
+    "Real Racing Club de Santander": "Santander", "Racing de Santander": "Santander",
+    "La Coruna": "La Coruna", "RC Deportivo La Coruña": "La Coruna",
+    "Deportivo La Coruña": "La Coruna", "Deportivo La Coruna": "La Coruna",
+    "Oviedo": "Oviedo", "Real Oviedo": "Oviedo", "Huesca": "Huesca", "SD Huesca": "Huesca",
+    "Celta Vigo": "Celta", "CA Osasuna": "Osasuna", "Levante UD": "Levante",
+    # Serie A
+    "Inter Milan": "Inter", "Hellas Verona": "Hellas Verona", "Hellas Verona FC": "Hellas Verona",
+    "Cremonese": "Cremonese", "US Cremonese": "Cremonese",
+    "Pisa": "Pisa", "AC Pisa 1909": "Pisa", "Pisa SC": "Pisa",
+    # Bundesliga
+    "TSG 1899 Hoffenheim": "Hoffenheim", "Köln": "Köln", "1. FC Köln": "Köln", "FC Köln": "Köln",
+    "Mainz 05": "Mainz 05", "1. FSV Mainz 05": "Mainz 05", "FSV Mainz 05": "Mainz 05",
+    "Gladbach": "Gladbach", "Borussia Mönchengladbach": "Gladbach", "Borussia Monchengladbach": "Gladbach",
+    "Schalke 04": "Schalke 04", "FC Schalke 04": "Schalke 04",
+    "Hamburg": "Hamburg", "Hamburger SV": "Hamburg", "Hamburg SV": "Hamburg",
+    "Paderborn": "Paderborn", "SC Paderborn 07": "Paderborn", "SC Paderborn": "Paderborn",
+    "Elversberg": "Elversberg", "SV 07 Elversberg": "Elversberg", "SV Elversberg": "Elversberg",
+    "1. FC Heidenheim": "Heidenheim", "Freiburg": "Freiburg", "Stuttgart": "Stuttgart", "Wolfsburg": "Wolfsburg",
 })
 
 ALLOW_FOOTBALL_DATA_DOWNLOADS = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"
