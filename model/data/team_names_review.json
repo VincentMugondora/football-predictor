@@ -12,12 +12,120 @@
     "name": "Huesca"
   },
   {
+    "provider": "The Odds API",
+    "name": "Leeds United",
+    "suggestions": [
+      "Leeds",
+      "Sunderland",
+      "Man Utd"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "RC Deportivo La Coru\u00f1a",
+    "suggestions": [
+      "La Coruna",
+      "Fortuna Dusseldorf",
+      "Werder Bremen"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "RCD Espanyol de Barcelona",
+    "suggestions": [
+      "Barcelona",
+      "Espanyol",
+      "Werder Bremen"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "TSG 1899 Hoffenheim",
+    "suggestions": [
+      "Hoffenheim",
+      "Heidenheim",
+      "Tottenham"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "1. FC K\u00f6ln",
+    "suggestions": [
+      "K\u00f6ln",
+      "La Coruna",
+      "Barcelona"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "1. FSV Mainz 05",
+    "suggestions": [
+      "Mainz 05",
+      "Man Utd",
+      "Frosinone"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Borussia M\u00f6nchengladbach",
+    "suggestions": [
+      "Gladbach",
+      "Granada",
+      "Fortuna Dusseldorf"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Club Atl\u00e9tico de Madrid",
+    "suggestions": [
+      "Atl\u00e9tico Madrid",
+      "Real Madrid",
+      "Crystal Palace"
+    ]
+  },
+  {
     "provider": "football-data.org v4",
     "name": "Coventry City FC",
     "suggestions": [
+      "Coventry",
       "Man City",
-      "Eintracht Frankfurt",
-      "Valencia"
+      "Eintracht Frankfurt"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Deportivo Alav\u00e9s",
+    "suggestions": [
+      "Alav\u00e9s",
+      "Sampdoria",
+      "Rayo Vallecano"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Elche CF",
+    "suggestions": [
+      "Elche",
+      "Bielefeld",
+      "Lecce"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "FC Schalke 04",
+    "suggestions": [
+      "Schalke 04",
+      "Crystal Palace",
+      "Newcastle"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Hamburger SV",
+    "suggestions": [
+      "Hamburg",
+      "Augsburg",
+      "Burnley"
     ]
   },
   {
@@ -25,8 +133,62 @@
     "name": "Hull City AFC",
     "suggestions": [
       "Man City",
+      "Hull",
+      "Huesca"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "M\u00e1laga CF",
+    "suggestions": [
+      "Malaga",
+      "Man City",
+      "Gladbach"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Rayo Vallecano de Madrid",
+    "suggestions": [
+      "Rayo Vallecano",
+      "Real Madrid",
+      "Valladolid"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "Real Racing Club de Santander",
+    "suggestions": [
       "Real Sociedad",
-      "Hellas Verona"
+      "Santander",
+      "Real Madrid"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "SC Paderborn 07",
+    "suggestions": [
+      "Paderborn",
+      "Schalke 04",
+      "Werder Bremen"
+    ]
+  },
+  {
+    "provider": "football-data.org v4",
+    "name": "SV 07 Elversberg",
+    "suggestions": [
+      "Elversberg",
+      "Bayer Leverkusen",
+      "Wolfsburg"
+    ]
+  },
+  {
+    "provider": "The Odds API",
+    "name": "Inter Milan",
+    "suggestions": [
+      "Milan",
+      "Inter",
+      "Eintracht Frankfurt"
     ]
   },
   {
@@ -34,17 +196,17 @@
     "name": "Ipswich Town",
     "suggestions": [
       "Ipswich",
-      "Brighton",
-      "Aston Villa"
+      "Aston Villa",
+      "Torino"
     ]
   },
   {
     "provider": "The Odds API",
-    "name": "Leeds United",
+    "name": "SC Paderborn",
     "suggestions": [
-      "Leeds",
-      "Sunderland",
-      "Man Utd"
+      "Paderborn",
+      "Werder Bremen",
+      "Santander"
     ]
   }
 ]
