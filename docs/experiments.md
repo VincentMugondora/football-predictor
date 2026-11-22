@@ -33,3 +33,23 @@ Production backtest (`run_walk_forward_backtest`, last 40% = 4,213 matches, comp
 | All | 4,213 | 0.9809 -> 0.9662 (closing book 0.9642; gap 0.0167 -> 0.0020) | 52.8% -> 54.2% |
 
 Holds in all four leagues (rule: at least two, by at least 0.001). Brier 0.5845 -> 0.5747. Verdict stays "no proven edge": the anchored model tracks the market, so it is not a source of value bets. Matches without live odds fall back to the model alone (unchanged).
+
+## 2026-11-22: which odds to anchor to (round 2)
+
+Same walk-forward model, anchored to different pre-match prices, on the 2,191 tune/holdout matches where every source had a price. Log loss, lower is better.
+
+| Odds source | Tune LL | Holdout LL | Winner right |
+| :--- | :--- | :--- | :--- |
+| Betfair Exchange (BFE) | 0.9642 | **0.9631** | 53.9% |
+| Mean of Pinnacle + Betfair Exchange | 0.9643 | 0.9637 | 54.0% |
+| Pinnacle (PS) | 0.9646 | 0.9645 | 53.9% |
+| Market average (Avg) | 0.9650 | 0.9645 | 53.9% |
+| Bet365 (single high-street book) | 0.9655 | 0.9649 | 53.8% |
+| Median of high-street books | 0.9654 | 0.9650 | 53.9% |
+| Closing prices (Pinnacle, reference) | 0.9623 | 0.9658 | 54.5% |
+
+Decision: live odds now use the average of the sharp books The Odds API returns (Pinnacle, Betfair Exchange, Smarkets, Matchbook), falling back to the median of all books. Previously the first-listed book was used, usually a high-street book with a 5-8% margin.
+
+Odds closer to kick-off: closing prices beat pre-match on tune (0.9623 vs 0.9646) but not on holdout (0.9658 vs 0.9645), so the gain is uncertain. Odds are now refreshed when a match is within 24 hours and the saved prices are over 3 hours old (previously once per day), with extra runs at 12:30 and 16:30. Low cost; also stops morning prices being used for evening matches.
+
+Line-ups and injuries: not added. API-Football's free plan does not cover the current season on this key, and its /injuries endpoint keeps no history, so the effect cannot be backtested. Late odds already include team news.
