@@ -15,9 +15,15 @@ $Action = New-ScheduledTaskAction `
     -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$DailyScript`"" `
     -WorkingDirectory $RepoRoot
 
-# Run twice daily: 08:00 AM (pre-match predictions) and 11:30 PM (refresh with the day's results)
-$TriggerMorning = New-ScheduledTaskTrigger -Daily -At "08:00AM"
-$TriggerEvening = New-ScheduledTaskTrigger -Daily -At "11:30PM"
+# 08:00 morning predictions; 12:30 and 16:30 refresh odds before afternoon and evening
+# kick-offs (team news is in the prices by then); 23:30 adds the day's results.
+# Odds are only re-fetched for leagues with a match in the next 24 hours (ODDS_REFRESH_HOURS).
+$Triggers = @(
+    (New-ScheduledTaskTrigger -Daily -At "08:00AM"),
+    (New-ScheduledTaskTrigger -Daily -At "12:30PM"),
+    (New-ScheduledTaskTrigger -Daily -At "04:30PM"),
+    (New-ScheduledTaskTrigger -Daily -At "11:30PM")
+)
 
 # If the computer was off or asleep at a run time, run as soon as it is back on.
 $Settings = New-ScheduledTaskSettingsSet `
@@ -29,10 +35,10 @@ $Settings = New-ScheduledTaskSettingsSet `
 Register-ScheduledTask `
     -TaskName $TaskName `
     -Action $Action `
-    -Trigger @($TriggerMorning, $TriggerEvening) `
+    -Trigger $Triggers `
     -Settings $Settings `
     -Description "Makes pre-match predictions and records results, then publishes site/picks.json to GitHub for the app." `
     -Force
 
-Write-Host "Registered Windows Scheduled Task '$TaskName' (runs daily at 08:00 AM and 11:30 PM, and catches up after the computer was off)."
+Write-Host "Registered Windows Scheduled Task '$TaskName' (runs daily at 08:00, 12:30, 16:30 and 23:30, and catches up after the computer was off)."
 Write-Host "Log file: $(Join-Path $RepoRoot 'logs\daily_run.log')"
