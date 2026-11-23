@@ -11,18 +11,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   4.846,
-   4.535,
-   1.745
+   4.918,
+   4.505,
+   1.74
   ],
   "p": [
-   0.2011,
-   0.231,
-   0.5679
+   0.1992,
+   0.2303,
+   0.5705
   ],
   "p_score": 0.094,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "558511": {
@@ -37,18 +37,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.164,
-   3.753,
-   3.685
+   2.169,
+   3.694,
+   3.728
   ],
   "p": [
-   0.4536,
-   0.2836,
-   0.2628
+   0.4547,
+   0.2834,
+   0.2619
   ],
   "p_score": 0.093,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "558512": {
@@ -63,18 +63,18 @@
   "margin": 2,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.246,
-   7.962,
-   13.952
+   1.241,
+   8.094,
+   14.111
   ],
   "p": [
-   0.8055,
-   0.1201,
-   0.0744
+   0.8079,
+   0.119,
+   0.0731
   ],
   "p_score": 0.078,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "3-1"
  },
  "558513": {
@@ -89,18 +89,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.549,
-   5.152,
-   6.236
+   1.552,
+   5.107,
+   6.25
   ],
   "p": [
-   0.6423,
-   0.2006,
-   0.1571
+   0.6418,
+   0.2008,
+   0.1574
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "558514": {
@@ -115,18 +115,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   3.732,
-   3.646,
-   2.184
+   3.704,
+   3.653,
+   2.192
   ],
   "p": [
-   0.2669,
-   0.2763,
-   0.4568
+   0.2685,
+   0.2767,
+   0.4548
   ],
   "p_score": 0.092,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "558515": {
@@ -141,18 +141,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   3.648,
-   3.497,
-   2.273
+   3.634,
+   3.483,
+   2.285
   ],
   "p": [
-   0.2717,
-   0.2908,
-   0.4375
+   0.2732,
+   0.2911,
+   0.4357
   ],
-  "p_score": 0.092,
+  "p_score": 0.091,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "558517": {
@@ -167,18 +167,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   3.405,
-   3.801,
-   2.256
+   3.421,
+   3.797,
+   2.251
   ],
   "p": [
-   0.2944,
-   0.2617,
-   0.4439
+   0.2933,
+   0.2615,
+   0.4452
   ],
   "p_score": 0.087,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "558518": {
@@ -193,18 +193,18 @@
   "margin": 2,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.359,
-   5.894,
-   10.557
+   1.362,
+   5.838,
+   10.578
   ],
   "p": [
-   0.737,
-   0.1669,
-   0.0961
+   0.7362,
+   0.1673,
+   0.0965
   ],
   "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-0"
  },
  "558519": {
@@ -219,18 +219,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   4.028,
-   3.844,
-   2.034
+   4.033,
+   3.831,
+   2.037
   ],
   "p": [
-   0.2553,
+   0.2555,
    0.246,
-   0.4987
+   0.4985
   ],
   "p_score": 0.089,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "558520": {
@@ -427,18 +427,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.363,
-   3.625,
-   3.323
+   2.395,
+   3.573,
+   3.304
   ],
   "p": [
-   0.4118,
-   0.2986,
-   0.2896
+   0.4079,
+   0.2992,
+   0.2929
   ],
   "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "560652": {
@@ -453,18 +453,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.579,
-   4.633,
-   6.627
+   1.565,
+   4.644,
+   6.865
   ],
   "p": [
-   0.6242,
-   0.234,
-   0.1418
+   0.6309,
+   0.2315,
+   0.1376
   ],
   "p_score": 0.099,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "560653": {
@@ -479,18 +479,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   3.718,
-   3.988,
-   2.082
+   3.792,
+   4.045,
+   2.045
   ],
   "p": [
-   0.2543,
-   0.28,
-   0.4657
+   0.2482,
+   0.2783,
+   0.4735
   ],
   "p_score": 0.094,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "560654": {
@@ -505,18 +505,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.037,
-   3.929,
-   3.929
+   2.081,
+   3.834,
+   3.867
   ],
   "p": [
-   0.4667,
-   0.303,
-   0.2303
+   0.4585,
+   0.305,
+   0.2365
   ],
-  "p_score": 0.101,
+  "p_score": 0.1,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-0"
  },
  "560655": {
@@ -531,18 +531,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.166,
-   3.874,
-   3.57
+   2.15,
+   3.869,
+   3.617
   ],
   "p": [
-   0.4594,
-   0.2628,
-   0.2778
+   0.4633,
+   0.2621,
+   0.2746
   ],
   "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "560656": {
@@ -557,18 +557,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   3.843,
-   3.911,
-   2.066
+   3.887,
+   3.921,
+   2.051
   ],
   "p": [
-   0.2482,
-   0.2797,
-   0.4721
+   0.2454,
+   0.2789,
+   0.4757
   ],
-  "p_score": 0.094,
+  "p_score": 0.095,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "560657": {
@@ -583,18 +583,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.805,
-   3.669,
-   2.696
+   2.836,
+   3.647,
+   2.68
   ],
   "p": [
-   0.3345,
-   0.3167,
-   0.3488
+   0.3315,
+   0.3165,
+   0.352
   ],
-  "p_score": 0.081,
+  "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "560658": {
@@ -609,18 +609,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.871,
-   3.598,
-   2.675
+   2.813,
+   3.567,
+   2.746
   ],
   "p": [
-   0.3407,
-   0.2932,
-   0.3661
+   0.3489,
+   0.2935,
+   0.3576
   ],
-  "p_score": 0.083,
+  "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "560659": {
@@ -635,18 +635,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.623,
-   4.737,
-   5.795
+   1.62,
+   4.765,
+   5.786
   ],
   "p": [
-   0.6081,
-   0.2274,
-   0.1645
+   0.6086,
+   0.2273,
+   0.1641
   ],
   "p_score": 0.098,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "560660": {
@@ -661,18 +661,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   3.658,
-   3.505,
-   2.266
+   3.685,
+   3.482,
+   2.265
   ],
   "p": [
-   0.2536,
-   0.3248,
-   0.4216
+   0.2526,
+   0.3246,
+   0.4228
   ],
   "p_score": 0.107,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "0-1"
  },
  "560661": {
@@ -687,18 +687,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.943,
-   3.989,
-   4.261
+   1.942,
+   4.025,
+   4.228
   ],
   "p": [
-   0.5008,
-   0.2783,
-   0.2209
+   0.4999,
+   0.2785,
+   0.2216
   ],
   "p_score": 0.096,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "564749": {
@@ -817,18 +817,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.264,
-   3.74,
-   3.437
+   2.255,
+   3.724,
+   3.473
   ],
   "p": [
-   0.4359,
-   0.279,
-   0.2851
+   0.4385,
+   0.2786,
+   0.2829
   ],
-  "p_score": 0.09,
+  "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "564758": {
@@ -843,18 +843,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.817,
-   3.64,
-   2.701
+   2.808,
+   3.647,
+   2.705
   ],
   "p": [
-   0.3392,
+   0.34,
    0.3063,
-   0.3545
+   0.3537
   ],
   "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "564759": {
@@ -869,23 +869,23 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   5.91,
-   4.748,
-   1.612
+   5.901,
+   4.775,
+   1.61
   ],
   "p": [
-   0.1542,
-   0.2406,
-   0.6052
+   0.1539,
+   0.2405,
+   0.6056
   ],
   "p_score": 0.099,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "564760": {
   "away": "Rayo Vallecano",
-  "confidence": "high",
+  "confidence": "medium",
   "date": "2026-11-28T13:00:00Z",
   "div": "SP1",
   "first_predicted_at": "2026-11-22T04:07:24Z",
@@ -895,18 +895,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.647,
-   4.551,
-   5.774
+   1.668,
+   4.457,
+   5.674
   ],
   "p": [
-   0.6043,
-   0.2253,
-   0.1704
+   0.5979,
+   0.2273,
+   0.1748
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "564761": {
@@ -921,18 +921,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.214,
-   3.376,
-   3.968
+   2.206,
+   3.396,
+   3.964
   ],
   "p": [
-   0.4441,
-   0.3114,
-   0.2445
+   0.4449,
+   0.3113,
+   0.2438
   ],
   "p_score": 0.101,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-0"
  },
  "564762": {
@@ -948,17 +948,17 @@
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
    1.189,
-   9.956,
-   17.103
+   9.926,
+   17.227
   ],
   "p": [
-   0.8278,
-   0.1269,
-   0.0453
+   0.8282,
+   0.1267,
+   0.0451
   ],
   "p_score": 0.121,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-0"
  },
  "564764": {
@@ -973,18 +973,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.23,
-   3.87,
-   3.41
+   2.198,
+   3.827,
+   3.523
   ],
   "p": [
-   0.4402,
-   0.2748,
-   0.285
+   0.4489,
+   0.2733,
+   0.2778
   ],
-  "p_score": 0.09,
+  "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "564765": {
@@ -999,18 +999,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.192,
-   4.081,
-   3.347
+   2.189,
+   4.075,
+   3.358
   ],
   "p": [
-   0.4546,
-   0.2483,
-   0.2971
+   0.4554,
+   0.2482,
+   0.2964
   ],
   "p_score": 0.084,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "564766": {
@@ -1025,18 +1025,18 @@
   "margin": 2,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   11.307,
-   7.743,
-   1.278
+   11.284,
+   7.727,
+   1.279
   ],
   "p": [
-   0.0766,
-   0.1528,
-   0.7706
+   0.0769,
+   0.153,
+   0.7701
   ],
   "p_score": 0.098,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "0-2"
  },
  "564767": {
@@ -1051,18 +1051,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   4.9,
-   3.838,
-   1.868
+   4.886,
+   3.827,
+   1.873
   ],
   "p": [
-   0.1891,
-   0.2906,
-   0.5203
+   0.1899,
+   0.291,
+   0.5191
   ],
   "p_score": 0.113,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "0-1"
  },
  "565863": {
@@ -1129,18 +1129,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.008,
-   4.28,
-   3.728
+   2.09,
+   4.125,
+   3.584
   ],
   "p": [
-   0.4768,
-   0.2761,
-   0.2471
+   0.4599,
+   0.2797,
+   0.2604
   ],
-  "p_score": 0.094,
+  "p_score": 0.093,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565867": {
@@ -1155,18 +1155,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.58,
-   4.769,
-   6.359
+   1.564,
+   4.918,
+   6.353
   ],
   "p": [
-   0.6294,
-   0.217,
-   0.1536
+   0.6331,
+   0.2157,
+   0.1512
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565868": {
@@ -1181,18 +1181,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.516,
-   3.612,
-   3.07
+   2.579,
+   3.642,
+   2.962
   ],
   "p": [
-   0.379,
-   0.3137,
-   0.3073
+   0.3677,
+   0.3147,
+   0.3176
   ],
-  "p_score": 0.085,
+  "p_score": 0.084,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565869": {
@@ -1207,18 +1207,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.849,
-   4.518,
-   4.207
+   1.823,
+   4.481,
+   4.378
   ],
   "p": [
-   0.5334,
-   0.2364,
-   0.2302
+   0.543,
+   0.234,
+   0.223
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565870": {
@@ -1233,18 +1233,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.808,
-   4.968,
-   4.071
+   1.804,
+   4.947,
+   4.106
   ],
   "p": [
-   0.5386,
-   0.2302,
-   0.2312
+   0.5405,
+   0.2297,
+   0.2298
   ],
   "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565871": {
@@ -1259,18 +1259,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   1.771,
-   4.872,
-   4.348
+   1.808,
+   4.905,
+   4.116
   ],
   "p": [
-   0.5555,
-   0.2237,
-   0.2208
+   0.5415,
+   0.2272,
+   0.2313
   ],
-  "p_score": 0.088,
+  "p_score": 0.087,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565872": {
@@ -1286,17 +1286,17 @@
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
    2.217,
-   4.216,
-   3.208
+   4.186,
+   3.226
   ],
   "p": [
-   0.4339,
-   0.2715,
-   0.2946
+   0.4349,
+   0.2713,
+   0.2938
   ],
   "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "2-1"
  },
  "565873": {
@@ -1311,18 +1311,18 @@
   "margin": 1,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   2.744,
-   4.147,
-   2.535
+   2.841,
+   4.076,
+   2.483
   ],
   "p": [
-   0.3548,
-   0.2604,
-   0.3848
+   0.3447,
+   0.2598,
+   0.3955
   ],
-  "p_score": 0.079,
+  "p_score": 0.08,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-2"
  },
  "565874": {
@@ -1337,18 +1337,18 @@
   "margin": 2,
   "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
   "odds": [
-   10.13,
-   8.643,
-   1.273
+   10.621,
+   8.699,
+   1.264
   ],
   "p": [
-   0.0852,
-   0.1428,
-   0.772
+   0.0816,
+   0.1401,
+   0.7783
   ],
   "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-23T10:38:27Z",
+  "predicted_at": "2026-11-23T15:12:12Z",
   "score": "1-3"
  }
 }
