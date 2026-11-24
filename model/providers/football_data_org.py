@@ -22,7 +22,7 @@ from model.providers.teams import canonical_team
 
 class FootballDataOrgProvider(FixtureProvider):
     BASE_URL = "https://api.football-data.org/v4"
-    COMPETITIONS = {"E0": "PL", "D1": "BL1", "I1": "SA", "SP1": "PD"}
+    COMPETITIONS = dict(config.LEAGUE_FD_ORG_CODES)
 
     def __init__(self, token: str | None = None, cache_dir: Path | None = None) -> None:
         self.token = token if token is not None else os.getenv("FOOTBALL_DATA_TOKEN", "")
@@ -75,11 +75,18 @@ class FootballDataOrgProvider(FixtureProvider):
 
     def _matches(self, start: datetime, end: datetime, status: str | None = None) -> list[dict[str, Any]]:
         items: list[dict[str, Any]] = []
+        failures: list[str] = []
         for competition in self.COMPETITIONS.values():
             params = {"dateFrom": start.date().isoformat(), "dateTo": end.date().isoformat(), "limit": "500"}
             if status:
                 params["status"] = status
-            payload = self._get(f"/competitions/{competition}/matches", params)
+            try:
+                payload = self._get(f"/competitions/{competition}/matches", params)
+            except RuntimeError as exc:
+                # One league failing (e.g. not on this plan) must not stop the others.
+                print(f"WARNING: football-data.org {competition} skipped: {exc}", flush=True)
+                failures.append(competition)
+                continue
             matches = payload.get("matches")
             if not isinstance(matches, list):
                 raise ValueError("football-data.org matches field must be a list")
@@ -87,6 +94,8 @@ class FootballDataOrgProvider(FixtureProvider):
                 if not isinstance(match, dict):
                     raise ValueError("football-data.org match row must be an object")
                 items.append(match)
+        if failures and len(failures) == len(self.COMPETITIONS):
+            raise RuntimeError(f"football-data.org request failed for every competition: {', '.join(failures)}")
         return items
 
     def get_fixtures(self, start: datetime, end: datetime) -> list[Fixture]:

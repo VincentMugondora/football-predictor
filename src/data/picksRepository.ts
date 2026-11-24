@@ -12,7 +12,8 @@ import {
 const CACHE_KEY = 'football-predictor-live-picks-v1';
 const PICKS_URL = process.env.EXPO_PUBLIC_PICKS_URL;
 const REQUEST_TIMEOUT_MS = 12_000;
-const MAX_PICKS_BYTES = 50 * 1024;
+// Matches MAX_PICKS_JSON_BYTES in model/config.py.
+const MAX_PICKS_BYTES = 160 * 1024;
 
 export type PicksLoadErrorKind =
   | 'url_not_configured'
@@ -410,7 +411,7 @@ export class LivePicksRepository implements PicksRepository {
       if (utf8ByteLength(serialized) > MAX_PICKS_BYTES) {
         throw new PicksLoadError(
           'schema_validation_failed',
-          'The picks data failed validation at “payload_size” (over 50 KB).',
+          'The picks data failed validation at “payload_size” (over 160 KB).',
           requestedUrl,
           'payload_size'
         );

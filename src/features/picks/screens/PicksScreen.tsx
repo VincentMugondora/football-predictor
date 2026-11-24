@@ -18,11 +18,7 @@ import { ScreenContainer } from '@/components/ScreenContainer';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import { FeaturedMatchCard } from '@/features/picks/components/FeaturedMatchCard';
 import { MatchPickCard } from '@/features/picks/components/MatchPickCard';
-import {
-  LEAGUE_FILTERS,
-  MatchListItem,
-  usePicksScreen,
-} from '@/features/picks/hooks/usePicksScreen';
+import { MatchListItem, usePicksScreen } from '@/features/picks/hooks/usePicksScreen';
 import { DAY_FILTER_LABELS, DayFilter } from '@/lib/dateUtils';
 import { AppTheme, useAppTheme } from '@/theme/useAppTheme';
 
@@ -57,6 +53,7 @@ export function PicksScreen() {
     handlePressMatch,
     handleLogOutcome,
     reload,
+    leagueFilters,
   } = usePicksScreen();
 
   const keyExtractor = useCallback((item: MatchListItem) => item.id, []);
@@ -123,7 +120,7 @@ export function PicksScreen() {
           />
         ) : null}
         <FilterChipsRow
-          options={LEAGUE_FILTERS}
+          options={leagueFilters}
           selected={selectedLeague}
           onSelect={setSelectedLeague}
         />

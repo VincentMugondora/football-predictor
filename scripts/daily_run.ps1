@@ -35,6 +35,20 @@ if ((Test-Path $LogFile) -and ((Get-Item $LogFile).Length -gt 500KB)) {
     Set-Content -Path $LogFile -Value $tail
 }
 
+# Only one run at a time: a second run (e.g. started by hand while the scheduled one is
+# going) would clash on the same files and on the git push. The mutex is released when
+# this process exits, even if it crashes.
+$mutex = New-Object System.Threading.Mutex($false, "Local\MatchSenseDailyRun")
+try {
+    $acquired = $mutex.WaitOne(0)
+} catch [System.Threading.AbandonedMutexException] {
+    $acquired = $true  # a previous run crashed without releasing it; we own it now
+}
+if (-not $acquired) {
+    Write-Log "Another daily run is already in progress; skipping this one."
+    exit 0
+}
+
 Write-Log "=== Daily run started"
 
 # 1. Make predictions

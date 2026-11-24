@@ -601,11 +601,15 @@ def test_odds_refresh_rules():
     from model.providers.the_odds_api import needs_refresh
 
     now = datetime(2026, 11, 22, 10, 0, tzinfo=timezone.utc)
-    soon = [now + timedelta(hours=5)]
+    soon = [now + timedelta(hours=5)]       # within 6 h
+    tomorrow = [now + timedelta(hours=20)]  # within 30 h
     later = [now + timedelta(days=4)]
     assert needs_refresh(None, soon, now, 3) is True
     assert needs_refresh(now - timedelta(hours=1), soon, now, 3) is False
     assert needs_refresh(now - timedelta(hours=4), soon, now, 3) is True
-    assert needs_refresh(now - timedelta(hours=10), later, now, 3) is False
-    assert needs_refresh(now - timedelta(hours=25), later, now, 3) is True
-    assert needs_refresh(now - timedelta(hours=30), [now - timedelta(hours=1)], now, 3) is False
+    assert needs_refresh(now - timedelta(hours=4), soon, now, 3, conserve=True) is False
+    assert needs_refresh(now - timedelta(hours=8), tomorrow, now, 3) is False
+    assert needs_refresh(now - timedelta(hours=21), tomorrow, now, 3) is True
+    assert needs_refresh(now - timedelta(hours=60), later, now, 3) is False
+    assert needs_refresh(now - timedelta(hours=97), later, now, 3) is True
+    assert needs_refresh(now - timedelta(hours=100), [now - timedelta(hours=1)], now, 3) is False

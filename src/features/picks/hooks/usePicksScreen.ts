@@ -11,14 +11,9 @@ import {
   isDataStale,
   matchesDayFilter,
 } from '@/lib/dateUtils';
+import { leagueFiltersFor } from '@/lib/leagues';
 
-export const LEAGUE_FILTERS = [
-  'All',
-  'Premier League',
-  'La Liga',
-  'Serie A',
-  'Bundesliga',
-] as const;
+export { LEAGUE_FILTERS } from '@/lib/leagues';
 
 export interface MatchListItem {
   id: string;
@@ -190,8 +185,11 @@ export function usePicksScreen() {
     });
   }, []);
 
+  const leagueFilters = useMemo(() => leagueFiltersFor(payload?.matches), [payload]);
+
   return {
     payload,
+    leagueFilters,
     isLoading,
     errorMessage,
     selectedLeague,

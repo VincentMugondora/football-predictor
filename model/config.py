@@ -41,16 +41,17 @@ PREDICTIONS_HISTORY_PATH = SITE_DIR / "predictions_history.json"
 STATUS_JSON_PATH = SITE_DIR / "status.json"
 BACKTEST_REPORT_PATH = SITE_DIR / "backtest_report.json"
 
-# Hard limit from Section 2 Rule 8: keep picks.json under 50 KB
-MAX_PICKS_JSON_BYTES = 50 * 1024
+# Size cap for picks.json (was 50 KB for 4 leagues; 8 leagues need more). GitHub serves
+# it compressed, so the download is roughly a fifth of this. The app checks the same cap.
+MAX_PICKS_JSON_BYTES = 160 * 1024
 
 # Seasons to load from football-data.co.uk; the last entry is the current season
 SEASONS: tuple[str, ...] = ("1920", "2021", "2122", "2223", "2324", "2425", "2526", "2627")
 MIN_HISTORY_SEASONS_PER_LEAGUE = int(os.getenv("MIN_HISTORY_SEASONS_PER_LEAGUE", "5"))
 
 # Leagues configured for football-data.co.uk CSV ingestion
-ACTIVE_LEAGUES: tuple[str, ...] = ("E0", "SP1", "I1", "D1")
-ALL_SUPPORTED_LEAGUES: tuple[str, ...] = ("E0", "E1", "SP1", "D1", "I1")
+ACTIVE_LEAGUES: tuple[str, ...] = ("E0", "SP1", "I1", "D1", "E1", "F1", "N1", "P1")
+ALL_SUPPORTED_LEAGUES: tuple[str, ...] = ACTIVE_LEAGUES
 
 LEAGUE_DISPLAY_NAMES: dict[str, str] = {
     "E0": "Premier League",
@@ -58,6 +59,27 @@ LEAGUE_DISPLAY_NAMES: dict[str, str] = {
     "SP1": "La Liga",
     "I1": "Serie A",
     "D1": "Bundesliga",
+    "F1": "Ligue 1",
+    "N1": "Eredivisie",
+    "P1": "Primeira Liga",
+}
+
+# football-data.org v4 competition codes (all on the free tier) per football-data.co.uk Div.
+LEAGUE_FD_ORG_CODES: dict[str, str] = {
+    "E0": "PL", "SP1": "PD", "I1": "SA", "D1": "BL1",
+    "E1": "ELC", "F1": "FL1", "N1": "DED", "P1": "PPL",
+}
+
+# The Odds API sport keys per football-data.org competition code.
+ODDS_SPORT_BY_COMPETITION: dict[str, str] = {
+    "PL": "soccer_epl",
+    "PD": "soccer_spain_la_liga",
+    "SA": "soccer_italy_serie_a",
+    "BL1": "soccer_germany_bundesliga",
+    "ELC": "soccer_efl_champ",
+    "FL1": "soccer_france_ligue_one",
+    "DED": "soccer_netherlands_eredivisie",
+    "PPL": "soccer_portugal_primeira_liga",
 }
 
 HISTORICAL_CSV_URL_TEMPLATE = (
@@ -240,10 +262,74 @@ TEAM_ALIASES.update({
     "Paderborn": "Paderborn", "SC Paderborn 07": "Paderborn", "SC Paderborn": "Paderborn",
     "Elversberg": "Elversberg", "SV 07 Elversberg": "Elversberg", "SV Elversberg": "Elversberg",
     "1. FC Heidenheim": "Heidenheim", "Freiburg": "Freiburg", "Stuttgart": "Stuttgart", "Wolfsburg": "Wolfsburg",
+    # Added 2026-11-24 for the Championship, Ligue 1, Eredivisie and Primeira Liga.
+    # Targets are football-data.co.uk CSV names. Championship names checked against the CSVs;
+    # the others are a first pass and get checked once their CSVs are downloaded.
+    # Championship
+    "Birmingham City": "Birmingham", "Birmingham City FC": "Birmingham",
+    "Blackburn Rovers": "Blackburn", "Blackburn Rovers FC": "Blackburn",
+    "Bolton Wanderers": "Bolton", "Bolton Wanderers FC": "Bolton",
+    "Bristol City FC": "Bristol City", "Burnley FC": "Burnley",
+    "Cardiff City": "Cardiff", "Cardiff City FC": "Cardiff",
+    "Charlton Athletic": "Charlton", "Charlton Athletic FC": "Charlton",
+    "Derby County": "Derby", "Derby County FC": "Derby",
+    "Ipswich Town FC": "Ipswich", "Leicester City": "Leicester", "Leicester City FC": "Leicester",
+    "Lincoln City": "Lincoln", "Lincoln City FC": "Lincoln",
+    "Middlesbrough FC": "Middlesbrough", "Millwall FC": "Millwall",
+    "Norwich City": "Norwich", "Norwich City FC": "Norwich",
+    "Oxford United": "Oxford", "Oxford United FC": "Oxford",
+    "Portsmouth FC": "Portsmouth",
+    "Preston North End": "Preston", "Preston North End FC": "Preston",
+    "Queens Park Rangers": "QPR", "Queens Park Rangers FC": "QPR",
+    "Sheffield United FC": "Sheffield United",
+    "Sheffield Wednesday": "Sheffield Weds", "Sheffield Wednesday FC": "Sheffield Weds",
+    "Southampton FC": "Southampton", "Stoke City": "Stoke", "Stoke City FC": "Stoke",
+    "Swansea City": "Swansea", "Swansea City AFC": "Swansea",
+    "Watford FC": "Watford", "West Bromwich Albion": "West Brom", "West Bromwich Albion FC": "West Brom",
+    "Wrexham AFC": "Wrexham", "Wrexham": "Wrexham",
+    # Ligue 1
+    "Paris Saint-Germain FC": "Paris SG", "Paris Saint Germain": "Paris SG", "Paris Saint-Germain": "Paris SG",
+    "Olympique de Marseille": "Marseille", "Olympique Lyonnais": "Lyon",
+    "AS Monaco FC": "Monaco", "AS Monaco": "Monaco", "Lille OSC": "Lille", "OGC Nice": "Nice",
+    "Stade Rennais FC 1901": "Rennes", "Racing Club de Lens": "Lens", "RC Lens": "Lens",
+    "FC Nantes": "Nantes", "RC Strasbourg Alsace": "Strasbourg", "Montpellier HSC": "Montpellier",
+    "Stade de Reims": "Reims", "Toulouse FC": "Toulouse", "Stade Brestois 29": "Brest",
+    "Le Havre AC": "Le Havre", "FC Lorient": "Lorient", "FC Metz": "Metz", "AJ Auxerre": "Auxerre",
+    "Angers SCO": "Angers", "AS Saint-Étienne": "St Etienne", "Saint Etienne": "St Etienne",
+    "Paris FC": "Paris FC",
+    # Eredivisie
+    "AFC Ajax": "Ajax", "PSV": "PSV Eindhoven", "Feyenoord Rotterdam": "Feyenoord",
+    "AZ": "AZ Alkmaar", "FC Twente '65": "Twente", "FC Twente": "Twente", "FC Utrecht": "Utrecht",
+    "SC Heerenveen": "Heerenveen", "FC Groningen": "Groningen", "Go Ahead Eagles": "Go Ahead Eagles",
+    "GA Eagles": "Go Ahead Eagles", "NEC": "Nijmegen", "NEC Nijmegen": "Nijmegen",
+    "Fortuna Sittard": "For Sittard", "Heracles Almelo": "Heracles", "PEC Zwolle": "Zwolle",
+    "Willem II Tilburg": "Willem II", "RKC Waalwijk": "Waalwijk", "Almere City FC": "Almere City",
+    "SBV Excelsior": "Excelsior", "FC Volendam": "Volendam", "SC Telstar": "Telstar",
+    # Primeira Liga
+    "Sport Lisboa e Benfica": "Benfica", "FC Porto": "Porto",
+    "Sporting Clube de Portugal": "Sp Lisbon", "Sporting Lisbon": "Sp Lisbon", "Sporting CP": "Sp Lisbon",
+    "Sporting Clube de Braga": "Sp Braga", "Braga": "Sp Braga", "SC Braga": "Sp Braga",
+    "Vitória SC": "Guimaraes", "Vitoria Guimaraes": "Guimaraes", "FC Famalicão": "Famalicao",
+    "Famalicao": "Famalicao", "Gil Vicente FC": "Gil Vicente", "Moreirense FC": "Moreirense",
+    "GD Estoril Praia": "Estoril", "Estoril": "Estoril", "FC Arouca": "Arouca", "Casa Pia AC": "Casa Pia",
+    "Rio Ave FC": "Rio Ave", "CD Santa Clara": "Santa Clara", "CD Nacional": "Nacional",
+    "CF Estrela da Amadora": "Estrela", "Estrela": "Estrela", "AVS Futebol SAD": "AVS",
+    "CD Tondela": "Tondela", "FC Alverca": "Alverca", "Boavista FC": "Boavista", "SC Farense": "Farense",
+    # Added after the first 8-league run (team_names_review.json, 2026-11-24).
+    "ADO Den Haag": "Den Haag", "Den Haag": "Den Haag",
+    "SC Cambuur-Leeuwarden": "Cambuur", "SC Cambuur": "Cambuur", "Cambuur": "Cambuur",
+    "Telstar 1963": "Telstar", "Telstar": "Telstar",
+    "FC Twente Enschede": "Twente", "FC Zwolle": "Zwolle",
+    "ES Troyes AC": "Troyes", "Troyes": "Troyes", "Le Mans FC": "Le Mans", "Le Mans": "Le Mans",
+    "Académico de Viseu FC": "Academico Viseu", "Academico de Viseu": "Academico Viseu",
+    "Académico de Viseu": "Academico Viseu", "CS Marítimo": "Maritimo", "Maritimo": "Maritimo",
+    "Marítimo": "Maritimo", "CF Estrela": "Estrela", "Famalicão": "Famalicao",
 })
 
 # Re-fetch odds when a match is within 24 hours and the saved prices are older than this.
 ODDS_REFRESH_HOURS = float(os.getenv("ODDS_REFRESH_HOURS", "3"))
+# Below this many credits left, skip the extra just-before-kick-off refreshes.
+ODDS_CONSERVE_BELOW = int(os.getenv("ODDS_CONSERVE_BELOW", "120"))
 
 ALLOW_FOOTBALL_DATA_DOWNLOADS = os.getenv("ALLOW_FOOTBALL_DATA_DOWNLOADS", "false").lower() == "true"
 

@@ -35,8 +35,8 @@ from model.timing_backfill import run_timing_backfill
 SCHEMA_VERSION = "2.0"
 MODEL_VERSION = "bivariate-dc-xg-elo-v3.1-odds-anchor"
 LAST_API_FOOTBALL_REMAINING: int | None = None
-COMPETITION_TO_LEAGUE = {"PL": "E0", "BL1": "D1", "SA": "I1", "PD": "SP1",
-                         "E0": "E0", "D1": "D1", "I1": "I1", "SP1": "SP1"}
+COMPETITION_TO_LEAGUE = {code: div for div, code in config.LEAGUE_FD_ORG_CODES.items()}
+COMPETITION_TO_LEAGUE.update({div: div for div in config.LEAGUE_FD_ORG_CODES})
 
 
 def _load_environment_file(path: Path = config.REPO_ROOT / ".env") -> None:
@@ -626,10 +626,7 @@ def run_daily_pipeline(
         credits_remaining = None
         credits_used = 0
         if os.getenv("THE_ODDS_API_KEY"):
-            odds_provider = TheOddsApiProvider(sport_by_competition={
-                "PL": "soccer_epl", "BL1": "soccer_germany_bundesliga",
-                "SA": "soccer_italy_serie_a", "PD": "soccer_spain_la_liga",
-            })
+            odds_provider = TheOddsApiProvider(sport_by_competition=dict(config.ODDS_SPORT_BY_COMPETITION))
             try:
                 min_credits = int(os.getenv("ODDS_MIN_CREDITS_REMAINING", "10"))
                 if len(fixtures) and len(fixtures) > 0:

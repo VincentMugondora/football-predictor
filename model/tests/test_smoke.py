@@ -17,8 +17,12 @@ def test_python_version_and_dependencies() -> None:
 
 
 def test_config_constants_and_paths() -> None:
-    assert config.MAX_PICKS_JSON_BYTES == 50 * 1024
+    assert config.MAX_PICKS_JSON_BYTES == 160 * 1024
     assert "E0" in config.ACTIVE_LEAGUES
+    for div in config.ACTIVE_LEAGUES:
+        assert div in config.LEAGUE_DISPLAY_NAMES
+        code = config.LEAGUE_FD_ORG_CODES[div]
+        assert code in config.ODDS_SPORT_BY_COMPETITION
     assert config.RAW_DATA_DIR.exists()
     assert config.SITE_DIR.exists()
     assert len(config.ODDS_SOURCE_PRIORITY) == 4

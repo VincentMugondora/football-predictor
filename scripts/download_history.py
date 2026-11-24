@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "model" / "data" / "raw"
 
 SEASONS = ("1920", "2021", "2122", "2223", "2324", "2425", "2526", "2627")
-LEAGUES = ("E0", "E1", "SP1", "I1", "D1")
+LEAGUES = ("E0", "E1", "SP1", "I1", "D1", "F1", "N1", "P1")
 URL = "https://www.football-data.co.uk/mmz4281/{season}/{league}.csv"
 FIXTURES_URL = "https://www.football-data.co.uk/fixtures.csv"
 USER_AGENT = "MatchSenseDataPipeline/1.0 (Offline-First Statistical Model)"
