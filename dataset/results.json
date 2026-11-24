@@ -1,4 +1,11 @@
 {
+ "558519": {
+  "away_goals": 0,
+  "home_goals": 3,
+  "id": "558519",
+  "settled_at": "2026-11-24T07:26:13Z",
+  "status": "final"
+ },
  "558520": {
   "away_goals": 4,
   "home_goals": 4,
@@ -48,6 +55,13 @@
   "settled_at": "2026-11-23T10:38:27Z",
   "status": "final"
  },
+ "560649": {
+  "away_goals": 0,
+  "home_goals": 4,
+  "id": "560649",
+  "settled_at": "2026-11-24T07:26:13Z",
+  "status": "final"
+ },
  "564749": {
   "away_goals": 2,
   "home_goals": 3,
@@ -74,6 +88,13 @@
   "home_goals": 0,
   "id": "564753",
   "settled_at": "2026-11-23T10:38:27Z",
+  "status": "final"
+ },
+ "564757": {
+  "away_goals": 1,
+  "home_goals": 1,
+  "id": "564757",
+  "settled_at": "2026-11-24T07:26:13Z",
   "status": "final"
  },
  "565863": {
