@@ -136,6 +136,7 @@ export function PicksScreen() {
     );
   }, [
     payload,
+    leagueFilters,
     styles,
     staleWarning,
     updatedLabel,
