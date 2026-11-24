@@ -16,13 +16,13 @@
    1.74
   ],
   "p": [
-   0.2018,
-   0.2251,
+   0.2017,
+   0.2252,
    0.5731
   ],
   "p_score": 0.092,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558510": {
@@ -42,13 +42,13 @@
    1.799
   ],
   "p": [
-   0.1993,
-   0.2399,
-   0.5608
+   0.1942,
+   0.25,
+   0.5558
   ],
-  "p_score": 0.096,
+  "p_score": 0.098,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558511": {
@@ -68,13 +68,13 @@
    3.728
   ],
   "p": [
-   0.4562,
-   0.2804,
-   0.2634
+   0.4537,
+   0.2854,
+   0.2609
   ],
   "p_score": 0.093,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "558512": {
@@ -94,13 +94,13 @@
    14.111
   ],
   "p": [
-   0.8035,
-   0.1278,
-   0.0687
+   0.8037,
+   0.1274,
+   0.0689
   ],
   "p_score": 0.082,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "3-1"
  },
  "558513": {
@@ -120,13 +120,13 @@
    6.25
   ],
   "p": [
-   0.6383,
-   0.2077,
-   0.154
+   0.6403,
+   0.2037,
+   0.156
   ],
-  "p_score": 0.094,
+  "p_score": 0.092,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "558514": {
@@ -146,13 +146,13 @@
    2.192
   ],
   "p": [
-   0.2713,
-   0.2712,
-   0.4575
+   0.2697,
+   0.2744,
+   0.4559
   ],
   "p_score": 0.092,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558515": {
@@ -172,13 +172,13 @@
    2.285
   ],
   "p": [
-   0.2731,
-   0.2914,
-   0.4355
+   0.2782,
+   0.2812,
+   0.4406
   ],
   "p_score": 0.091,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558516": {
@@ -198,13 +198,13 @@
    1.995
   ],
   "p": [
-   0.2524,
-   0.2481,
-   0.4995
+   0.2455,
+   0.262,
+   0.4925
   ],
-  "p_score": 0.09,
+  "p_score": 0.094,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558517": {
@@ -224,13 +224,13 @@
    2.251
   ],
   "p": [
-   0.2922,
-   0.2637,
-   0.4441
+   0.2927,
+   0.2626,
+   0.4447
   ],
   "p_score": 0.088,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558518": {
@@ -250,13 +250,13 @@
    10.578
   ],
   "p": [
-   0.7362,
-   0.1673,
-   0.0965
+   0.7341,
+   0.1714,
+   0.0945
   ],
-  "p_score": 0.09,
+  "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-0"
  },
  "558519": {
@@ -438,7 +438,7 @@
   ],
   "p_score": 0.07,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "558820": {
@@ -464,7 +464,7 @@
   ],
   "p_score": 0.075,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "558821": {
@@ -490,7 +490,7 @@
   ],
   "p_score": 0.085,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558822": {
@@ -516,7 +516,7 @@
   ],
   "p_score": 0.085,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558823": {
@@ -542,7 +542,7 @@
   ],
   "p_score": 0.087,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558824": {
@@ -568,7 +568,7 @@
   ],
   "p_score": 0.075,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "558825": {
@@ -594,7 +594,7 @@
   ],
   "p_score": 0.084,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "558826": {
@@ -620,7 +620,7 @@
   ],
   "p_score": 0.062,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "558827": {
@@ -646,7 +646,7 @@
   ],
   "p_score": 0.073,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "559612": {
@@ -666,13 +666,13 @@
    1.817
   ],
   "p": [
-   0.2051,
-   0.2515,
-   0.5434
+   0.2056,
+   0.2505,
+   0.5439
   ],
   "p_score": 0.097,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "559613": {
@@ -692,13 +692,13 @@
    2.403
   ],
   "p": [
-   0.3132,
-   0.2733,
-   0.4135
+   0.3125,
+   0.2747,
+   0.4128
   ],
-  "p_score": 0.086,
+  "p_score": 0.087,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "559614": {
@@ -718,13 +718,13 @@
    13.369
   ],
   "p": [
-   0.7808,
+   0.7807,
    0.1582,
-   0.061
+   0.0611
   ],
   "p_score": 0.13,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-0"
  },
  "559615": {
@@ -744,13 +744,13 @@
    3.168
   ],
   "p": [
-   0.3976,
-   0.2821,
-   0.3203
+   0.3972,
+   0.2828,
+   0.32
   ],
   "p_score": 0.086,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "559616": {
@@ -770,13 +770,13 @@
    2.291
   ],
   "p": [
-   0.2773,
-   0.2948,
-   0.4279
+   0.2786,
+   0.2922,
+   0.4292
   ],
   "p_score": 0.091,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "559617": {
@@ -796,13 +796,13 @@
    2.152
   ],
   "p": [
-   0.2416,
-   0.3003,
-   0.4581
+   0.2405,
+   0.3024,
+   0.4571
   ],
-  "p_score": 0.094,
+  "p_score": 0.096,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "0-1"
  },
  "559618": {
@@ -822,13 +822,13 @@
    2.726
   ],
   "p": [
-   0.3669,
-   0.2663,
-   0.3668
+   0.3673,
+   0.2654,
+   0.3673
   ],
   "p_score": 0.079,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "559619": {
@@ -848,13 +848,13 @@
    1.971
   ],
   "p": [
-   0.2432,
-   0.2557,
-   0.5011
+   0.2436,
+   0.2549,
+   0.5015
   ],
   "p_score": 0.093,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "559620": {
@@ -874,13 +874,13 @@
    4.75
   ],
   "p": [
-   0.5457,
-   0.2567,
-   0.1976
+   0.5436,
+   0.261,
+   0.1954
   ],
   "p_score": 0.098,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "560645": {
@@ -978,13 +978,13 @@
    6.865
   ],
   "p": [
-   0.6309,
-   0.2315,
-   0.1376
+   0.63,
+   0.2332,
+   0.1368
   ],
   "p_score": 0.099,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "560653": {
@@ -1005,12 +1005,12 @@
   ],
   "p": [
    0.2578,
-   0.2591,
-   0.4831
+   0.2592,
+   0.483
   ],
   "p_score": 0.092,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "560654": {
@@ -1030,13 +1030,13 @@
    3.867
   ],
   "p": [
-   0.4571,
-   0.3077,
-   0.2352
+   0.4573,
+   0.3073,
+   0.2354
   ],
   "p_score": 0.102,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-0"
  },
  "560655": {
@@ -1056,13 +1056,13 @@
    3.617
   ],
   "p": [
-   0.4638,
-   0.261,
-   0.2752
+   0.4632,
+   0.2622,
+   0.2746
   ],
   "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "560656": {
@@ -1082,13 +1082,13 @@
    2.051
   ],
   "p": [
-   0.247,
-   0.2757,
-   0.4773
+   0.244,
+   0.2817,
+   0.4743
   ],
-  "p_score": 0.094,
+  "p_score": 0.095,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "560657": {
@@ -1109,12 +1109,12 @@
   ],
   "p": [
    0.3336,
-   0.3122,
-   0.3542
+   0.3123,
+   0.3541
   ],
   "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "560658": {
@@ -1134,13 +1134,13 @@
    2.746
   ],
   "p": [
-   0.3465,
-   0.2984,
-   0.3551
+   0.3464,
+   0.2986,
+   0.355
   ],
   "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "560659": {
@@ -1160,13 +1160,13 @@
    5.786
   ],
   "p": [
-   0.6067,
-   0.231,
-   0.1623
+   0.6089,
+   0.2268,
+   0.1643
   ],
   "p_score": 0.098,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "560660": {
@@ -1186,13 +1186,13 @@
    2.265
   ],
   "p": [
-   0.2567,
-   0.3165,
-   0.4268
+   0.257,
+   0.3158,
+   0.4272
   ],
-  "p_score": 0.1,
+  "p_score": 0.099,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "0-1"
  },
  "560661": {
@@ -1212,13 +1212,13 @@
    4.228
   ],
   "p": [
-   0.504,
-   0.2705,
-   0.2255
+   0.5056,
+   0.2672,
+   0.2272
   ],
   "p_score": 0.096,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561953": {
@@ -1238,13 +1238,13 @@
    6.651
   ],
   "p": [
-   0.6549,
-   0.1917,
-   0.1534
+   0.6596,
+   0.1823,
+   0.1581
   ],
-  "p_score": 0.088,
+  "p_score": 0.081,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561954": {
@@ -1264,13 +1264,13 @@
    7.185
   ],
   "p": [
-   0.6611,
-   0.2048,
-   0.1341
+   0.661,
+   0.2051,
+   0.1339
   ],
   "p_score": 0.096,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561955": {
@@ -1290,13 +1290,13 @@
    1.856
   ],
   "p": [
-   0.2114,
-   0.2508,
-   0.5378
+   0.2106,
+   0.2525,
+   0.5369
   ],
-  "p_score": 0.096,
+  "p_score": 0.097,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561956": {
@@ -1316,13 +1316,13 @@
    2.704
   ],
   "p": [
-   0.3644,
-   0.2658,
-   0.3698
+   0.3638,
+   0.2671,
+   0.3691
   ],
   "p_score": 0.079,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561957": {
@@ -1342,13 +1342,13 @@
    11.597
   ],
   "p": [
-   0.7386,
-   0.1764,
-   0.085
+   0.7377,
+   0.1781,
+   0.0842
   ],
-  "p_score": 0.113,
+  "p_score": 0.116,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-0"
  },
  "561958": {
@@ -1368,13 +1368,13 @@
    2.693
   ],
   "p": [
-   0.3231,
-   0.3117,
-   0.3652
+   0.3261,
+   0.3056,
+   0.3683
   ],
   "p_score": 0.084,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561959": {
@@ -1394,13 +1394,13 @@
    3.1
   ],
   "p": [
-   0.3812,
-   0.2974,
-   0.3214
+   0.3788,
+   0.3022,
+   0.319
   ],
-  "p_score": 0.086,
+  "p_score": 0.085,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561960": {
@@ -1420,13 +1420,13 @@
    3.887
   ],
   "p": [
-   0.4898,
-   0.2486,
-   0.2616
+   0.4891,
+   0.2501,
+   0.2608
   ],
-  "p_score": 0.089,
+  "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561961": {
@@ -1446,13 +1446,13 @@
    2.84
   ],
   "p": [
-   0.3633,
-   0.3004,
-   0.3363
+   0.3616,
+   0.3038,
+   0.3346
   ],
   "p_score": 0.083,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561962": {
@@ -1472,13 +1472,13 @@
    3.579
   ],
   "p": [
-   0.4352,
-   0.2901,
-   0.2747
+   0.4349,
+   0.2908,
+   0.2743
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561963": {
@@ -1498,13 +1498,13 @@
    2.074
   ],
   "p": [
-   0.2501,
-   0.277,
-   0.4729
+   0.2528,
+   0.2716,
+   0.4756
   ],
   "p_score": 0.094,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561964": {
@@ -1524,13 +1524,13 @@
    2.527
   ],
   "p": [
-   0.3361,
-   0.2755,
-   0.3884
+   0.334,
+   0.2796,
+   0.3864
   ],
   "p_score": 0.084,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561965": {
@@ -1550,13 +1550,13 @@
    3.602
   ],
   "p": [
-   0.4134,
-   0.3026,
-   0.284
+   0.4121,
+   0.3051,
+   0.2828
   ],
   "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561966": {
@@ -1576,13 +1576,13 @@
    3.227
   ],
   "p": [
-   0.3992,
-   0.2714,
-   0.3294
+   0.3982,
+   0.2734,
+   0.3284
   ],
-  "p_score": 0.084,
+  "p_score": 0.085,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561967": {
@@ -1602,13 +1602,13 @@
    3.164
   ],
   "p": [
-   0.3974,
-   0.2634,
-   0.3392
+   0.3963,
+   0.2656,
+   0.3381
   ],
   "p_score": 0.082,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561968": {
@@ -1628,13 +1628,13 @@
    2.803
   ],
   "p": [
-   0.3657,
-   0.2588,
-   0.3755
+   0.3653,
+   0.2595,
+   0.3752
   ],
-  "p_score": 0.077,
+  "p_score": 0.078,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561969": {
@@ -1654,13 +1654,13 @@
    3.561
   ],
   "p": [
-   0.4192,
-   0.302,
-   0.2788
+   0.4174,
+   0.3056,
+   0.277
   ],
-  "p_score": 0.09,
+  "p_score": 0.089,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561970": {
@@ -1680,13 +1680,13 @@
    4.008
   ],
   "p": [
-   0.4885,
-   0.2531,
-   0.2584
+   0.4887,
+   0.2527,
+   0.2586
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561971": {
@@ -1706,13 +1706,13 @@
    3.333
   ],
   "p": [
-   0.402,
-   0.2821,
-   0.3159
+   0.4011,
+   0.2839,
+   0.315
   ],
   "p_score": 0.087,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561972": {
@@ -1732,13 +1732,13 @@
    1.768
   ],
   "p": [
-   0.1827,
-   0.2652,
-   0.5521
+   0.1838,
+   0.2628,
+   0.5534
   ],
   "p_score": 0.099,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561973": {
@@ -1758,13 +1758,13 @@
    2.243
   ],
   "p": [
-   0.2874,
-   0.256,
-   0.4566
+   0.2867,
+   0.2573,
+   0.456
   ],
-  "p_score": 0.087,
+  "p_score": 0.088,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "561974": {
@@ -1784,13 +1784,13 @@
    5.923
   ],
   "p": [
-   0.5646,
-   0.2327,
-   0.2027
+   0.5633,
+   0.2353,
+   0.2014
   ],
-  "p_score": 0.094,
+  "p_score": 0.095,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561975": {
@@ -1810,13 +1810,13 @@
    5.042
   ],
   "p": [
-   0.5164,
-   0.2727,
-   0.2109
+   0.516,
+   0.2734,
+   0.2106
   ],
   "p_score": 0.097,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "561976": {
@@ -1836,13 +1836,13 @@
    3.657
   ],
   "p": [
-   0.4673,
-   0.2451,
-   0.2876
+   0.4697,
+   0.2402,
+   0.2901
   ],
-  "p_score": 0.084,
+  "p_score": 0.082,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "564749": {
@@ -1992,13 +1992,13 @@
    2.705
   ],
   "p": [
-   0.3408,
-   0.3048,
-   0.3544
+   0.3376,
+   0.3112,
+   0.3512
   ],
   "p_score": 0.082,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "564759": {
@@ -2018,13 +2018,13 @@
    1.61
   ],
   "p": [
-   0.1527,
-   0.243,
-   0.6043
+   0.1515,
+   0.2454,
+   0.6031
   ],
   "p_score": 0.099,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "564760": {
@@ -2044,13 +2044,13 @@
    5.674
   ],
   "p": [
-   0.6011,
-   0.221,
-   0.1779
+   0.6008,
+   0.2217,
+   0.1775
   ],
   "p_score": 0.095,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "564761": {
@@ -2070,13 +2070,13 @@
    3.964
   ],
   "p": [
-   0.4473,
-   0.3064,
-   0.2463
+   0.4491,
+   0.3028,
+   0.2481
   ],
-  "p_score": 0.096,
+  "p_score": 0.093,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-0"
  },
  "564762": {
@@ -2096,18 +2096,18 @@
    17.227
   ],
   "p": [
-   0.8286,
-   0.126,
-   0.0454
+   0.8279,
+   0.1274,
+   0.0447
   ],
-  "p_score": 0.119,
+  "p_score": 0.123,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-0"
  },
  "564763": {
   "away": "Getafe",
-  "confidence": "medium",
+  "confidence": "low",
   "date": "2026-11-30T20:00:00Z",
   "div": "SP1",
   "first_predicted_at": "2026-11-24T07:26:13Z",
@@ -2122,18 +2122,18 @@
    4.313
   ],
   "p": [
-   0.4533,
-   0.323,
-   0.2237
+   0.4495,
+   0.3305,
+   0.22
   ],
-  "p_score": 0.119,
+  "p_score": 0.127,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-0"
  },
  "564764": {
   "away": "Sevilla",
-  "confidence": "medium",
+  "confidence": "low",
   "date": "2026-11-29T20:00:00Z",
   "div": "SP1",
   "first_predicted_at": "2026-11-23T10:38:27Z",
@@ -2148,13 +2148,13 @@
    3.523
   ],
   "p": [
-   0.4507,
-   0.2697,
-   0.2796
+   0.4489,
+   0.2732,
+   0.2779
   ],
-  "p_score": 0.09,
+  "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "564765": {
@@ -2174,13 +2174,13 @@
    3.358
   ],
   "p": [
-   0.454,
-   0.2511,
-   0.2949
+   0.4594,
+   0.2403,
+   0.3003
   ],
-  "p_score": 0.085,
+  "p_score": 0.08,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "564766": {
@@ -2200,13 +2200,13 @@
    1.279
   ],
   "p": [
-   0.0749,
-   0.1569,
-   0.7682
+   0.0755,
+   0.1557,
+   0.7688
   ],
-  "p_score": 0.106,
+  "p_score": 0.103,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "0-2"
  },
  "564767": {
@@ -2226,14 +2226,14 @@
    1.873
   ],
   "p": [
-   0.1926,
-   0.2856,
-   0.5218
+   0.204,
+   0.2626,
+   0.5334
   ],
-  "p_score": 0.106,
+  "p_score": 0.098,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
-  "score": "0-1"
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
  },
  "565863": {
   "away": "Hamburg",
@@ -2304,13 +2304,13 @@
    3.584
   ],
   "p": [
-   0.4677,
-   0.2641,
-   0.2682
+   0.4674,
+   0.2647,
+   0.2679
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565867": {
@@ -2330,13 +2330,13 @@
    6.353
   ],
   "p": [
-   0.6301,
-   0.2217,
-   0.1482
+   0.6305,
+   0.221,
+   0.1485
   ],
   "p_score": 0.098,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565868": {
@@ -2356,13 +2356,13 @@
    2.962
   ],
   "p": [
-   0.3736,
-   0.3029,
-   0.3235
+   0.3733,
+   0.3035,
+   0.3232
   ],
   "p_score": 0.085,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565869": {
@@ -2382,13 +2382,13 @@
    4.378
   ],
   "p": [
-   0.5463,
-   0.2274,
-   0.2263
+   0.5437,
+   0.2326,
+   0.2237
   ],
-  "p_score": 0.088,
+  "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565870": {
@@ -2408,13 +2408,13 @@
    4.106
   ],
   "p": [
-   0.549,
-   0.2129,
-   0.2381
+   0.5479,
+   0.2151,
+   0.237
   ],
-  "p_score": 0.079,
+  "p_score": 0.081,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565871": {
@@ -2434,13 +2434,13 @@
    4.116
   ],
   "p": [
-   0.5457,
-   0.2188,
-   0.2355
+   0.5459,
+   0.2183,
+   0.2358
   ],
   "p_score": 0.083,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565872": {
@@ -2460,13 +2460,13 @@
    3.226
   ],
   "p": [
-   0.439,
-   0.2631,
-   0.2979
+   0.4387,
+   0.2636,
+   0.2977
   ],
   "p_score": 0.087,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "565873": {
@@ -2492,7 +2492,7 @@
   ],
   "p_score": 0.08,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
  },
  "565874": {
@@ -2512,13 +2512,13 @@
    1.264
   ],
   "p": [
-   0.0852,
-   0.1329,
-   0.7819
+   0.0846,
+   0.1339,
+   0.7815
   ],
   "p_score": 0.08,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-3"
  },
  "567356": {
@@ -2544,7 +2544,7 @@
   ],
   "p_score": 0.091,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "567357": {
@@ -2570,7 +2570,7 @@
   ],
   "p_score": 0.156,
   "pick": "draw",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-1"
  },
  "567358": {
@@ -2596,7 +2596,7 @@
   ],
   "p_score": 0.088,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "567359": {
@@ -2622,7 +2622,7 @@
   ],
   "p_score": 0.128,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "0-1"
  },
  "567360": {
@@ -2648,7 +2648,7 @@
   ],
   "p_score": 0.142,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-0"
  },
  "567362": {
@@ -2674,7 +2674,7 @@
   ],
   "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "567363": {
@@ -2700,7 +2700,7 @@
   ],
   "p_score": 0.09,
   "pick": "home",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "2-1"
  },
  "567364": {
@@ -2726,7 +2726,1463 @@
   ],
   "p_score": 0.089,
   "pick": "away",
-  "predicted_at": "2026-11-24T11:34:11Z",
+  "predicted_at": "2026-11-24T12:14:52Z",
   "score": "1-2"
+ },
+ "575397": {
+  "away": "PSV Eindhoven",
+  "confidence": "high",
+  "date": "2026-11-24T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Real Madrid",
+  "id": "575397",
+  "league": "Champions League",
+  "margin": 2,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.17,
+   11.1,
+   17.995
+  ],
+  "p": [
+   0.8412,
+   0.1164,
+   0.0424
+  ],
+  "p_score": 0.111,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-0"
+ },
+ "575398": {
+  "away": "Napoli",
+  "confidence": "high",
+  "date": "2026-11-24T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Man City",
+  "id": "575398",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.326,
+   6.832,
+   10.046
+  ],
+  "p": [
+   0.7358,
+   0.1829,
+   0.0813
+  ],
+  "p_score": 0.095,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "575399": {
+  "away": "Dortmund",
+  "confidence": "high",
+  "date": "2026-11-24T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Arsenal",
+  "id": "575399",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.491,
+   5.036,
+   7.655
+  ],
+  "p": [
+   0.6376,
+   0.2648,
+   0.0976
+  ],
+  "p_score": 0.172,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "575400": {
+  "away": "Porto",
+  "confidence": "low",
+  "date": "2026-11-24T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Feyenoord",
+  "id": "575400",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.468,
+   3.853,
+   2.212
+  ],
+  "p": [
+   0.2716,
+   0.293,
+   0.4354
+  ],
+  "p_score": 0.091,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "575402": {
+  "away": "Lens",
+  "confidence": "high",
+  "date": "2026-11-24T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "RB Leipzig",
+  "id": "575402",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.394,
+   6.062,
+   8.487
+  ],
+  "p": [
+   0.7054,
+   0.1886,
+   0.106
+  ],
+  "p_score": 0.094,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "575406": {
+  "away": "Stuttgart",
+  "confidence": "high",
+  "date": "2026-11-25T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Inter",
+  "id": "575406",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.454,
+   6.03,
+   6.834
+  ],
+  "p": [
+   0.6785,
+   0.1844,
+   0.1371
+  ],
+  "p_score": 0.088,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "575408": {
+  "away": "Roma",
+  "confidence": "high",
+  "date": "2026-11-25T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Paris SG",
+  "id": "575408",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.465,
+   5.43,
+   7.508
+  ],
+  "p": [
+   0.6776,
+   0.1942,
+   0.1282
+  ],
+  "p_score": 0.094,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "575410": {
+  "away": "Bayern Munich",
+  "confidence": "medium",
+  "date": "2026-11-25T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Lille",
+  "id": "575410",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   5.42,
+   4.444,
+   1.693
+  ],
+  "p": [
+   0.1693,
+   0.2553,
+   0.5754
+  ],
+  "p_score": 0.099,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "575411": {
+  "away": "Man Utd",
+  "confidence": "low",
+  "date": "2026-11-25T20:00:00Z",
+  "div": "UCL",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Sp Lisbon",
+  "id": "575411",
+  "league": "Champions League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.57,
+   3.97,
+   2.785
+  ],
+  "p": [
+   0.3781,
+   0.2738,
+   0.3481
+  ],
+  "p_score": 0.082,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-ARG-20261126-boca-juniors-ind-rivadavia": {
+  "away": "Ind. Rivadavia",
+  "confidence": "medium",
+  "date": "2026-11-26T00:00:00Z",
+  "div": "ARG",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Boca Juniors",
+  "id": "fdcouk-ARG-20261126-boca-juniors-ind-rivadavia",
+  "league": "Argentina Primera",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.74,
+   3.781,
+   6.215
+  ],
+  "p": [
+   0.5816,
+   0.2505,
+   0.1679
+  ],
+  "p_score": 0.099,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-BRA-20261124-chapecoense-sc-palmeiras": {
+  "away": "Palmeiras",
+  "confidence": "low",
+  "date": "2026-11-24T21:00:00Z",
+  "div": "BRA",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Chapecoense-SC",
+  "id": "fdcouk-BRA-20261124-chapecoense-sc-palmeiras",
+  "league": "Brazil Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.521,
+   3.621,
+   2.273
+  ],
+  "p": [
+   0.2788,
+   0.2864,
+   0.4348
+  ],
+  "p_score": 0.091,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-BRA-20261125-atletico-mg-corinthians": {
+  "away": "Corinthians",
+  "confidence": "low",
+  "date": "2026-11-25T23:00:00Z",
+  "div": "BRA",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Atletico-MG",
+  "id": "fdcouk-BRA-20261125-atletico-mg-corinthians",
+  "league": "Brazil Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.494,
+   3.527,
+   3.169
+  ],
+  "p": [
+   0.3705,
+   0.3444,
+   0.2851
+  ],
+  "p_score": 0.109,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-BRA-20261126-sao-paulo-remo": {
+  "away": "Remo",
+  "confidence": "high",
+  "date": "2026-11-26T23:00:00Z",
+  "div": "BRA",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Sao Paulo",
+  "id": "fdcouk-BRA-20261126-sao-paulo-remo",
+  "league": "Brazil Serie A",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.432,
+   5.153,
+   9.275
+  ],
+  "p": [
+   0.6788,
+   0.2327,
+   0.0885
+  ],
+  "p_score": 0.148,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-E2-20261124-blackpool-leicester": {
+  "away": "Leicester",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "E2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Blackpool",
+  "id": "fdcouk-E2-20261124-blackpool-leicester",
+  "league": "League One",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   4.528,
+   4.528,
+   1.791
+  ],
+  "p": [
+   0.2101,
+   0.2424,
+   0.5475
+  ],
+  "p_score": 0.095,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-E2-20261124-bradford-barnsley": {
+  "away": "Barnsley",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "E2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Bradford",
+  "id": "fdcouk-E2-20261124-bradford-barnsley",
+  "league": "League One",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.654,
+   4.77,
+   5.379
+  ],
+  "p": [
+   0.5789,
+   0.2609,
+   0.1602
+  ],
+  "p_score": 0.105,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-E2-20261124-bromley-wycombe": {
+  "away": "Wycombe",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "E2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Bromley",
+  "id": "fdcouk-E2-20261124-bromley-wycombe",
+  "league": "League One",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   4.518,
+   4.107,
+   1.869
+  ],
+  "p": [
+   0.2286,
+   0.2291,
+   0.5423
+  ],
+  "p_score": 0.089,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-E2-20261124-stevenage-sheffield-weds": {
+  "away": "Sheffield Weds",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "E2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Stevenage",
+  "id": "fdcouk-E2-20261124-stevenage-sheffield-weds",
+  "league": "League One",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.804,
+   3.658,
+   2.703
+  ],
+  "p": [
+   0.3328,
+   0.3211,
+   0.3461
+  ],
+  "p_score": 0.081,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "0-1"
+ },
+ "fdcouk-E2-20261126-doncaster-huddersfield": {
+  "away": "Huddersfield",
+  "confidence": "medium",
+  "date": "2026-11-26T20:00:00Z",
+  "div": "E2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Doncaster",
+  "id": "fdcouk-E2-20261126-doncaster-huddersfield",
+  "league": "League One",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   4.407,
+   4.509,
+   1.814
+  ],
+  "p": [
+   0.2124,
+   0.2508,
+   0.5368
+  ],
+  "p_score": 0.096,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-E3-20261124-crawley-town-barnet": {
+  "away": "Barnet",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "E3",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Crawley Town",
+  "id": "fdcouk-E3-20261124-crawley-town-barnet",
+  "league": "League Two",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.972,
+   4.176,
+   1.966
+  ],
+  "p": [
+   0.2437,
+   0.2556,
+   0.5007
+  ],
+  "p_score": 0.093,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-E3-20261124-port-vale-northampton": {
+  "away": "Northampton",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "E3",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Port Vale",
+  "id": "fdcouk-E3-20261124-port-vale-northampton",
+  "league": "League Two",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.176,
+   3.508,
+   3.915
+  ],
+  "p": [
+   0.4419,
+   0.3204,
+   0.2377
+  ],
+  "p_score": 0.111,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-EC-20261124-altrincham-wealdstone": {
+  "away": "Wealdstone",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Altrincham",
+  "id": "fdcouk-EC-20261124-altrincham-wealdstone",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.99,
+   4.073,
+   3.97
+  ],
+  "p": [
+   0.4932,
+   0.2642,
+   0.2426
+  ],
+  "p_score": 0.094,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261124-boston-utd-barrow": {
+  "away": "Barrow",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Boston Utd",
+  "id": "fdcouk-EC-20261124-boston-utd-barrow",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.068,
+   3.861,
+   2.409
+  ],
+  "p": [
+   0.3182,
+   0.2745,
+   0.4073
+  ],
+  "p_score": 0.086,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-EC-20261124-carlisle-tamworth": {
+  "away": "Tamworth",
+  "confidence": "high",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Carlisle",
+  "id": "fdcouk-EC-20261124-carlisle-tamworth",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.483,
+   5.354,
+   7.207
+  ],
+  "p": [
+   0.6732,
+   0.1892,
+   0.1376
+  ],
+  "p_score": 0.09,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261124-eastleigh-yeovil": {
+  "away": "Yeovil",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Eastleigh",
+  "id": "fdcouk-EC-20261124-eastleigh-yeovil",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.191,
+   4.015,
+   2.285
+  ],
+  "p": [
+   0.2975,
+   0.2808,
+   0.4217
+  ],
+  "p_score": 0.089,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-EC-20261124-forest-green-southend": {
+  "away": "Southend",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Forest Green",
+  "id": "fdcouk-EC-20261124-forest-green-southend",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.393,
+   4.295,
+   2.863
+  ],
+  "p": [
+   0.4081,
+   0.2524,
+   0.3395
+  ],
+  "p_score": 0.079,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261124-fylde-halifax": {
+  "away": "Halifax",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Fylde",
+  "id": "fdcouk-EC-20261124-fylde-halifax",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.985,
+   4.422,
+   3.702
+  ],
+  "p": [
+   0.4859,
+   0.2618,
+   0.2523
+  ],
+  "p_score": 0.093,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261124-hornchurch-sutton": {
+  "away": "Sutton",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Hornchurch",
+  "id": "fdcouk-EC-20261124-hornchurch-sutton",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.666,
+   3.384,
+   3.035
+  ],
+  "p": [
+   0.3679,
+   0.3099,
+   0.3222
+  ],
+  "p_score": 0.084,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261124-scunthorpe-gateshead": {
+  "away": "Gateshead",
+  "confidence": "high",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Scunthorpe",
+  "id": "fdcouk-EC-20261124-scunthorpe-gateshead",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.525,
+   5.22,
+   6.55
+  ],
+  "p": [
+   0.6397,
+   0.2236,
+   0.1367
+  ],
+  "p_score": 0.099,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261124-woking-worthing": {
+  "away": "Worthing",
+  "confidence": "low",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Woking",
+  "id": "fdcouk-EC-20261124-woking-worthing",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.455,
+   3.989,
+   2.925
+  ],
+  "p": [
+   0.3949,
+   0.2757,
+   0.3294
+  ],
+  "p_score": 0.085,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-EC-20261125-boreham-wood-aldershot": {
+  "away": "Aldershot",
+  "confidence": "high",
+  "date": "2026-11-25T19:00:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Boreham Wood",
+  "id": "fdcouk-EC-20261125-boreham-wood-aldershot",
+  "league": "National League",
+  "margin": 2,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.258,
+   7.838,
+   12.891
+  ],
+  "p": [
+   0.7852,
+   0.147,
+   0.0678
+  ],
+  "p_score": 0.104,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-0"
+ },
+ "fdcouk-EC-20261125-harrogate-kidderminster": {
+  "away": "Kidderminster",
+  "confidence": "medium",
+  "date": "2026-11-25T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Harrogate",
+  "id": "fdcouk-EC-20261125-harrogate-kidderminster",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.68,
+   4.279,
+   5.844
+  ],
+  "p": [
+   0.579,
+   0.2662,
+   0.1548
+  ],
+  "p_score": 0.114,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-EC-20261125-hartlepool-solihull": {
+  "away": "Solihull",
+  "confidence": "low",
+  "date": "2026-11-25T19:45:00Z",
+  "div": "EC",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Hartlepool",
+  "id": "fdcouk-EC-20261125-hartlepool-solihull",
+  "league": "National League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.243,
+   3.982,
+   3.301
+  ],
+  "p": [
+   0.4309,
+   0.2811,
+   0.288
+  ],
+  "p_score": 0.09,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261124-benevento-empoli": {
+  "away": "Empoli",
+  "confidence": "high",
+  "date": "2026-11-24T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Benevento",
+  "id": "fdcouk-I2-20261124-benevento-empoli",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.587,
+   4.606,
+   6.551
+  ],
+  "p": [
+   0.6231,
+   0.2314,
+   0.1455
+  ],
+  "p_score": 0.099,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261124-cesena-ascoli": {
+  "away": "Ascoli",
+  "confidence": "low",
+  "date": "2026-11-24T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Cesena",
+  "id": "fdcouk-I2-20261124-cesena-ascoli",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.811,
+   3.437,
+   2.831
+  ],
+  "p": [
+   0.3446,
+   0.3134,
+   0.342
+  ],
+  "p_score": 0.081,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261124-juve-stabia-catanzaro": {
+  "away": "Catanzaro",
+  "confidence": "medium",
+  "date": "2026-11-24T18:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Juve Stabia",
+  "id": "fdcouk-I2-20261124-juve-stabia-catanzaro",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.052,
+   3.622,
+   4.225
+  ],
+  "p": [
+   0.4899,
+   0.2707,
+   0.2394
+  ],
+  "p_score": 0.095,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261124-palermo-sudtirol": {
+  "away": "Sudtirol",
+  "confidence": "high",
+  "date": "2026-11-24T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Palermo",
+  "id": "fdcouk-I2-20261124-palermo-sudtirol",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.537,
+   4.784,
+   7.125
+  ],
+  "p": [
+   0.6476,
+   0.215,
+   0.1374
+  ],
+  "p_score": 0.098,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261124-vicenza-carrarese": {
+  "away": "Carrarese",
+  "confidence": "low",
+  "date": "2026-11-24T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Vicenza",
+  "id": "fdcouk-I2-20261124-vicenza-carrarese",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.398,
+   3.246,
+   2.515
+  ],
+  "p": [
+   0.2981,
+   0.3005,
+   0.4014
+  ],
+  "p_score": 0.088,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-I2-20261124-virtus-entella-hellas-verona": {
+  "away": "Hellas Verona",
+  "confidence": "low",
+  "date": "2026-11-24T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Virtus Entella",
+  "id": "fdcouk-I2-20261124-virtus-entella-hellas-verona",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.696,
+   3.291,
+   2.349
+  ],
+  "p": [
+   0.2612,
+   0.3225,
+   0.4163
+  ],
+  "p_score": 0.102,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "0-1"
+ },
+ "fdcouk-I2-20261125-cremonese-avellino": {
+  "away": "Avellino",
+  "confidence": "medium",
+  "date": "2026-11-25T18:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Cremonese",
+  "id": "fdcouk-I2-20261125-cremonese-avellino",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.127,
+   3.407,
+   4.233
+  ],
+  "p": [
+   0.475,
+   0.284,
+   0.241
+  ],
+  "p_score": 0.095,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261125-mantova-arezzo": {
+  "away": "Arezzo",
+  "confidence": "medium",
+  "date": "2026-11-25T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Mantova",
+  "id": "fdcouk-I2-20261125-mantova-arezzo",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.763,
+   4.123,
+   5.257
+  ],
+  "p": [
+   0.5612,
+   0.2545,
+   0.1843
+  ],
+  "p_score": 0.099,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-I2-20261125-padova-sampdoria": {
+  "away": "Sampdoria",
+  "confidence": "low",
+  "date": "2026-11-25T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Padova",
+  "id": "fdcouk-I2-20261125-padova-sampdoria",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.106,
+   3.262,
+   2.692
+  ],
+  "p": [
+   0.3179,
+   0.3147,
+   0.3674
+  ],
+  "p_score": 0.084,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-I2-20261125-pisa-modena": {
+  "away": "Modena",
+  "confidence": "low",
+  "date": "2026-11-25T19:00:00Z",
+  "div": "I2",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Pisa",
+  "id": "fdcouk-I2-20261125-pisa-modena",
+  "league": "Serie B",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.513,
+   3.375,
+   3.271
+  ],
+  "p": [
+   0.4,
+   0.2922,
+   0.3078
+  ],
+  "p_score": 0.088,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-JPN-20261125-avispa-fukuoka-yokohama-f-marinos": {
+  "away": "Yokohama F. Marinos",
+  "confidence": "low",
+  "date": "2026-11-25T10:00:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Avispa Fukuoka",
+  "id": "fdcouk-JPN-20261125-avispa-fukuoka-yokohama-f-marinos",
+  "league": "J1 League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.329,
+   3.586,
+   2.377
+  ],
+  "p": [
+   0.2726,
+   0.3344,
+   0.393
+  ],
+  "p_score": 0.107,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "0-1"
+ },
+ "fdcouk-JPN-20261125-chiba-nagoya-grampus": {
+  "away": "Nagoya Grampus",
+  "confidence": "low",
+  "date": "2026-11-25T10:00:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Chiba",
+  "id": "fdcouk-JPN-20261125-chiba-nagoya-grampus",
+  "league": "J1 League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.517,
+   3.62,
+   2.276
+  ],
+  "p": [
+   0.2606,
+   0.3239,
+   0.4155
+  ],
+  "p_score": 0.104,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "0-1"
+ },
+ "fdcouk-JPN-20261125-fc-tokyo-sanfrecce-hiroshima": {
+  "away": "Sanfrecce Hiroshima",
+  "confidence": "low",
+  "date": "2026-11-25T10:00:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "FC Tokyo",
+  "id": "fdcouk-JPN-20261125-fc-tokyo-sanfrecce-hiroshima",
+  "league": "J1 League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.462,
+   3.775,
+   3.041
+  ],
+  "p": [
+   0.3783,
+   0.3208,
+   0.3009
+  ],
+  "p_score": 0.088,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-JPN-20261125-mito-verdy": {
+  "away": "Verdy",
+  "confidence": "low",
+  "date": "2026-11-25T10:00:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Mito",
+  "id": "fdcouk-JPN-20261125-mito-verdy",
+  "league": "J1 League",
+  "margin": 0,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.209,
+   3.157,
+   2.691
+  ],
+  "p": [
+   0.29,
+   0.36,
+   0.35
+  ],
+  "p_score": 0.157,
+  "pick": "draw",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-1"
+ },
+ "fdcouk-JPN-20261125-okayama-shimizu-s-pulse": {
+  "away": "Shimizu S-Pulse",
+  "confidence": "low",
+  "date": "2026-11-25T10:00:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Okayama",
+  "id": "fdcouk-JPN-20261125-okayama-shimizu-s-pulse",
+  "league": "J1 League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.138,
+   3.495,
+   4.061
+  ],
+  "p": [
+   0.4464,
+   0.3286,
+   0.225
+  ],
+  "p_score": 0.123,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
+ },
+ "fdcouk-JPN-20261125-urawa-reds-cerezo-osaka": {
+  "away": "Cerezo Osaka",
+  "confidence": "medium",
+  "date": "2026-11-25T10:30:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Urawa Reds",
+  "id": "fdcouk-JPN-20261125-urawa-reds-cerezo-osaka",
+  "league": "J1 League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.914,
+   4.241,
+   4.138
+  ],
+  "p": [
+   0.5168,
+   0.2473,
+   0.2359
+  ],
+  "p_score": 0.093,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-JPN-20261125-v-varen-nagasaki-kawasaki-frontale": {
+  "away": "Kawasaki Frontale",
+  "confidence": "medium",
+  "date": "2026-11-25T10:00:00Z",
+  "div": "JPN",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "V-Varen Nagasaki",
+  "id": "fdcouk-JPN-20261125-v-varen-nagasaki-kawasaki-frontale",
+  "league": "J1 League",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.965,
+   4.223,
+   1.957
+  ],
+  "p": [
+   0.2427,
+   0.2558,
+   0.5015
+  ],
+  "p_score": 0.093,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-MEX-20261126-monterrey-club-america": {
+  "away": "Club America",
+  "confidence": "low",
+  "date": "2026-11-26T03:10:00Z",
+  "div": "MEX",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Monterrey",
+  "id": "fdcouk-MEX-20261126-monterrey-club-america",
+  "league": "Liga MX",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.542,
+   3.611,
+   3.033
+  ],
+  "p": [
+   0.3957,
+   0.2722,
+   0.3321
+  ],
+  "p_score": 0.084,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-MEX-20261126-toluca-atlas": {
+  "away": "Atlas",
+  "confidence": "high",
+  "date": "2026-11-26T01:00:00Z",
+  "div": "MEX",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Toluca",
+  "id": "fdcouk-MEX-20261126-toluca-atlas",
+  "league": "Liga MX",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.53,
+   5.159,
+   6.548
+  ],
+  "p": [
+   0.6516,
+   0.1976,
+   0.1508
+  ],
+  "p_score": 0.091,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-MEX-20261127-club-leon-cruz-azul": {
+  "away": "Cruz Azul",
+  "confidence": "low",
+  "date": "2026-11-27T03:10:00Z",
+  "div": "MEX",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Club Leon",
+  "id": "fdcouk-MEX-20261127-club-leon-cruz-azul",
+  "league": "Liga MX",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   3.377,
+   3.736,
+   2.292
+  ],
+  "p": [
+   0.2955,
+   0.2688,
+   0.4357
+  ],
+  "p_score": 0.088,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-2"
+ },
+ "fdcouk-MEX-20261127-pachuca-guadalajara-chivas": {
+  "away": "Guadalajara Chivas",
+  "confidence": "low",
+  "date": "2026-11-27T01:00:00Z",
+  "div": "MEX",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Pachuca",
+  "id": "fdcouk-MEX-20261127-pachuca-guadalajara-chivas",
+  "league": "Liga MX",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.828,
+   3.669,
+   2.675
+  ],
+  "p": [
+   0.3256,
+   0.3285,
+   0.3459
+  ],
+  "p_score": 0.088,
+  "pick": "away",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "0-1"
+ },
+ "fdcouk-SC0-20261124-hibernian-dundee": {
+  "away": "Dundee",
+  "confidence": "medium",
+  "date": "2026-11-24T19:45:00Z",
+  "div": "SC0",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Hibernian",
+  "id": "fdcouk-SC0-20261124-hibernian-dundee",
+  "league": "Scottish Premiership",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.712,
+   4.356,
+   5.369
+  ],
+  "p": [
+   0.5809,
+   0.2361,
+   0.183
+  ],
+  "p_score": 0.097,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-1"
+ },
+ "fdcouk-SC0-20261124-rangers-aberdeen": {
+  "away": "Aberdeen",
+  "confidence": "high",
+  "date": "2026-11-24T20:00:00Z",
+  "div": "SC0",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "Rangers",
+  "id": "fdcouk-SC0-20261124-rangers-aberdeen",
+  "league": "Scottish Premiership",
+  "margin": 2,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   1.268,
+   7.248,
+   13.589
+  ],
+  "p": [
+   0.7884,
+   0.1381,
+   0.0735
+  ],
+  "p_score": 0.084,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "2-0"
+ },
+ "fdcouk-USA-20261125-san-jose-earthquakes-houston-dynamo": {
+  "away": "Houston Dynamo",
+  "confidence": "low",
+  "date": "2026-11-25T03:00:00Z",
+  "div": "USA",
+  "first_predicted_at": "2026-11-24T12:14:52Z",
+  "home": "San Jose Earthquakes",
+  "id": "fdcouk-USA-20261125-san-jose-earthquakes-houston-dynamo",
+  "league": "MLS",
+  "margin": 1,
+  "model_version": "bivariate-dc-xg-elo-v3.1-odds-anchor",
+  "odds": [
+   2.206,
+   3.845,
+   3.49
+  ],
+  "p": [
+   0.4273,
+   0.3122,
+   0.2605
+  ],
+  "p_score": 0.095,
+  "pick": "home",
+  "predicted_at": "2026-11-24T12:14:52Z",
+  "score": "1-0"
  }
 }
