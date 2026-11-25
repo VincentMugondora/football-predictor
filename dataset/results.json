@@ -62,6 +62,62 @@
   "settled_at": "2026-11-24T07:26:13Z",
   "status": "final"
  },
+ "561953": {
+  "away_goals": 4,
+  "home_goals": 0,
+  "id": "561953",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561954": {
+  "away_goals": 1,
+  "home_goals": 2,
+  "id": "561954",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561955": {
+  "away_goals": 0,
+  "home_goals": 1,
+  "id": "561955",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561956": {
+  "away_goals": 1,
+  "home_goals": 1,
+  "id": "561956",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561957": {
+  "away_goals": 0,
+  "home_goals": 3,
+  "id": "561957",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561958": {
+  "away_goals": 0,
+  "home_goals": 4,
+  "id": "561958",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561959": {
+  "away_goals": 1,
+  "home_goals": 1,
+  "id": "561959",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "561960": {
+  "away_goals": 1,
+  "home_goals": 1,
+  "id": "561960",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
  "564749": {
   "away_goals": 2,
   "home_goals": 3,
@@ -109,6 +165,62 @@
   "home_goals": 3,
   "id": "565864",
   "settled_at": "2026-11-23T10:38:27Z",
+  "status": "final"
+ },
+ "575395": {
+  "away_goals": 0,
+  "home_goals": 1,
+  "id": "575395",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575396": {
+  "away_goals": 0,
+  "home_goals": 1,
+  "id": "575396",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575397": {
+  "away_goals": 1,
+  "home_goals": 5,
+  "id": "575397",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575398": {
+  "away_goals": 2,
+  "home_goals": 2,
+  "id": "575398",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575399": {
+  "away_goals": 1,
+  "home_goals": 1,
+  "id": "575399",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575400": {
+  "away_goals": 1,
+  "home_goals": 0,
+  "id": "575400",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575402": {
+  "away_goals": 1,
+  "home_goals": 3,
+  "id": "575402",
+  "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575403": {
+  "away_goals": 0,
+  "home_goals": 1,
+  "id": "575403",
+  "settled_at": "2026-11-25T07:00:57Z",
   "status": "final"
  }
 }
