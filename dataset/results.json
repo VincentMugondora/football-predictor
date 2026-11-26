@@ -118,6 +118,34 @@
   "settled_at": "2026-11-25T07:00:57Z",
   "status": "final"
  },
+ "561961": {
+  "away_goals": 1,
+  "home_goals": 0,
+  "id": "561961",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "561962": {
+  "away_goals": 1,
+  "home_goals": 2,
+  "id": "561962",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "561963": {
+  "away_goals": 3,
+  "home_goals": 1,
+  "id": "561963",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "561964": {
+  "away_goals": 2,
+  "home_goals": 0,
+  "id": "561964",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
  "564749": {
   "away_goals": 2,
   "home_goals": 3,
@@ -221,6 +249,48 @@
   "home_goals": 1,
   "id": "575403",
   "settled_at": "2026-11-25T07:00:57Z",
+  "status": "final"
+ },
+ "575406": {
+  "away_goals": 0,
+  "home_goals": 2,
+  "id": "575406",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "575407": {
+  "away_goals": 0,
+  "home_goals": 2,
+  "id": "575407",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "575408": {
+  "away_goals": 2,
+  "home_goals": 2,
+  "id": "575408",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "575409": {
+  "away_goals": 3,
+  "home_goals": 0,
+  "id": "575409",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "575410": {
+  "away_goals": 1,
+  "home_goals": 2,
+  "id": "575410",
+  "settled_at": "2026-11-26T06:47:29Z",
+  "status": "final"
+ },
+ "575411": {
+  "away_goals": 2,
+  "home_goals": 2,
+  "id": "575411",
+  "settled_at": "2026-11-26T06:47:29Z",
   "status": "final"
  }
 }
