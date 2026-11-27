@@ -292,5 +292,117 @@
   "id": "575411",
   "settled_at": "2026-11-26T06:47:29Z",
   "status": "final"
+ },
+ "oddsapi-1abbe02767589722b5de92e94e96429d": {
+  "away_goals": 0,
+  "home_goals": 4,
+  "id": "oddsapi-1abbe02767589722b5de92e94e96429d",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-31ebd41354699af625fa3372932206f0": {
+  "away_goals": 4,
+  "home_goals": 2,
+  "id": "oddsapi-31ebd41354699af625fa3372932206f0",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-3ee2bf8a6fa6add543f64ac3e9813976": {
+  "away_goals": 2,
+  "home_goals": 2,
+  "id": "oddsapi-3ee2bf8a6fa6add543f64ac3e9813976",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-3fe17778f32b5fd0f218f9be6b0681cc": {
+  "away_goals": 1,
+  "home_goals": 2,
+  "id": "oddsapi-3fe17778f32b5fd0f218f9be6b0681cc",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-413409b43875d1bdb627a9e7fb6bc3fd": {
+  "away_goals": 1,
+  "home_goals": 1,
+  "id": "oddsapi-413409b43875d1bdb627a9e7fb6bc3fd",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-7da3be4f6fe50a39ecdf3a8dc12966c8": {
+  "away_goals": 2,
+  "home_goals": 1,
+  "id": "oddsapi-7da3be4f6fe50a39ecdf3a8dc12966c8",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-8a0dc963ce319d55751d4d07c5152600": {
+  "away_goals": 0,
+  "home_goals": 4,
+  "id": "oddsapi-8a0dc963ce319d55751d4d07c5152600",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-92db66d09fdcf10ff8561cb7ec09732e": {
+  "away_goals": 2,
+  "home_goals": 3,
+  "id": "oddsapi-92db66d09fdcf10ff8561cb7ec09732e",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-a24c89b65c5a30fb9473735049589e64": {
+  "away_goals": 0,
+  "home_goals": 0,
+  "id": "oddsapi-a24c89b65c5a30fb9473735049589e64",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-bbab118a8c6ca33b6b0e7b5ed36fecd8": {
+  "away_goals": 0,
+  "home_goals": 4,
+  "id": "oddsapi-bbab118a8c6ca33b6b0e7b5ed36fecd8",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-c587e5656d1f38f068cba1b168462ba4": {
+  "away_goals": 3,
+  "home_goals": 2,
+  "id": "oddsapi-c587e5656d1f38f068cba1b168462ba4",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-dd5f6def5ea1aa9e0a0f45e3605ac64e": {
+  "away_goals": 1,
+  "home_goals": 2,
+  "id": "oddsapi-dd5f6def5ea1aa9e0a0f45e3605ac64e",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-de10dd2e5917108a9478c07275ba8cdb": {
+  "away_goals": 3,
+  "home_goals": 1,
+  "id": "oddsapi-de10dd2e5917108a9478c07275ba8cdb",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-df4947bbe49057782feacca38c03e790": {
+  "away_goals": 1,
+  "home_goals": 3,
+  "id": "oddsapi-df4947bbe49057782feacca38c03e790",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-e1bfce2837ee873eec90dbefe31844ac": {
+  "away_goals": 4,
+  "home_goals": 1,
+  "id": "oddsapi-e1bfce2837ee873eec90dbefe31844ac",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
+ },
+ "oddsapi-e836bc70afa19b0db28fb320a97662e4": {
+  "away_goals": 1,
+  "home_goals": 3,
+  "id": "oddsapi-e836bc70afa19b0db28fb320a97662e4",
+  "settled_at": "2026-11-27T04:30:04Z",
+  "status": "final"
  }
 }
